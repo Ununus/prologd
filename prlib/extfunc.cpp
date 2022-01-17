@@ -1,7 +1,9 @@
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <charconv>
+#include <random>
 #include "pdefs.h"
 #include "pstructs.h"
 #include "extfunc.h"
@@ -289,13 +291,16 @@ unsigned zap2f(float num1, float num2, int arg1, int arg2,
 int prrandom(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 // выполнение предиката СЛУЧ
 {
+  static std::random_device rd;
+  static std::mt19937 rng(rd());
   switch (sw)
   {
   case 7:   // целое: инициализация генератора
       //randomize();
     return 3;
   case 5:   // переменная: получить новое значение
-    return zap1(rand(), 1, ScVar, ClVar, heap);
+    return zap1(rng(), 1, ScVar, ClVar, heap);
+    //return zap1(rand(), 1, ScVar, ClVar, heap);
   default:
     outerror(24); return 1;//!!!r_t_e(71);
   }
@@ -1100,8 +1105,8 @@ unsigned prstlst(unsigned sw,
 unsigned prstint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   array* heap)   //стрцел
 {//int i;
-  long w;
-  char lnwr[maxlinelen];
+  long w{};
+  char lnwr[maxlinelen]{};
   switch (sw)
   {
   case 97:   //str int
@@ -1110,32 +1115,39 @@ unsigned prstint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   case 45:   //symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
+    std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    //w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
     if (sw == 95 || sw == 45)
       return zap1(w, 2, ScVar, ClVar, heap);
     return (w == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
   }
   case 57:   //var int  возможно нужно var float
   {
-    _ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
+    std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
+    // Заменено на to_chars, но не поверено
+    //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
     //char *str=newStr(lnwr);
+
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
   case 56:
   {
     float value = occf(1, ScVar, ClVar, heap);
-    int dec, sign, ndig = 5;
-    char* p = lnwr;
-    p = _fcvt(value, ndig, &dec, &sign);
-    int j = 0, i;
-    if (sign)
-      lnwr[j++] = '-';
-    for (i = 0; (i < dec && i + j < maxlinelen);
-      lnwr[j + i] = p[i], i++);
-    lnwr[j + i] = '.';
-    j++;
-    for (; (i + j < maxlinelen && p[i]); lnwr[i + j] = p[i], i++);
-    lnwr[j + i] = NULL;
+    sprintf(lnwr, "%f", value);
+    //std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
+    // Заменено на, но не поверено
+    //int dec, sign, ndig = 5;
+    //char* p = lnwr;
+    //p = _fcvt(value, ndig, &dec, &sign);
+    //int j = 0, i;
+    //if (sign)
+    //  lnwr[j++] = '-';
+    //for (i = 0; (i < dec && i + j < maxlinelen);
+    //  lnwr[j + i] = p[i], i++);
+    //lnwr[j + i] = '.';
+    //j++;
+    //for (; (i + j < maxlinelen && p[i]); lnwr[i + j] = p[i], i++);
+    //lnwr[j + i] = NULL;
 
     //str=newStr(lnwr);
     return zap3(lnwr, 1, ScVar, ClVar, heap);

@@ -5,6 +5,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
+#include <charconv>
 #include "functions.h"
 #include "pdefs.h"
 //#include "extdecl.h"
@@ -317,10 +318,14 @@ int num(char*& p, TScVar* ScVar, array* heap)
   {
     unsigned int index;
     bufnum[i] = 0;
-    if (punkt || e)
+    if (punkt || e) {
+      //std::from_chars(bufnum, bufnum + sizeof(bufnum), valuef); // в gcc не реализовано
       valuef = static_cast<float>(atof(bufnum));
-    else
-      valuei = atoi(bufnum);
+    }
+    else {
+      std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
+      //valuei = atoi(bufnum);
+    }
     if ((valuef == valuei) && (i > 1 ||
       (i == 1 && (*p != '0'))))
       err = 4;//не верный формат числа

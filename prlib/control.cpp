@@ -1,7 +1,8 @@
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <charconv>
 #include "pdefs.h"
 #include "pstructs.h"
 #include "control.h"
@@ -354,9 +355,12 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W,
     if (term == isnil || term == NULL)// || !term)
     {
       buff[j++] = '_';
-      _itoa(W, (char*)&buff[j], 10);
-      //for(i=0;((i+j)<200 && buff[i+j]);i++);
-      for (; (j < sizeof(buff) - 1 && buff[j]); j++);
+      auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
+      j = ptr - buff;
+      // Заменено на to_chars, но не поверено
+      //_itoa(W, (char*)&buff[j], 10);
+      //for (; (j < sizeof(buff) - 1 && buff[j]); j++);
+
       ex = nextarg(&j, ScVar, ClVar, heap);
     }
     else
@@ -383,10 +387,13 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W,
       }         break; //ok
       case isinteger:
       {
-        ClVar->precordinteger =
-          (recordinteger*)tp;
-        _ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
-        for (; j < sizeof(buff) - 1 && buff[j]; j++);
+        ClVar->precordinteger = (recordinteger*)tp;
+        auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
+        j = ptr - buff;
+        // Заменено на to_chars, но не поверено
+        //_ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
+        //for (; j < sizeof(buff) - 1 && buff[j]; j++);
+
         ex = nextarg(&j, ScVar, ClVar, heap);
       }   break; //ok
       case isfloat:
@@ -445,8 +452,12 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W,
         {
         case isinteger:
         {
-          _ltoa(ii, (char*)&buff[j], 10);
-          for (; j < sizeof(buff) - 1 && buff[j]; j++);
+          auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
+          j = ptr - buff;
+          // Заменено на to_chars, но не поверено
+          //_ltoa(ii, (char*)&buff[j], 10);
+          //for (; j < sizeof(buff) - 1 && buff[j]; j++);
+
         }	break;
         case isfloat:
           char string[40];
@@ -500,7 +511,7 @@ void prvars(TScVar* ScVar, TClVar* ClVar, array* heap)    //пока только описание
     //  bpt=BPT=new unsigned[maxbptr];
     //  unsigned i=0,j=0;
     unsigned j = 0;
-    out(const_cast<char*>(""));
+    //out(const_cast<char*>(""));
     unsigned w;
     for (unsigned k = 0; k < ClVar->varqu; k++)
     {

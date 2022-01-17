@@ -21,12 +21,6 @@ std::unique_ptr<std::ofstream> out_file;
 std::unique_ptr<std::ofstream> err_file;
 int Nstr;
 
-FILE _iob[] = { *stdin, *stdout, *stderr };
-extern "C" FILE * __cdecl __iob_func(void)
-{
-  return _iob;
-}
-
 //void RunProlog(int string_count, char** text, bool out_question = true, bool trace = false)
 void RunProlog(bool out_question = true)
 {
@@ -91,8 +85,7 @@ void out(char* str) {
   *out_file << str << '\n';
 }
 void errout(char* str) {
-  char number[8];
-  memset(number, 0, sizeof(char) * 8);
+  char number[8]{};
   std::to_chars(number, number + 8, Nstr);
   *err_file << number << " - " << str << '\n';
 }
