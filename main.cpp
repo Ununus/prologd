@@ -96,7 +96,7 @@ void errout(char* str) {
   std::to_chars(number, number + 8, Nstr);
   *err_file << number << " - " << str << '\n';
 }
-int InputStringFromDialog(char* buf, unsigned int size, char *caption) {
+int InputStringFromDialog(char* buf, size_t size, char *caption) {
   //out(caption);
   std::string line;
   if (!std::getline(*input_file, line)) {
