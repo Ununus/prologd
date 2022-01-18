@@ -4,7 +4,6 @@
 #include <string.h>
 #include "pstructs.h"
 #include "pdefs.h"
-#include "excpt.h"
 
 void TScVar::Init()
 {

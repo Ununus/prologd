@@ -9,7 +9,6 @@
 #include "extfunc.h"
 #include "control.h"
 #include "functions.h"
-#include "excpt.h"
 
 extern void ShowGWindow(bool clear = true);
 extern void Rectangle(int x1, int y1, int x2, int y2, unsigned color);
