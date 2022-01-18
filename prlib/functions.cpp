@@ -12,7 +12,7 @@
 #include "scaner.h"
 //#include "control.h"
 //#include "..\dinputdlg.h"
-#include "excpt.h"
+//#include "excpt.h"
 #include "extfunc.h"
 #define MAX_BUILD_PRED  45
 #define LEN_BUILD_LIBR   9
