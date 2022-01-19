@@ -4,8 +4,8 @@
 //#include <limits.h>
 //#include "pdefs.h"
 
-extern void out(char* str);
-extern void errout(char* str);
+extern void out(const char* str);
+extern void errout(const char* str);
 
 struct baserecord //предок всех структур
 {

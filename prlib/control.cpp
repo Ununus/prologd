@@ -576,7 +576,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
     {
       if (ClVar->PrSetting->Tracce)
       {
-        out(const_cast<char*>("Согласуется с "));
+        out("Согласуется с ");
         buff[write_term(heap->ptcltarget[ClVar->tryclause],
           ClVar->frame1, 0, 0, ScVar, ClVar, heap)] = 0;
         out(buff);
@@ -595,7 +595,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
         if (ClVar->stat != 5)
         {
           if (ClVar->PrSetting->Tracce)
-            out(const_cast<char*>("Успех"));
+            out("Успех");
           ClVar->oldtptr = ClVar->tptr;
           ClVar->oldsvptr = ClVar->svptr;
           ClVar->atomp = ClVar->tryclause;
@@ -610,7 +610,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
         if (ClVar->stat != 1)
         {
           if (ClVar->PrSetting->Tracce)
-            out(const_cast<char*>("Неудача"));
+            out("Неудача");
           ClVar->svptr = ClVar->oldsvptr;
           zero(ClVar);
           ClVar->stat = 4;
@@ -623,11 +623,11 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
     {
       if (heap->ptcltarget)
       {
-        out(const_cast<char*>("Цель"));
+        out("Цель");
         buff[write_term(heap->ptcltarget[ClVar->tryclause],
           ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
       }
-      out(const_cast<char*>("Неудачна "));
+      out("Неудачна ");
     }
     ClVar->stat = 5;
   }
@@ -706,7 +706,7 @@ int control(TScVar* ScVar, TClVar* ClVar, array* heap, bool* EnableRunning)
     case 6:
       if (ClVar->PrSetting->Tracce)
       {
-        out(const_cast<char*>("Цель "));
+        out("Цель ");
         buff[write_term(ClVar->head, ClVar->frame2, 0, 0,
           ScVar, ClVar, heap)] = 0;
         out(buff);
@@ -759,7 +759,7 @@ int control(TScVar* ScVar, TClVar* ClVar, array* heap, bool* EnableRunning)
         ClVar->svptr = ClVar->oldsvptr;
         if (ClVar->PrSetting->Tracce)
         {
-          out(const_cast<char*>("Переделка. Цель "));
+          out("Переделка. Цель ");
           buff[write_term(ClVar->head,
             ClVar->frame2, 0, 0, ScVar, ClVar,
             heap)] = 0;

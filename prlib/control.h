@@ -13,8 +13,8 @@ bool unify(unsigned tt1, unsigned tt2, unsigned ff1, unsigned ff2,
 unsigned char calculation(unsigned term, unsigned frame, long* i,
   float* f, TClVar* ClVar, array* heap);
 void outerror(int err);
-void out(char* str);
-void errout(char* str);
+void out(const char* str);
+void errout(const char* str);
 void zero(TClVar* ClVar);
 void to_stac(unsigned* b, unsigned index, unsigned value);
 unsigned occur_term(unsigned* TERM, unsigned* FRAME, TClVar* ClVar,
