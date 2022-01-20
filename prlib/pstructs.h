@@ -163,11 +163,11 @@ public:
 };
 
 // структура для scaner
-#define _maxbptr_ 1024
-#define _maxgptr_ 150
-#define _maxvar_ 512
-#define _maxsymbol_ 4096
-#define _maxarray_ 5000
+constexpr int _maxbptr_ = 1024;
+constexpr int _maxgptr_ = 150;
+constexpr int _maxvar_ = 512;
+constexpr int _maxsymbol_ = 4096;
+constexpr int _maxarray_ = 5000;
 
 struct TScVar
 {
@@ -215,8 +215,8 @@ struct TPrSetting
 };
 
 //структуры для хранения данных - программы
-#define _vmaxstack_ 1000
-#define _maxbf_ 2048
+constexpr int _vmaxstack_ = 1000;
+constexpr int _maxbf_ = 2048;
 struct TClVar
 {
   unsigned int stat;

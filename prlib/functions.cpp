@@ -1,6 +1,3 @@
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
@@ -12,10 +9,9 @@
 #include "scaner.h"
 //#include "control.h"
 //#include "..\dinputdlg.h"
-//#include "excpt.h"
 #include "extfunc.h"
-#define MAX_BUILD_PRED  45
-#define LEN_BUILD_LIBR   9
+constexpr int MAX_BUILD_PRED = 45;
+constexpr int LEN_BUILD_LIBR = 9;
 
 //=======Первоначальное заполнение
 const char* NamesOfPredicates[] =
