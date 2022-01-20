@@ -42,8 +42,8 @@ constexpr unsigned char o3 = o2 | (1 << 5);
 void print_decoded_cp1251_to_utf8(const char* str, std::ostream& out) {
   for (const char* c = str; *c; ++c) {
     if (*c >= 'À' && *c <= 'ÿ') {
-      unsigned int v = unsigned char(*c - 'À') + 1040;
-      char c1 = o2 + unsigned char(v >> 6);
+      unsigned int v = static_cast<unsigned char>(*c - 'À') + 1040;
+      char c1 = o2 + static_cast<unsigned char>(v >> 6);
       char c2 = (v & 63) + 128;
       out << c1 << c2;
     }
@@ -76,7 +76,7 @@ std::string decode_utf8_to_cp1251(const std::string& str) {
       i += 1;
     }
     else if ((b & o3) == 192) {
-      int q = unsigned char(str[i + 1]);
+      int q = static_cast<unsigned char>(str[i + 1]);
       int val = ((b ^ o2) << 6) + (q & (o2 - 129));
       char c = char(val - 1040) + 'À';
       result.push_back(c);
