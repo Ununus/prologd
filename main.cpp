@@ -35,14 +35,59 @@ static int parsed_str_number{ 0 };
 
 static std::list<std::string> inputed_strs;
 
+constexpr unsigned char o1 = (1 << 7);
+constexpr unsigned char o2 = o1 | (1 << 6);
+constexpr unsigned char o3 = o2 | (1 << 5);
+
+void print_decoded_cp1251_to_utf8(const char* str, std::ostream& out) {
+  for (const char* c = str; *c; ++c) {
+    if (*c >= 'À' && *c <= 'ÿ') {
+      unsigned int v = unsigned char(*c - 'À') + 1040;
+      char c1 = o2 + unsigned char(v >> 6);
+      char c2 = (v & 63) + 128;
+      out << c1 << c2;
+    }
+    else {
+      out << char(*c & 127);
+    }
+  }
+  out << '\n';
+}
+
 void out(const char* str)
 {
-  *output_stream << str << '\n';
+  //*output_stream << str << '\n';
+  print_decoded_cp1251_to_utf8(str, *output_stream);
 }
 
 void errout(const char* str)
 {
-  *error_stream << parsed_str_number << ' ' << str << std::endl;
+  //*error_stream << parsed_str_number << ' ' << str << std::endl;
+  *error_stream << parsed_str_number << ' '; 
+  print_decoded_cp1251_to_utf8(str, *error_stream);
+}
+
+std::string decode_utf8_to_cp1251(const std::string& str) {
+  std::string result;
+  for (size_t i = 0; i < str.size();) {
+    unsigned char b = str[i];
+    if ((b & o1) == 0) {
+      result.push_back(str[i]);
+      i += 1;
+    }
+    else if ((b & o3) == 192) {
+      int q = unsigned char(str[i + 1]);
+      int val = ((b ^ o2) << 6) + (q & (o2 - 129));
+      char c = char(val - 1040) + 'À';
+      result.push_back(c);
+      i += 2;
+    }
+    else {
+      errout("Decoding error");
+      throw 1;
+    }
+  }
+  return result;
 }
 
 int runProlog()
@@ -85,6 +130,7 @@ int runProlog()
     {
       break;
     }
+    line = decode_utf8_to_cp1251(line);
     if (line[0] == input_signal_char)
     {
       inputed_strs.push_back(line);
