@@ -35,51 +35,30 @@ static int parsed_str_number{ 0 };
 
 static std::list<std::string> inputed_strs;
 
-constexpr unsigned char o1 = (1 << 7);
-constexpr unsigned char o2 = o1 | (1 << 6);
-constexpr unsigned char o3 = o2 | (1 << 5);
-
-void print_decoded_cp1251_to_utf8(const char* str, std::ostream& out) {
+void print_cp1251_decoded_to_utf8(const char* str, std::ostream& out) {
   for (const char* c = str; *c; ++c) {
     if (*c >= 'À' && *c <= 'ÿ') {
-      unsigned int v = static_cast<unsigned char>(*c - 'À') + 1040;
-      char c1 = o2 + static_cast<unsigned char>(v >> 6);
-      char c2 = (v & 63) + 128;
+      auto v = static_cast<unsigned char>(*c - 'À') + 1040u;
+      unsigned char c1 = 192u + (v >> 6u);
+      unsigned char c2 = (v & 63u) + 128u;
       out << c1 << c2;
     }
     else {
-      out << char(*c & 127);
+      out << static_cast<unsigned char>(*c & 127u);
     }
   }
   out << '\n';
 }
 
-void out(const char* str)
-{
-  //*output_stream << str << '\n';
-  print_decoded_cp1251_to_utf8(str, *output_stream);
-}
-
-void errout(const char* str)
-{
-  //*error_stream << parsed_str_number << ' ' << str << std::endl;
-  *error_stream << parsed_str_number << ' '; 
-  print_decoded_cp1251_to_utf8(str, *error_stream);
-}
-
-std::string decode_utf8_to_cp1251(const std::string& str) {
-  std::string result;
+void decode_utf8_to_cp1251(std::string& str) {
+  if (str.empty()) return;
+  size_t si = 0;
   for (size_t i = 0; i < str.size();) {
-    unsigned char b = str[i];
-    if ((b & o1) == 0) {
-      result.push_back(str[i]);
-      i += 1;
+    if ((str[i] & 128u) == 0) {
+      str[si++] = str[i++];
     }
-    else if ((b & o3) == 192) {
-      int q = static_cast<unsigned char>(str[i + 1]);
-      int val = ((b ^ o2) << 6) + (q & (o2 - 129));
-      char c = char(val - 1040) + 'À';
-      result.push_back(c);
+    else if ((str[i] & 224u) == 192u && i + 1 != str.size()) {
+      str[si++] = ((str[i] ^ 192u) << 6u) + (str[i + 1] & 63u) - 1040u - 64u;
       i += 2;
     }
     else {
@@ -87,7 +66,20 @@ std::string decode_utf8_to_cp1251(const std::string& str) {
       throw 1;
     }
   }
-  return result;
+  str.resize(si);
+}
+
+void out(const char* str)
+{
+  //*output_stream << str << '\n';
+  print_cp1251_decoded_to_utf8(str, *output_stream);
+}
+
+void errout(const char* str)
+{
+  //*error_stream << parsed_str_number << ' ' << str << std::endl;
+  *error_stream << parsed_str_number << ' '; 
+  print_cp1251_decoded_to_utf8(str, *error_stream);
 }
 
 int runProlog()
@@ -130,7 +122,7 @@ int runProlog()
     {
       break;
     }
-    line = decode_utf8_to_cp1251(line);
+    decode_utf8_to_cp1251(line);
     if (line[0] == input_signal_char)
     {
       inputed_strs.push_back(line);
@@ -176,7 +168,9 @@ int InputStringFromDialog(char* buf, size_t size, char* caption)
   else {
     if (dialog)
     {
-      *output_stream << "!dialog " << caption << std::endl;
+      *output_stream << "!dialog ";
+      print_cp1251_decoded_to_utf8(caption, *output_stream);
+      output_stream->flush();
     }
     if (!std::getline(*input_stream, line))
     {
