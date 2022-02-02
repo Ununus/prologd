@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  prolog-d:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    container_name: prolog-d
+    image: prolog-d
+    volumes:
+      - ../compiled:/compiled:rw
