@@ -330,7 +330,11 @@ unsigned prout(TScVar* ScVar, TClVar* ClVar, array* heap)      //ïğîëîãîâñêèé âû
     k = write_term(ptr[i], ClVar->frame2, i, k, ScVar, ClVar, heap);
   }
   buff[k] = 0;
-  out(buff);
+  if (ClVar->PrSetting->out.is_open()) {
+      ClVar->PrSetting->out << buff;
+  } else {
+    out(buff);
+  }
   return 3;
 }
 
@@ -494,8 +498,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W,
   return j + i;
 }
 
-char yes[] = "ÄÀ";
-char no[] = "ÍÅÒ";
+const char* yes = "ÄÀ";
+const char* no = "ÍÅÒ";
 void prvars(TScVar* ScVar, TClVar* ClVar, array* heap)    //ïîêà òîëüêî îïèñàíèå ôóíêöèè
 {
   if (!ClVar->varqu)
@@ -574,7 +578,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
     }
     else
     {
-      if (ClVar->PrSetting->Tracce)
+      if (ClVar->PrSetting->Trace)
       {
         out("Ñîãëàñóåòñÿ ñ ");
         buff[write_term(heap->ptcltarget[ClVar->tryclause],
@@ -594,7 +598,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
           ClVar->ntro = false;
         if (ClVar->stat != 5)
         {
-          if (ClVar->PrSetting->Tracce)
+          if (ClVar->PrSetting->Trace)
             out("Óñïåõ");
           ClVar->oldtptr = ClVar->tptr;
           ClVar->oldsvptr = ClVar->svptr;
@@ -609,7 +613,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
       else
         if (ClVar->stat != 1)
         {
-          if (ClVar->PrSetting->Tracce)
+          if (ClVar->PrSetting->Trace)
             out("Íåóäà÷à");
           ClVar->svptr = ClVar->oldsvptr;
           zero(ClVar);
@@ -619,7 +623,7 @@ void st_4(TScVar* ScVar, TClVar* ClVar, array* heap)
   }
   else
   {
-    if (ClVar->PrSetting->Tracce)
+    if (ClVar->PrSetting->Trace)
     {
       if (heap->ptcltarget)
       {
@@ -704,7 +708,7 @@ int control(TScVar* ScVar, TClVar* ClVar, array* heap, bool* EnableRunning)
         ClVar->stat = 6;
       }   break;
     case 6:
-      if (ClVar->PrSetting->Tracce)
+      if (ClVar->PrSetting->Trace)
       {
         out("Öåëü ");
         buff[write_term(ClVar->head, ClVar->frame2, 0, 0,
@@ -757,7 +761,7 @@ int control(TScVar* ScVar, TClVar* ClVar, array* heap, bool* EnableRunning)
         zero(ClVar);
         ClVar->head = heap->pacltarget[ClVar->atomp];
         ClVar->svptr = ClVar->oldsvptr;
-        if (ClVar->PrSetting->Tracce)
+        if (ClVar->PrSetting->Trace)
         {
           out("Ïåğåäåëêà. Öåëü ");
           buff[write_term(ClVar->head,

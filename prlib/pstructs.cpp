@@ -7,7 +7,6 @@
 
 void TScVar::Init()
 {
-  InitOk = false;
   buf = (unsigned int*)0;
   goal = (unsigned int*)0;
   tvar = (unsigned int*)0;
@@ -24,8 +23,6 @@ void TScVar::Init()
   goal = new unsigned int[_maxgptr_];
   tvar = new unsigned int[_maxvar_];
   tat = new unsigned int[_maxsymbol_];
-  if (buf && goal && tvar && tat)
-    InitOk = true;
 }
 
 void TScVar::Clear()
@@ -52,7 +49,6 @@ TScVar::~TScVar()
 
 void TClVar::Init()
 {
-  InitOk = false;
   vmaxstack = _vmaxstack_;
   st_con = new unsigned int[_vmaxstack_];
   st_vr1 = new unsigned int[_vmaxstack_];
@@ -61,8 +57,6 @@ void TClVar::Init()
   bf = new unsigned int[_maxbf_];
   BPT = new unsigned int[_maxbptr_];
   bpt = BPT;
-  if (st_con && st_vr1 && st_vr2 && st_trail && bf && BPT)
-    InitOk = true;
 }
 
 void TClVar::Clear()
@@ -350,7 +344,7 @@ void PrintFunction(char** Buf, size_t* BufSize,
     int len = (*Buf - p);
     strncpy(Func, p, len);
     Func[len] = 0;
-    out(Func);
+    out(const_cast<const char*>(Func));
   }
   unsigned* ptrarg = heap->GetPunsigned(prf->ptrarg);
 
@@ -373,7 +367,7 @@ void PrintFunction(char** Buf, size_t* BufSize,
       //(baserecord *)&heap->heaps[ptrarg[i]];
       char sarg[255];
       sprintf(sarg, "argument index: %d", ptrarg[i]);
-      out(sarg);
+      out(const_cast<const char*>(sarg));
       switch (pbr->ident)
       {
       case issymbol:

@@ -118,7 +118,7 @@ int scaner(char * Str, TScVar * ScVar, array * heap)
 			default  :
 			{
 				unsigned int len = 0;
-				if (issvar(p, len))
+                if (issvar(p, len))
 				{
 					err = variabletable(p, len, ScVar, heap);
 					p += len - 1;
@@ -149,7 +149,7 @@ int scaner(char * Str, TScVar * ScVar, array * heap)
 		//sprintf(Mess, "Ошибка при разборе строки: %s", Str);
 		sprintf(Mess, "Ошибка при разборе: %s", Str);
 		//out(Mess);
-		errout(Mess);
+        errout(const_cast<const char*>(Mess));
 	}
 	return err;
 }

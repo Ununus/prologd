@@ -50,7 +50,7 @@ unsigned prgt(TScVar * ScVar, TClVar * ClVar, array * heap);
 //=========== функции ввода ==============
 int Inputstring(char *buf, int size, char * caption = 0);
 int InputSymbol(char *buf);
-int InputInt(int *n, char * caption=0);
+int InputInt(int *n, const char * caption);
 
 //out for debug
 void PrintTerm(baserecord * pbr, int Level, TScVar * ScVar, TClVar * ClVar, array * heap);
