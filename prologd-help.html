@@ -1,0 +1,2265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1251">
+	<TITLE>&Iuml;&eth;&icirc;&euml;&icirc;&atilde;-&Auml; &auml;&euml;&yuml; Windows</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice 4.1.11  (Win32)">
+	<META NAME="AUTHOR" CONTENT="Michael Alexeev">
+	<META NAME="CREATED" CONTENT="20010508;13140000">
+	<META NAME="CHANGEDBY" CONTENT="Алексей Воронин">
+	<META NAME="CHANGED" CONTENT="20220130;4520438">
+	<META NAME="SDFOOTNOTE" CONTENT=";;;;P">
+	<STYLE TYPE="text/css">
+	<!--
+		@page { size: 8.27in 11.69in; margin-left: 0.79in; margin-right: 0.79in; margin-top: 1in; margin-bottom: 1in }
+		P { margin-bottom: 0in; color: #000000; text-align: justify }
+		P.western { font-size: 12pt; so-language: ru-RU }
+		P.cjk { font-size: 12pt }
+		P.ctl { font-size: 12pt }
+		H1 { margin-bottom: 0.08in; color: #000000; text-align: center; page-break-after: avoid }
+		H1.western { font-family: "Arial", sans-serif; font-size: 16pt; so-language: ru-RU; font-weight: bold }
+		H1.cjk { font-family: "Microsoft YaHei"; font-size: 16pt; font-weight: bold }
+		H1.ctl { font-family: "Arial"; font-size: 16pt; font-weight: bold }
+		A:link { color: #000080; so-language: zxx; text-decoration: underline }
+		A:visited { color: #800000; so-language: zxx; text-decoration: underline }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" TEXT="#000000" LINK="#000080" VLINK="#800000" DIR="LTR" STYLE="border: none; padding: 0in">
+<P LANG="ru-RU" CLASS="western" ALIGN=CENTER STYLE="margin-bottom: 0.2in">
+<FONT SIZE=4 STYLE="font-size: 16pt"><FONT FACE="Arial, sans-serif"><B>Пролог</B></FONT><FONT FACE="Arial, sans-serif"><SPAN LANG="en-US"><B>-</B></SPAN></FONT><FONT FACE="Arial, sans-serif"><B>Д
+для </B></FONT><FONT FACE="Arial, sans-serif"><SPAN LANG="en-US"><B>Windows</B></SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#1.Описание синтаксиса входного языка системы логического программирования Пролог -Д|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Синтаксис
+языка</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#2.Типы данных|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Типы
+данных</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#13.Встроенные предикаты|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Встроенные
+предикаты</SPAN></FONT></FONT></A></P>
+<H1 LANG="ru-RU" CLASS="western" STYLE="page-break-before: always"><A NAME="1.Описание синтаксиса входного языка системы логического программирования Пролог -Д|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Описание синтаксиса
+входного языка системы логического программирования Пролог -Д</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Программа ::= БазаЗнаний
+Вопрос</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>БазаЗнаний ::=
+{Предложение}*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предложение ::= Факт |
+Правило | Комментарий</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Факт ::= Предикат;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат ::=
+Имя(Аргумент{,Аргумент}*) | Имя</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Имя ::= Буква{Символ}* <SPAN LANG="en-US">|
+</SPAN>Строка </FONT></FONT>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Правило ::=
+Предикат&lt;-Цель{,Цель}*;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Цель ::= Предикат |
+ВстрПредикат</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Вопрос ::= ?Цель<SPAN LANG="en-US">{</SPAN>,Цель<SPAN LANG="en-US">}</SPAN>*<SPAN LANG="en-US">;</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Комментарий ::=
+<SPAN LANG="en-US">%</SPAN>{СимволASCII}*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Аргумент ::= Константа <SPAN LANG="en-US">|
+</SPAN>Переменная <SPAN LANG="en-US">| </SPAN>Функция <SPAN LANG="en-US">|</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Список <SPAN LANG="en-US">|</SPAN>
+<SPAN LANG="en-US">#</SPAN>АрифмВыражение<SPAN LANG="en-US">#</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Константа ::= Целое |
+Вещественное <SPAN LANG="en-US">| </SPAN>Имя</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Целое ::= -Число <SPAN LANG="en-US">|</SPAN>
+Число</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US">Вещественное
+</SPAN>::= Целое. <SPAN LANG="en-US">|</SPAN> Целое.Число</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Число ::= <SPAN LANG="en-US">{</SPAN>Цифра<SPAN LANG="en-US">}*</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Переменная ::= Буква <SPAN LANG="en-US">|
+</SPAN>Буква<SPAN LANG="en-US">' | </SPAN>Имя<SPAN LANG="en-US">' | _</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Функция ::=
+Имя(Аргумент<SPAN LANG="en-US">{</SPAN>,Аргумент<SPAN LANG="en-US">}</SPAN>*)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Список ::=
+<SPAN LANG="en-US">[</SPAN>Аргумент<SPAN LANG="en-US">{</SPAN>,Аргумент<SPAN LANG="en-US">}</SPAN>*<SPAN LANG="en-US">]
+| [] | [</SPAN>Начало<SPAN LANG="en-US">|</SPAN>Остаток<SPAN LANG="en-US">]</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Начало ::=
+Аргумент<SPAN LANG="en-US">{</SPAN>,Аргумент<SPAN LANG="en-US">}</SPAN>*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Остаток ::= Аргумент</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Строка ::=
+&quot;<SPAN LANG="en-US">{</SPAN>Символ<SPAN LANG="en-US">ASCII}*&quot;</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>АрифмВыражение ::=
+АддЧасть</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>АддЧасть ::= МультЧасть <SPAN LANG="en-US">|
+</SPAN>АддЧасть+МультЧасть <SPAN LANG="en-US">|</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>АддЧасть-МультЧасть <SPAN LANG="en-US">|
+</SPAN>-МультЧасть</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>МультЧасть ::= Выражение
+<SPAN LANG="en-US">|</SPAN> МультЧасть*Выражение <SPAN LANG="en-US">|
+</SPAN>МультЧасть/Выражение <SPAN LANG="en-US">|
+</SPAN>МультЧасть_<SPAN LANG="en-US">mod_</SPAN>Выражение </FONT></FONT>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выражение ::=
+Идентификатор <SPAN LANG="en-US">|</SPAN> (АддЧасть)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Идентификатор ::=
+Переменная <SPAN LANG="en-US">|</SPAN> Число</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Буква ::=
+<SPAN LANG="en-US">A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-left: 1.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US">a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|</SPAN>А<SPAN LANG="en-US">|</SPAN>Б<SPAN LANG="en-US">|</SPAN>В<SPAN LANG="en-US">|</SPAN>Г<SPAN LANG="en-US">|</SPAN>Д<SPAN LANG="en-US">|</SPAN>Е<SPAN LANG="en-US">|</SPAN>Ё<SPAN LANG="en-US">|</SPAN>Ж<SPAN LANG="en-US">|</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-left: 1.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>З<SPAN LANG="en-US">|</SPAN>И<SPAN LANG="en-US">|</SPAN>Й<SPAN LANG="en-US">|</SPAN>К<SPAN LANG="en-US">|</SPAN>Л<SPAN LANG="en-US">|</SPAN>М<SPAN LANG="en-US">|</SPAN>Н<SPAN LANG="en-US">|</SPAN>О<SPAN LANG="en-US">|</SPAN>П<SPAN LANG="en-US">|</SPAN>Р<SPAN LANG="en-US">|</SPAN>С<SPAN LANG="en-US">|</SPAN>Т<SPAN LANG="en-US">|</SPAN>У<SPAN LANG="en-US">|</SPAN>Ф<SPAN LANG="en-US">|</SPAN>Х<SPAN LANG="en-US">|</SPAN>Ц<SPAN LANG="en-US">|</SPAN>Ч<SPAN LANG="en-US">|</SPAN>Ш<SPAN LANG="en-US">|</SPAN>Щ<SPAN LANG="en-US">|</SPAN>Ь<SPAN LANG="en-US">|</SPAN>Ы<SPAN LANG="en-US">|</SPAN>Ъ<SPAN LANG="en-US">|</SPAN>Э<SPAN LANG="en-US">|</SPAN>Ю<SPAN LANG="en-US">|</SPAN>Я<SPAN LANG="en-US">|</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-left: 1.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>а<SPAN LANG="en-US">|</SPAN>б<SPAN LANG="en-US">|</SPAN>в<SPAN LANG="en-US">|</SPAN>г<SPAN LANG="en-US">|</SPAN>д<SPAN LANG="en-US">|</SPAN>е<SPAN LANG="en-US">|</SPAN>ё<SPAN LANG="en-US">|</SPAN>ж<SPAN LANG="en-US">|</SPAN>з<SPAN LANG="en-US">|</SPAN>и<SPAN LANG="en-US">|</SPAN>й<SPAN LANG="en-US">|</SPAN>к<SPAN LANG="en-US">|</SPAN>л<SPAN LANG="en-US">|</SPAN>м<SPAN LANG="en-US">|</SPAN>н<SPAN LANG="en-US">|</SPAN>о<SPAN LANG="en-US">|</SPAN>п<SPAN LANG="en-US">|</SPAN>р<SPAN LANG="en-US">|</SPAN>с<SPAN LANG="en-US">|</SPAN>т<SPAN LANG="en-US">|</SPAN>у<SPAN LANG="en-US">|</SPAN>ф<SPAN LANG="en-US">|</SPAN>х<SPAN LANG="en-US">|</SPAN>ц<SPAN LANG="en-US">|</SPAN>ч<SPAN LANG="en-US">|</SPAN>ш<SPAN LANG="en-US">|</SPAN>щ<SPAN LANG="en-US">|</SPAN>ь<SPAN LANG="en-US">|</SPAN>ы<SPAN LANG="en-US">|</SPAN>ъ<SPAN LANG="en-US">|</SPAN>э<SPAN LANG="en-US">|</SPAN>ю<SPAN LANG="en-US">|</SPAN>я
+</FONT></FONT>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Цифра ::= 1<SPAN LANG="en-US">|</SPAN>
+2 <SPAN LANG="en-US">|</SPAN> 3 <SPAN LANG="en-US">|</SPAN> 4 <SPAN LANG="en-US">|</SPAN>
+5 <SPAN LANG="en-US">|</SPAN> 6 <SPAN LANG="en-US">|</SPAN> 7 <SPAN LANG="en-US">|</SPAN>
+8 <SPAN LANG="en-US">|</SPAN> 9 <SPAN LANG="en-US">|</SPAN> 0</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ВстрПредикат
+::= </SPAN></FONT></FONT><A HREF="#13.Встроенные предикаты|outline"><FONT FACE="Arial, sans-serif">Встроенный
+предикат</FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Примечания</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>1. Символ <SPAN LANG="en-US">ASCII
+-</SPAN> любой терминальный символ</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>2. При описании фактов и
+правил вместо символа &ldquo;; - точка с запятой&ldquo; допускается
+использование символа &ldquo;. - точка&ldquo;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="margin-right: 0.08in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>3. При описании правил
+вместо сочетания символов &ldquo;<SPAN LANG="en-US">&lt;-&ldquo;
+</SPAN>д<SPAN LANG="en-US">оп</SPAN>ускается использование сочетания
+символов &ldquo;<SPAN LANG="en-US">:-&ldquo;.</SPAN></FONT></FONT></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="2.Типы данных|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Типы данных</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Простые типы</B></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US"><B>:</B></SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#3.Целые|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Целые</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#4.Вещественные|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Вещественные</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#5.Арифметические выражения|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Арифметические
+выражения</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#6.Символьные константы|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Символьные
+константы</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#7.Строки|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Строки</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#8.Преобразование типов|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Преобразование
+типов</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Структурированные
+типы:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#9.Функции|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Функции</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#10.Списки|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Списки</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#11.Сравнение списков|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Сравнение
+списков</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#12.Типовые операции со списками|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Типовые
+операции со списками</SPAN></FONT></FONT></A></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="3.Целые|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Целые</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: Целое::=
+-Число &brvbar; Число</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Число::= Цифра[Цифра]*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Диапазон допустимых
+значений целых от -2147483648 до 2147483647. Допускается только
+десятичная запись. Переполнение в целых числах не регистрируется. В
+качестве целого допускается использование арифметического выражения.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="4.Вещественные|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Вещественные</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+Вещественное::= -Число. &brvbar;-Число.Число &brvbar; Число. <SPAN LANG="en-US">|</SPAN>
+Число.число</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Число::= Цифра[Цифра]*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Диапазон допустимых
+значений целых от 3.4*(10**-38) до 3.4*(10**+38). Допускается только
+десятичная запись. Переполнение в вещественных числах не
+регистрируется. В качестве вещественного допускается использование
+арифметического выражения.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="5.Арифметические выражения|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Арифметические выражения</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+Арифм_выражение::= # Выражение #</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выражение ::= Выр &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выражение + Выр &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выражение - Выр</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выр::= Первичное_выр &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выр * Первичное_выр &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выр / Первичное_выр &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Выр mod Первичное_выр</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Первичное_выр ::= Цел &brvbar;
+(Выражение), где Цел это целое или переменная, конкретизированная
+целым.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Результатом вычислений
+арифметического выражения является целое или вещественное.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="6.Символьные константы|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Символьные константы</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+Словосочетание::= Буква[Символ]*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Символ ::= Буква &brvbar;
+Цифра &brvbar; _</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Символьная константа в
+данной версии Пролога-Д - это любая последовательность букв, цифр и _
+(знаков подчеркивания), начинающаяся с буквы.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Примеры:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>кто</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ANT25</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Лев_Николаевич_Толстой</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="7.Строки|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Строки</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: Строка::=
+&quot;[СимволASCII]*&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СимволASCII - Любой
+терминальный символ.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Строка может иметь длину
+из диапазона 0..128.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="8.Преобразование типов|outline"></A><A NAME="Преобразование типов|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Преобразование типов</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В данной версии Пролога-Д
+операции преобразования типов представлены встроенными предикатами
+СТРСПИС, СТРЦЕЛ. С их помощью можно преобразовать строку в список
+кодов, список целых в строку, строку в целое и, наконец, целое в
+строку. Детально эти предикаты описаны в разделе <A HREF="#Преобразование типов|outline"><SPAN STYLE="text-decoration: none">Преобразование
+типов данных</SPAN></A></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="9.Функции|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Функции</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: Функция ::=
+Имя(Аргумент [,Аргумент]*)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Аргумент ::= Константа &brvbar;
+Переменная &brvbar; Функция &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Список &brvbar; Строка</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Имя::=
+БукваСимвол[Символ]*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Константа::= Целое &brvbar;
+Словосочетание</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Символ ::= Буква &brvbar;
+Цифра &brvbar; _</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В данной версии длина
+имени функционального терма не ограничена, все символы в именах
+значимы. Аргументом функции может быть любой терм. Функция должна
+иметь хотя бы один аргумент.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="10.Списки|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Списки</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис списков.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Список ::=
+[Аргумент[,Аргумент]*] &brvbar; [] &brvbar; Образец</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Образец ::=
+[Начало|Остаток]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Начало ::=
+Аргумент[,Аргумент]*</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Остаток ::= Аргумент</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Аргумент::= Константа &brvbar;
+Переменная &brvbar; Функция &brvbar; Список &brvbar; Строка</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В Прологе-Д имеется
+единственный встроенный функциональный символ: СПИСОК. Список в
+Прологе-Д определяется рекурсивно:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>1. Пустой список [ ] -
+список.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>2. [A|B] - список, если В
+- список.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>3. Других списков нет.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>От списков отличаются
+спископодобные пары. Например, при унификации термов:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(УКНЦ,YAMAHA,x)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(a ,b,[a|b])</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>возникнет спископодобная
+пара [УКНЦ|YAMAHA].</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Элементом списка может
+быть любой терм. Список может иметь любое число элементов.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="11.Сравнение списков|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Сравнение списков</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В Прологе-Д есть два
+шаблона для задания списка.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>1. Перечисление.
+Например: [CPM,MSDOS,Unix]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>2. Начало и остаток.
+Например: [a,b|c]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Разные шаблоны определяют
+различное внутреннее представление. Шаблону [x,y] соответствует
+внутреннее представление</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СПИСОК</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>/ \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x СПИСОК</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>/ \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y [ ]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Шаблону [x|y]
+соответствует внутреннее представление</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СПИСОК</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>/ \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x y</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Разные шаблоны - разные
+внутренние представления - обуславливают различия в унификации.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример 1:
+[1|[2|[3]]]==[1,2|[3]]==[1,2,3]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример 2:
+[[1,2]|[3]]==[[1,2],3]=/=[1,2,3]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Сравните внутренние
+представления:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СПИСОК СПИСОК</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>/ \ / \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СПИСОК СПИСОК 1 СПИСОК</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>/ \ / \ / \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>1 СПИСОК 3 [ ] 2 СПИСОК</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>/ \ / \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>2 [ ] 3 [ ]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>У первых двух списков. У
+третьего списка.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример 3: При унификации
+[x|y] с [1,2,3] переменная x будет конкретизирована целым 1, а
+переменная y - списком [2,3].</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="12.Типовые операции со списками|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Типовые операции со
+списками</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Принадлежность
+элемента списку:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>элемент<SPAN LANG="en-US">(a,[a|y].</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>элемент<SPAN LANG="en-US">(a,[x|y]:-</SPAN>
+элемент<SPAN LANG="en-US">(a,y).</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Длина списка:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>длина([],0).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>длина([a|b],d):-длина(b,<SPAN LANG="en-US">c</SPAN>),СЛОЖЕНИЕ(c,1,d).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Слияние двух списков:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>присоединить([],a,a).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>присоединить([x|a],b,[x|c]):-присоединить(a,b,c).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Обращение списка</B><SPAN LANG="en-US"><B>:</B></SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>обра<SPAN LANG="en-US">щение([],[]).</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US">обращение([a|b],x):-</SPAN>
+обра<SPAN LANG="en-US">щение([b,c]),</SPAN>присоединить<SPAN LANG="en-US">(c,[a],x).</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Быстрая
+сортировка:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>быстрсорт([],[]).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US">быстрсорт([x|y],z):-разбиение(x,y,a,b),быстрсорт(a,c),быстрсорт(b,d),</SPAN>присоединить<SPAN LANG="en-US">(c,[x|d],z).</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>разбиение(x,[],[],[]).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>разбиение(x,[y|z],[y|a],b):-БОЛЬШЕ(x,y),!,разбиение(x,z,a,b).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>разбиение(x,[y|z],a,[y|b]):-разбиение(x,z,a,b).</FONT></FONT></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="13.Встроенные предикаты|outline"></A><A NAME="13.Встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенные предикаты</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#22.Управление трассировкой|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Управление
+трассировкой</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#14.Управление логическим выводом &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Управление
+логическим выводом</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#15.Арифметика &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Арифметика</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#16. Ввод-вывод &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Ввод
+- вывод</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#41.О графике Пролога-Д|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Графика</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#18.Контроль типов данных &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Контроль
+типов данных</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#19.Преобразования типов данных &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Преобразование
+типов данных</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#20.Работа со строками &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Работа
+со строками</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#21.Доступ к базе знаний &ndash; встроенные предикаты|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">Доступ
+к базе знаний</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="14.Управление логическим выводом &ndash; встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Управление логическим
+выводом</B> &ndash; <B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#23.Встроенный предикат ! - отсечение (cut)|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">!
+- отсечение</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#24.Встроенный предикат ЛОЖЬ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЛОЖЬ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#25.Встроенный предикат ВЫП|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ВЫП</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#26.Встроенный предикат НЕ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">НЕ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#27.Встроенный предикат ИЛИ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ИЛИ</SPAN></FONT></FONT></SPAN></A></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="15.Арифметика &ndash; встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Арифметика</B> &ndash;
+<B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#28.Встроенный предикат БОЛЬШЕ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">БОЛЬШЕ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#29.Встроенный предикат МЕНЬШЕ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">МЕНЬШЕ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#30.Встроенный предикат РАВНО|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">РАВНО</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#32.Встроенный предикат СЛОЖЕНИЕ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СЛОЖЕНИЕ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#31.Встроенные предикаты УМНОЖЕНИЕ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">УМНОЖЕНИЕ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#33.Встроенный предикат СЛУЧ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СЛУЧ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Ввод-вывод</B> &ndash;
+<B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#34.Встроенный предикат ЧТЕНИЕ_ИЗ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЧТЕНИЕ_ИЗ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#35.Встроенный предикат ЗАПИСЬ_В|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЗАПИСЬ_В</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#36.Встроенный предикат ВВКОД|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ВВКОД</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#37.Встроенный предикат ПС|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ПС
+(Перевод строки)</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#38.Встроенный предикат ВВОДЦЕЛ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ВВОДЦЕЛ
+(Ввод целого)</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#39.Встроенный предикат ВВОДСИМВ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ВВОДСИМВ
+(Ввод символьной константы)</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#40.Встроенный предикат ВЫВОД|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ВЫВОД</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенные предикаты
+графики</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#41.О графике Пролога-Д|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">О
+графике Пролога-Д</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#42.Встроенный предикат ТОЧКА|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ТОЧКА</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#43.Встроенный предикат ЛИНИЯ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЛИНИЯ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#44.Встроенный предикат ОКРУЖНОСТЬ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ОКРУЖНОСТЬ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#45.Встроенный предикат ЗАКРАСКА|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЗАКРАСКА</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="18.Контроль типов данных &ndash; встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Контроль типов данных</B>
+&ndash; <B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#46.Встроенный предикат ПЕР|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ПЕР</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#47.Встроенный предикат ЦЕЛ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЦЕЛ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#48.Встроенный предикат СИМВ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СИМВ</SPAN></FONT></FONT></SPAN></A></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="19.Преобразования типов данных &ndash; встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Преобразования типов
+данных</B> &ndash; <B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#49.Встроенный предикат СТРСПИС|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СТРСПИС</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#50.Встроенный предикат СТРЦЕЛ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СТРЦЕЛ</SPAN></FONT></FONT></SPAN></A></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="20.Работа со строками &ndash; встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Работа со строками</B>
+&ndash; <B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#51.Встроенный предикат БУКВА|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">БУКВА</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#52.Встроенный предикат ЦИФРА|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ЦИФРА</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#53.Встроенный предикат СЦЕП|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СЦЕП</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#54.Встроенный предикат КОПИЯ|outline"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">КОПИЯ</SPAN></FONT></FONT></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#55.Встроенный предикат ДЛИНА|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ДЛИНА</SPAN></FONT></FONT></SPAN></A></P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="21.Доступ к базе знаний &ndash; встроенные предикаты|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Доступ к базе знаний</B>
+&ndash; <B>встроенные предикаты</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#57.Встроенный предикат ДОБ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ДОБ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#58.Встроенный предикат УДАЛЕНИЕ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">УДАЛЕНИЕ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#59.Встроенный предикат СКОЛЬКО|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">СКОЛЬКО</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#60.Встроенный предикат ПРЕДЛ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ПРЕДЛ</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<A HREF="#56.Встроенный предикат ТЕРМ|outline"><SPAN STYLE="text-decoration: none"><FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="ru-RU">ТЕРМ
+(Доступ к структуре термов)</SPAN></FONT></FONT></SPAN></A></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="22.Управление трассировкой|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Управление трассировкой</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Встроенный предикат</B>
+<B>ТРАССА</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Включается
+режим трассировки. Данные о ходе логического вывода решения выводятся
+в текущий файл вывода</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Встроенный предикат</B>
+<B>НЕТ_ТРАССЫ</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Прекращается вывод
+трассировочной информации в файл вывода.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="23.Встроенный предикат ! - отсечение (cut)|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU"><B>Встроенный
+предикат ! - отсечение (</B></SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="en-US"><B>cut</B></SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU"><B>)</B></SPAN></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: !</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат ! не
+имеет аргументов. Он служит для отсечения ветвей в дереве вывода.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример 1: Рассмотрим
+программу в общем виде:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>B;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>D;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>A&lt;-B,C; (1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>C&lt;-D,!,E; (2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>E&lt;-F,G,H; (3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?A;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Говорят, что дизъюнкт (1)
+&quot;порождает&quot; дизъюнкт (2), т.к. в правой части (1) есть
+литера C и эта же литера - в левой части (2). Аналогично, дизъюнкт
+(2) &quot;порождает&quot; дизъюнкт (3). Если (3) неудачен, то в (2)
+выполнится отсечение: дизъюнкт (2) также считается неудачным,
+восстанавливается &quot;родительская среда&quot; (1), делается
+попытка найти альтернативное решение для B. Если бы (2) имело вид
+C&lt;-D,E;, то при неудаче в (3) была бы сделана попытка найти
+альтернативное решение для D. Результат работы программы:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>соединить([ ],l,l);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>соединить([a|b],c,[a|d])&lt;-соединить(b,c,d);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?соединить(x,y,[1,2]);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Должен быть:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=[ ]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y=[1,2]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=[1]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y=[2]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=[1,2]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y=[ ].</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если заменить первое
+предложение на соединить ([ ],l,l)&lt;-!; и задать тот же вопрос, то
+получится:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=[ ]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y=[1,2].</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="24.Встроенный предикат ЛОЖЬ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU"><B>Встроенный
+предикат</B></SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU">
+</SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU"><B>ЛОЖЬ</B></SPAN></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ЛОЖЬ</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат ЛОЖЬ
+не имеет аргументов. Он считается всегда ложным.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: перебор
+всевозможных решений:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ос(CPM);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ос(MSDOS);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ос(Unix);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>печать_всех &lt;- ос(x),</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВЫВОД(x),ПС,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛОЖЬ;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?печать_всех;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="25.Встроенный предикат ВЫП|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Встроенный предикат</B>
+<B>ВЫП</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ВЫП(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Этот предикат имеет один
+аргумент. Происходит попытка выполнить предикат Арг1. Если этим
+аргументом оказывается не предикат, то выполнение программы
+прекратится и появится сообщение об ошибке: &quot;Невыполнимый
+предикат ВЫП&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВЫП истинен, если
+выполненный предикат Арг1 истинен, и ВЫП ложен, если результатом
+выполнения предиката Арг1 является неудача или в базе знаний не
+существует предиката, который бы можно было бы унифицировать с Арг1.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: реализация
+предикатов НЕ, ИЛИ</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="26.Встроенный предикат НЕ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><B>Встроенный предикат</B>
+<B>НЕ</B></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: НЕ(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Этот предикат имеет один
+аргумент. Встроенный предикат НЕ реализован на ПРОЛОГе. Его
+представление на ПРОЛОГе имеет вид:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>НЕ(цель') &lt;-
+ВЫП(цель'),!,ЛОЖЬ;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>НЕ(_);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Аргументом обязательно
+должен быть предикатом. Если это условие не будет выполнено, то
+выполнение программы прекратится и появится сообщение об ошибке:
+&quot;Невыполнимый предикат ВЫП&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат НЕ истинен тогда
+и только тогда, когда предикат-аргумент ложен. Пример:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(<SPAN LANG="en-US">Toyota</SPAN>,Япония);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(Ford,США);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(Москвич,Россия);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(Волга,Россия);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>российский(x)&lt;-автомобиль(x,Россия);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>иностранный(x)&lt;-НЕ(российский(x));</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Вопросы:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?российский(<SPAN LANG="en-US">Ford</SPAN>);
+Ответ: НЕТ,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?иностранный(<SPAN LANG="en-US">Ford</SPAN>);
+Ответ: ДА,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?российский(Волга);
+Ответ: ДА.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="27.Встроенный предикат ИЛИ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU"><B>Встроенный
+предикат</B></SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU">
+</SPAN></FONT></FONT><FONT FACE="Arial, sans-serif"><FONT SIZE=4><SPAN LANG="ru-RU"><B>ИЛИ</B></SPAN></FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ИЛИ(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Этот предикат имеет два
+аргумента. Встроенный предикат ИЛИ реализован на ПРОЛОГе. Его
+представление на ПРОЛОГе имеет вид:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ИЛИ(цель1',_) &lt;-
+ВЫП(цель1'),!;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ИЛИ(_,цель2') &lt;-
+ВЫП(цель2');</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Аргументами обязательно
+должны быть предикаты. Если это условие не будет иметь место, то
+выполнение программы прекратится и появится сообщение об ошибке:
+&quot;Невыполнимый предикат ВЫП&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат
+ИЛИ истинен тогда и только тогда, когда хотя бы один из аргументов
+истинен. Процедурно он означает попытаться выполнить цель1. Если
+цель1 выполнена успешно, то предикат ИЛИ истинен, а цель2 не
+выполняется, в противном случае происходит попытка выполнить цель2.
+Если цель2 выполнена успешно, то предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(<SPAN LANG="en-US">Toyota</SPAN>,Япония);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(Ford,США);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(Москвич,Россия);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>автомобиль(Волга,Россия);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>российский(x)&lt;-автомобиль(x,Россия);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>иностранный(x)&lt;-НЕ(российский(x));</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Вопросы:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ИЛИ(российский(x),иностранный(x));</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ответ:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=Москвич</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="28.Встроенный предикат БОЛЬШЕ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+БОЛЬШЕ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+БОЛЬШЕ(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+БОЛЬШЕ имеет два аргумента: целых или переменных, конкретизированных
+целыми. Оба аргумента к моменту выполнения должны быть определены.
+Если эти требования не имеют места, то выполнение программы
+прекратится и появится сообщение об ошибке: &quot;Невыполнимый
+предикат БОЛЬШЕ&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Этот предикат истинен,
+если Арг1 &gt; Арг2, иначе - ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:
+МЕНЬШЕ_ИЛИ_РАВНО(x,y) &lt;- НЕ(БОЛЬШЕ(x,y));.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="29.Встроенный предикат МЕНЬШЕ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+МЕНЬШЕ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+МЕНЬШЕ(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат МЕНЬШЕ имеет два
+аргумента: целых или переменных, конкретизированных целыми.
+Встроенный предикат МЕНЬШЕ реализован на ПРОЛОГе. Его представление
+на ПРОЛОГе имеет вид:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>МЕНЬШЕ(x,y) &lt;-
+БОЛЬШЕ(y,x);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Оба аргумента к моменту
+выполнения должны быть определены. Если эти требования не имеют
+места, то выполнение программы прекратится и появится сообщение об
+ошибке: &quot;Невыполнимый предикат БОЛЬШЕ&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат истинен, если
+Арг1 &lt; Арг2, иначе - ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:
+БОЛЬШЕ_ИЛИ_РАВНО(x,y) &lt;- НЕ(МЕНЬШЕ(x,y));.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="30.Встроенный предикат РАВНО|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат РАВНО</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+РАВНО(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат РАВНО имеет два
+аргумента. Встроенный предикат РАВНО реализован на ПРОЛОГе:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>РАВНО(терм',терм');</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Никаких ограничений на
+тип аргументов нет.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Этот предикат истинен,
+если успешна унификация Арг1 и Арг2.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Процедурно
+РАВНО(Арг1,Арг2) означает: унифицировать Арг1 и Арг2.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: неравно(x,y) &lt;-
+НЕ(РАВНО(x,y));.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+УМНОЖЕНИЕ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Предикат с 4
+аргументами для целых чисел:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+УМНОЖЕНИЕ(Арг1,Арг2,Арг3,Арг4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+УМНОЖЕНИЕ имеет четыре аргумента: целых, переменных,
+конкретизированных целыми, и может быть одной неконкретизированной
+переменной. Ниже приведены результаты выполнения предиката в
+зависимости от типа аргументов.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(ц1,ц2,ц3,ц4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если (ц1*ц2+ц3)=ц4, то
+предикат истинен, иначе ложен;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(П1,ц2,ц3,ц4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если ((ц4-ц3) mod ц2)=ц1,
+то</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П1:= (ц4-ц3)/ц2 и
+предикат истинен, иначе ложен;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(ц1,П2,ц3,ц4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если ((ц4-ц3) mod ц1)=ц2,
+то</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П2:=(ц4-ц3)/ц1 и предикат
+истинен, иначе ложен;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(ц1,ц2,П3,ц4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П3:=ц4-ц1*ц2, предикат
+истинен;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(ц1,ц2,ц3,П4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П4:=ц1*ц2+ц3, предикат
+истинен;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(ц1,П2,П3,ц4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П2:=ц4 div ц1,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П3:=ц4 mod ц1, предикат
+истинен;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(П1,ц2,П3,ц4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П1:=ц4 div ц2,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>П3:=ц4 mod ц2, предикат
+истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается и выводится сообщение об ошибке:
+&quot;Невыполнимый предикат УМНОЖЕНИЕ&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: вычисление
+определителя &brvbar; a b &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&brvbar; c d &brvbar;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>det2(a,b,c,d,det') &lt;-
+УМНОЖЕНИЕ(a,d,0,x),</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>УМНОЖЕНИЕ(c,b,det',x);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><B>Предикат с 3
+аргументами для целых и вещественных чисел:</B></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+УМНОЖЕНИЕ(Арг1,Арг2,Арг3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+УМНОЖЕНИЕ имеет три аргумента, связанных формулой Арг3=Арг1&acute;Арг2.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат обратим, но два
+аргумента должны быть либо числами (целыми или вещественными), либо
+конкретизированы числами. Если это условие не имеет место, то
+выполнение программы прекратится и появится сообщение об ошибке:
+&quot;Невыполнимый предикат СЛОЖЕНИЕ&quot;. Естественно, деление на 0
+также приводит к ошибке.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:
+реализация деления x=z<SPAN LANG="en-US">/y</SPAN>.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ДЕЛЕНИЕ(z<SPAN LANG="en-US">,y</SPAN>,x)&lt;-УМНОЖЕНИЕ(x,y<SPAN LANG="en-US">,z</SPAN>);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="32.Встроенный предикат СЛОЖЕНИЕ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+СЛОЖЕНИЕ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+СЛОЖЕНИЕ(Арг1,Арг2,Арг3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат СЛОЖЕНИЕ имеет
+три аргумента, связанных формулой Арг3=Арг1+Арг2. Предикат реализован
+на ПРОЛОГе:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СЛОЖЕНИЕ(x,y,z) &lt;-
+УМНОЖЕНИЕ(1,x,y,z);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат обратим, но два
+аргумента должны быть либо числами (целыми или вещественными), либо
+конкретизированы числами. Если это условие не имеет место, то
+выполнение программы прекратится и появится сообщение об ошибке:
+&quot;Невыполнимый предикат СЛОЖЕНИЕ&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" STYLE="margin-bottom: 0.2in"><FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:
+реализация вычитания x=y-z.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВЫЧИТАНИЕ(y,z,x)&lt;-СЛОЖЕНИЕ(x,z,y);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="33.Встроенный предикат СЛУЧ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат СЛУЧ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: СЛУЧ(Арг1,
+<SPAN LANG="en-US">[</SPAN>Арг2, Арг3<SPAN LANG="en-US">]</SPAN>)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат СЛУЧ имеет один
+или три аргумента. Аргументами могут быть целые или переменные,
+конкретизированные или неконкретизированные целыми.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ниже приведены результаты
+выполнения предиката в зависимости от типа аргумента.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СЛУЧ(Арг1) Арг1 - целое
+или переменная, конкретизированная целым, производится инициализация
+генератора случайных чисел. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US">СЛУЧ(</SPAN>П<SPAN LANG="en-US">1)</SPAN>
+П1 - неконкретизированнная переменная. П1 конкретизируется
+псевдослучайным целым числом из диапазона  	От <SPAN LANG="en-US">-2'147'483'648</SPAN>
+до <SPAN LANG="en-US">2'147'483'647.</SPAN> Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3><SPAN LANG="en-US">СЛУЧ(</SPAN>П<SPAN LANG="en-US">1,
+</SPAN>ц1, ц2<SPAN LANG="en-US">)</SPAN> П1 - неконкретизированнная
+переменная, ц1 и ц2 &mdash; целые. П1 конкретизируется
+псевдослучайным целым числом из диапазона  	От ц1 до ц2 включительно<SPAN LANG="en-US">.</SPAN>
+Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="34.Встроенный предикат ЧТЕНИЕ_ИЗ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+ЧТЕНИЕ_ИЗ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ЧТЕНИЕ_ИЗ(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+ЧТЕНИЕ_ИЗ имеет один аргумент. Аргумент может быть строкой или
+переменной:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЧТЕНИЕ_ИЗ(имя_файла)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрывается ранее
+открытый для чтения файл. Открывается файл для чтения с именем
+имя_файла. Если это действие выполнено успешно, то предикат истинен,
+иначе предикат ложен и выдается соответствующее сообщение об ошибке.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЧТЕНИЕ_ИЗ(П) переменная
+конкретизируется строкой, являющейся именем файла для чтения,
+открытого предыдущим предикатом ЧТЕНИЕ_ИЗ. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выводится сообщение об ошибке: &quot;Невыполнимый предикат
+ЧТЕНИЕ_ИЗ&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЧТЕНИЕ_ИЗ(&quot;<SPAN LANG="en-US">C:/Documents/file</SPAN>&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрыть предыдущий файл
+для записи, открыть файл с именем <SPAN LANG="en-US">file,
+</SPAN>расположенный на диске С в папке  <SPAN LANG="en-US">Documents.</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЧТЕНИЕ_ИЗ(&quot;<SPAN LANG="en-US">output</SPAN>.<SPAN LANG="en-US">txt</SPAN>&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрыть предыдущий файл
+для записи, открыть файл с именем <SPAN LANG="en-US">output</SPAN>.<SPAN LANG="en-US">txt</SPAN>
+в текущем каталоге.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЧТЕНИЕ_ИЗ(&quot;&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрыть предыдущий файл
+для чтения, дальнейший ввод будет происходить с клавиатуры.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" STYLE="page-break-before: always"><A NAME="35.Встроенный предикат ЗАПИСЬ_В|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+ЗАПИСЬ_В</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ЗАПИСЬ_В(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+ЗАПИСЬ_В имеет один аргумент. Аргумент может быть строкой или
+переменной:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЗАПИСЬ_В(имя_файла)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрывается ранее
+открытый для записи файл. Открывается файл для записи с именем
+имя_файла. Если это действие выполнено успешно, то предикат истинен,
+иначе предикат ложен, и выдается соответствующая ошибка.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЗАПИСЬ_В(П)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Переменная
+конкретизируется строкой, являющейся именем файла для записи,
+открытого предыдущим предикатом ЧТЕНИЕ_ИЗ. Предикат истинен. Во всех
+остальных случаях выводится сообщение об ошибке: &quot;Невыполнимый
+предикат ЗАПИСЬ_В&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Перед ответом на вопрос и
+перед выводом значений переменных выполняется предикат
+ЗАПИСЬ_В(&quot;con:&quot;). Если в имени файла не указано расширение,
+то автоматически добавляется расширение &quot;.PRW&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЗАПИСЬ_В(&quot;<SPAN LANG="en-US">C:/Documents/file</SPAN>&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрыть предыдущий файл
+для записи, открыть файл с именем <SPAN LANG="en-US">file,
+</SPAN>расположенный на диске С в папке  <SPAN LANG="en-US">Documents.</SPAN></FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЗАПИСЬ_В(&quot;<SPAN LANG="en-US">input</SPAN>.<SPAN LANG="en-US">txt</SPAN>&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрыть предыдущий файл
+для записи, открыть файл с именем <SPAN LANG="en-US">input</SPAN>.<SPAN LANG="en-US">txt</SPAN>
+в текущем каталоге.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЗАПИСЬ_В(&quot;&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Закрыть предыдущий файл
+для записи, дальнейший вывод будет происходить на экран.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="36.Встроенный предикат ВВКОД|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ВВКОД</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ВВКОД(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат ВВКОД
+имеет один аргумент. Аргумент должен быть неконкретизированной
+переменной, целым или переменной, конкретизированной целым. Ниже
+приведены результаты выполнения предиката в зависимости от типа
+аргумента.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВКОД(П)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Из текущего файла ввода
+считывается символ. Переменная будет конкретизирована целым,
+являющимся кодом этого символа. Предикат истинен, если ввод прошел
+без ошибок, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВКОД(ц)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-left: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Символ с кодом ц
+выводится в текущий файл вывода. Предикат истинен, если вывод прошел
+успешно, иначе ложен. Во всех остальных случаях выводится сообщение
+об ошибке: &quot;Невыполнимый предикат ВВКОД&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: позиционирование
+текстового курсора</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>курсор(x,y) &lt;-
+СЛОЖЕНИЕ(x,32,X),СЛОЖЕНИЕ(y,32,Y),</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="text-indent: 0.5in; margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВКОД(27),ВВКОД(89),ВВКОД(X),ВВКОД(Y);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="37.Встроенный предикат ПС|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ПС</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ПС</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат ПС не имеет
+аргументов. Процедурно он обозначает перевод строки. Этот предикат
+всегда истинен. Предикат реализован на ПРОЛОГе:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ПС &lt;- ВВКОД(13),
+ВВКОД(10);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: вывод элементов
+списка столбиком</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>writeln([]);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>writeln([h|t])&lt;-ВЫВОД(h),ПС,writeln(t);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?writeln([CPM,MSDOS,Unix]);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="38.Встроенный предикат ВВОДЦЕЛ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+ВВОДЦЕЛ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ВВОДЦЕЛ(Арг1<SPAN LANG="en-US">[</SPAN>,Арг2<SPAN LANG="en-US">]</SPAN>)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+ВВОДЦЕЛ имеет один аргумент или два аргумента. Процедурно он означает
+ввод целого из файла открытого для чтения. Если ввод происходит из
+файла &quot;con:&quot;, то при выполнении этого предиката программа
+на Прологе-Д приостанавливается и система ожидает ввода, приглашение
+не выводится. Вторым аргументом может быть строка с текстом
+приглашения или пояснения. Ниже приведены результаты выполнения в
+зависимости от типа первого аргумента.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВОДЦЕЛ(П) Если введено
+целое, то П конкретизируется целым, предикат истинен, иначе предикат
+ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВОДЦЕЛ(ц) Введенный
+объект унифицируется с целым. Если унификация удачна, то предикат
+истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+предикат ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Признаком конца ввода
+является любой символ отличный от цифры. Обычно ввод заканчивается
+нажатием клавиши &lt;<SPAN LANG="en-US">ENTER</SPAN>&gt;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: угадай число.
+Чтобы закончить выполнение, нужно ввести число 5.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>repeat;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>repeat&lt;-repeat;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>test(x,y)&lt;-
+БОЛЬШЕ(x,y),</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВЫВОД(меньше),ПС,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛОЖЬ;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>test(x,y)&lt;-
+МЕНЬШЕ(x,y),</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВЫВОД(больше),ПС,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛОЖЬ;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>test(x,x);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>угадай &lt;- repeat,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВЫВОД(&quot;Число?
+&quot;),ВВОДЦЕЛ(x),ПС,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>test(x,5);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?угадай;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="39.Встроенный предикат ВВОДСИМВ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+ВВОДСИМВ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ВВОДСИМВ(Арг1<SPAN LANG="en-US">[</SPAN>,Арг2<SPAN LANG="en-US">]</SPAN>)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+ВВОДСИМВ имеет один или два аргумента. Процедурно он обозначает ввод
+символьной константы из файла открытого для чтения.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если ввод происходит из
+файла &quot;con:&quot;, то при выполнении этого предиката программа
+на Прологе-Д приостанавливается и система ожидает ввода данных с
+клавиатуры. Вторым аргументом может быть строка с текстом приглашения
+или пояснения.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Результаты выполнения в
+зависимости от типа первого аргумента приведены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВОДСИМВ(П)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если введена символьная
+строка, то П конкретизируется этой константой, предикат истинен. Если
+введенные данные не являются символьной константой, то предикат
+ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ВВОДСИМВ(с) Введенный
+объект унифицируется со строкой. Если унификация удачна, то предикат
+истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+предикат ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ввод должен заканчиваться
+нажатием клавиши &lt;<SPAN LANG="en-US">ENTER</SPAN>&gt;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="40.Встроенный предикат ВЫВОД|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ВЫВОД</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ВЫВОД(Аргумент
+[,Аргумент]*)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат ВЫВОД
+может иметь произвольное число аргументов. Процедурно он обозначает
+вывод аргументов в текстовом формате в файл, открытый для вывода.
+Аргументы могут быть произвольного типа. Вывод происходит в одну
+строку. Для перевода строки можно использовать встроенный предикат
+ПС. Предикат истинен, если вывод прошел успешно, иначе предикат
+ложен, и появляется соответствующее сообщение об ошибке.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="41.О графике Пролога-Д|outline"></A><A NAME="41.О графике Пролога-Д|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>О графике Пролога-Д</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех графических
+встроенных предикатах аргументами должны быть целыми или переменными,
+конкретизированными целыми, или неконкретизированными переменными.
+Если это требование не выполнено, то появится сообщение об ошибке.
+Параметр v - вертикальный размер, а h - горизонтальный размер экрана.
+Для стандартной платы видеоадаптера VGA v=349, h=639.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В предикатах ТОЧКА,
+ЛИНИЯ, ОКРУЖНОСТЬ, ЗАКРАСКА последний параметр задает цвет. Как
+правило, если на этом месте стоит неконкретизированная переменная, то
+также выводится сообщение об ошибке. Для обозначения цвета при
+использовании видеоадаптера <SPAN LANG="en-US">V</SPAN>GA принята
+следующая кодировка цветов:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>0 черный 8 темно-серый</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>1 синий 9 светло-синий</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>2 зеленый 10
+светло-зеленый</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>3 голубой 11
+светло-голубой</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>4 коричневый 12 красный</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>5 фиолетовый 13 сиреневый</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>6 темно-желтый 14 желтый</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>7 серый 15 белый.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="42.Встроенный предикат ТОЧКА|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ТОЧКА</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ТОЧКА(Арг1,Арг2,Арг3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат ТОЧКА
+имеет три аргумента. Ниже приведены результаты выполнения в
+зависимости от типа аргумента.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТОЧКА(ц1,ц2,ц3)
+Установить точку с координатами (ц1,ц2) и цветом ц3;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТОЧКА(ц1,ц2,П3) П3 :=
+цвет_точки(ц1,ц2);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТОЧКА(ц1,П2,ц3) Рисовать
+линию с начальной точкой (ц1,0), конечной - (ц1,v) цветом ц3;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТОЧКА(П1,ц2,ц3) Рисовать
+линию с начальной точкой (0,ц2), конечной - (h,ц2) цветом ц3;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТОЧКА(П1,П2,ц3) Заполнить
+экран цветом ц3.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В этих пяти случаях
+предикат истинен, иначе &ndash; выполнение программы прекращается и
+выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ТОЧКА&quot;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="43.Встроенный предикат ЛИНИЯ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ЛИНИЯ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ЛИНИЯ(Арг1,Арг2,Арг3,Арг4,Арг5)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Этот встроенный предикат
+имеет пять аргументов. Пятый аргумент всегда должен быть целым,
+арифметическим выражением или переменной, конкретизированной целым.
+Результаты выполнения приведены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,ц2,ц3,ц4,ц)
+Рисовать линию с начальной точкой (ц1,ц2), конечной - (ц3,ц4), цветом
+ц</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,ц2,ц3,П4,ц)
+Рисовать закрашенный треугольник с вершинами (ц1,ц2), (ц3,0), (ц3,v)
+и цветом ц;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,ц2,П3,ц4,ц)
+Рисовать закрашенный треугольник с вершинами (ц1,ц2), (0,ц4), (h,ц4)
+и цветом ц;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,П2,ц3,ц4,ц)
+Рисовать закрашенный треугольник с вершинами (ц1,0), (ц1,v), (ц3,ц4)
+и цветом ц;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,ц2,ц3,ц4,ц)
+Рисовать закрашенный треугольник с вершинами (0,ц2), (h,ц3), (ц3,ц4)
+и цветом ц;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,П2,ц3,ц4,ц) \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,ц2,П3,П4,ц) |</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,П2,П3,П4,ц) |</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,ц2,П3,П4,ц) |-&gt;
+Заполнение экрана цветом ц</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,П2,ц3,П4,ц) |</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,П2,П3,ц4,ц) |</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,П2,П3,П4,ц) /</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,П2,ц3,П4,ц)
+Вертикальный закрашенный цветом ц прямоугольник с вершинами (ц1,0),
+(ц1,v), (ц2,0), (ц2,v);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,ц2,П3,ц4,ц)
+Горизонтальный закрашенный цветом ц прямоугольник с вершинами (0,ц2),
+(h,ц2), (0,ц4), (h,ц4);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(ц1,П2,П3,ц4,ц)
+Четырехугольник цветом ц с вершинами (ц1,0), (ц1,v), (0,ц4), (h,ц4);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЛИНИЯ(П1,ц2,ц3,П4,ц)
+Четырехугольник цветом ц с вершинами (0,ц2), (h,ц2), (ц3,0), (ц3,v).</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В этих шестнадцати
+случаях предикат истинен, иначе выполнение программы прекращается и
+выдается сообщение об ошибке.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример1: рисование
+разноцветных закрашенных треугольников</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>преобр(x,y,u,v,t,T)&lt;-СЛОЖЕНИЕ(x,10,u),СЛОЖЕНИЕ(y,10,v),СЛОЖЕНИЕ(t,1,T);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>действие(x,y,t)&lt;-ЛИНИЯ(x,y,А,212,t),преобр(x,y,u,v,t,T),!,
+НЕ(тест(T)),действие(u,v,T);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>тест(16);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример &lt;-
+действие(100,50,1);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?пример;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример2: рисование рамки</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>рамка(x,y,u,v,c)&lt;-ЛИНИЯ(x,y,x,v,c),ЛИНИЯ(x,v,u,v,c),ЛИНИЯ(u,v,u,y,c),ЛИНИЯ(u,y,x,y,c);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="44.Встроенный предикат ОКРУЖНОСТЬ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+ОКРУЖНОСТЬ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ОКРУЖНОСТЬ(Арг1,Арг2,Арг3,Арг4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+ОКРУЖНОСТЬ имеет четыре аргумента. Четвертым аргументом всегда должно
+быть целое, арифметическое выражение или переменная,
+конкретизированная целым. Ниже приведены результаты выполнения в
+зависимости от типов аргументов.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(ц1,ц2,ц3,ц)
+Окружность с центром (ц1,ц2), радиусом ц3, цветом ц;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(ц1,ц2,П3,ц) \</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(ц1,П2,П3,ц) |</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(П1,ц2,П3,ц)
+|-&gt; Заполнение экрана цветом ц</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(П1,П2,П3,ц) |</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(П1,П2,ц3,ц) /</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(ц1,П2,ц3,ц)
+Вертикальный закрашенный цветом ц прямоугольник с вершинами:
+(ц1-ц3,0), (ц1-ц3,v), (ц1+ц3,0), (ц1+ц3,v);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ОКРУЖНОСТЬ(П1,ц2,ц3,ц)
+Горизонтальный закрашенный цветом ц прямоугольник с вершинами:
+(0,ц2-ц3), (h,ц2-ц3), (0,ц2+ц3), (h,ц2+ц3);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В этих восьми случаях
+предикат истинен, иначе выполнение программы прекращается и выводится
+сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ОКРУЖНОСТЬ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: рисование
+закрашенных концентрических окружностей</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>кольцо(x,y,r,r,1)&lt;-ОКРУЖНОСТЬ(x,y,r,1),!;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>кольцо(x,y,r,R,n)&lt;-МЕНЬШЕ(r,R),ОКРУЖНОСТЬ(x,y,#r+1#,n),кольцо(x,y,#r+1#,R,n);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>кольцо(x,y,r,r,n)&lt;-кольцо(x,y,r,#r+5#,#n-1#);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример&lt;-кольцо(100,100,0,5,15);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?пример;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="45.Встроенный предикат ЗАКРАСКА|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+ЗАКРАСКА</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ЗАКРАСКА(Арг1,Арг2,Арг3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат
+ЗАКРАСКА имеет три аргумента. Процедурно этот предикат означает:
+закрасить цветом Арг3 точку с координатами (Арг1,Арг2) и все смежные
+к ней с таким же цветом как и эта точка. Предикат всегда истинен. Все
+аргументы должны быть целыми, арифметическими выражениями или
+переменными, конкретизированными целыми. Если это условие не
+выполняется, то выполнение программы прекращается и выводится
+сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ЗАКРАСКА&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: закрашенный
+квадрат</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>рамка(x1',y1',x2',y2',цвет')&lt;-ЛИНИЯ(x1',y1',x1',y2',цвет'),ЛИНИЯ(x1',y1',x2',y1',цвет'),
+ЛИНИЯ(x1',y2',x2',y2',цвет'),ЛИНИЯ(x2',y1',x2',y2',цвет');</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример &lt;-
+рамка(50,50,150,150,8), ЗАКРАСКА(100,100,15);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?пример;.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="46.Встроенный предикат ПЕР|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ПЕР</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ПЕР(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет один
+аргумент, который может быть любого типа.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат истинен, если
+аргументом является неконкретизированная переменная, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="47.Встроенный предикат ЦЕЛ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ЦЕЛ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: ЦЕЛ(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет один
+аргумент, который может быть любого типа.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат истинен, если
+аргументом является целое, арифметическое выражение или переменная,
+конкретизированная целым, иначе предикат ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="48.Встроенный предикат СИМВ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат СИМВ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: СИМВ(Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет один
+аргумент, который может быть любого типа.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат истинен, если
+аргументом является символьная или строковая константа или
+переменная, конкретизированная символьной или строковой константой,
+иначе предикат ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="49.Встроенный предикат СТРСПИС|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+СТРСПИС</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+СТРСПИС(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента. Ниже приведены результаты выполнения предиката в
+зависимости от типа аргументов.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СТРСПИС(с1,П2) Переменная
+конкретизируется списком, элементами которого являются целые. Каждое
+целое есть код соответствующего символа в строке. Число элементов в
+списке равно числу символов в строке. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СТРСПИС(П1,сп2)
+Переменная конкретизируется строкой, код каждого символа равен
+соответствующему целому в списке. Целые в списке берутся по модулю
+255. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СТРСПИС(с1,сп2) Если
+длина строки с равна числу элементов списка сп2 и код каждого символа
+в строке с1 равен соответствующему целому в списке сп2, то предикат
+истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат СТРСПИС&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: преобразование
+заглавных букв в прописные и наоборот</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>в_прописную(к,К) &lt;-
+СЛОЖЕНИЕ(к,32,K), БОЛЬШЕ(К,223), БОЛЬШЕ(255,К),!;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>в_прописную(к,к);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>преобр([],[]);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>преобр([код'|коды'],[КОД'|КОДЫ'])
+&lt;- в_прописную(код',КОД'), преобр(коды',КОДЫ');</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>прописные(стр',СТР')&lt;-СИМВ(стр'),ПЕР(СТР'),СТРСПИС(стр',с),преобр(с,С),СТРСПИС(СТР',С);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>прописные(стр',СТР')&lt;-ПЕР(стр'),СИМВ(СТР'),СТРСПИС(СТР',С),преобр(с,С),СТРСПИС(стр',с);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?прописные(с,&quot;ЛОГИЧЕСКОЕ
+ПРОГРАММИРОВАНИЕ&quot;);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?прописные(&quot;пролог-д,С);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="50.Встроенный предикат СТРЦЕЛ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+СТРЦЕЛ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+СТРЦЕЛ(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента. Ниже приведены результаты выполнения предиката в
+зависимости от типа аргументов.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СТРЦЕЛ(с1,П2) Если строка
+содержит только цифры, а первым символом в строке является &quot;+&quot;
+или &quot;-&quot;, то переменная конкретизируется целым, строковое
+представление которого есть строка с1 и предикат истинен, иначе
+ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СТРЦЕЛ(П1,ц2) Целое
+преобразуется в строку, переменная конкретизируется этой строкой.
+Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СТРЦЕЛ(с1,ц2) Если строка
+может быть преобразована в целое и полученное целое равно целому ц2,
+то предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат СТРЦЕЛ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: генератор
+псевдослучайных чисел</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>взять_две_средние_цифры(1,s,&quot;0&quot;);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>взять_две_средние_цифры(2,s,S)
+&lt;- КОПИЯ(s,1,1,S);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>взять_две_средние_цифры(n,s,S)
+&lt;- БОЛЬШЕ(n,2),КОПИЯ(s,2,2,S);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>новое_случайное(n,N)&lt;-СТРЦЕЛ(s,n),ДЛИНА(s,x),взять_две_средние_цифры(x,s,S),СТРЦЕЛ(S,N);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>гсч(x,X)&lt;-новое_случайное(#
+(x+13)*63 #,X);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="51.Встроенный предикат БУКВА|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат БУКВА</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+БУКВА(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента: первый должен быть строкой или переменной,
+конкретизированной строкой, а второй - неконкретизированной
+переменной, целым или переменной, конкретизированной целым.
+Результаты выполнения предиката в зависимости от типа второго
+аргумента приведены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>БУКВА(с1,ц2) Предикат
+истинен, если символ строки в позиции, указанной вторым аргументом,
+является буквой, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>БУКВА(с1,П2) Если в
+строке с1 есть буква, то П2 := позиция буквы с строке с1,предикат
+истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В остальных случаях
+выполнение программы прекратится и появится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат БУКВА&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Примеры</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?БУКВА(&quot;абв&quot;,1)
+Ответ: ДА,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?БУКВА(&quot;25689&quot;,5)
+Ответ: НЕТ,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?БУКВА(&quot;абв&quot;,10)
+Ответ: НЕТ,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?БУКВА(&quot;абв&quot;,x)
+Ответ: x=1.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="52.Встроенный предикат ЦИФРА|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ЦИФРА</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ЦИФРА(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента: первый должен быть строкой или переменной,
+конкретизированной строкой, а второй - целым или переменной,
+конкретизированной целым. Результаты выполнения предиката в
+зависимости от типа второго аргумента приведены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЦИФРА(с1,ц2) Предикат
+истинен, если символ строки в позиции, указанной вторым аргументом,
+является цифрой, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЦИФРА(с1,П2) Если в
+строке с1 есть буква, то П2 := позиция цифры в строке с1,предикат
+истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В остальных случаях
+выполнение программы прекратится и появится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ЦИФРА&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Примеры</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ЦИФРА(&quot;абв&quot;,1)
+Ответ: НЕТ,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ЦИФРА(&quot;25689&quot;,5)
+Ответ: ДА,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ЦИФРА(&quot;123&quot;,-1)
+Ответ: НЕТ,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ЦИФРА(&quot;абв01&quot;,x)
+Ответ: x=4,</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ЦИФРА(&quot;абв&quot;,x)
+Ответ: НЕТ.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="53.Встроенный предикат СЦЕП|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат СЦЕП</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+СЦЕП(Арг1,Арг2,Арг3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет три
+аргумента. Результаты выполнения предиката представлены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СЦЕП(с1,с2,П3) Переменная
+П конкретизируется строкой, которая является результатом конкатенации
+строк с1, с2. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СЦЕП(с1,П2,с3) Если
+строку с3 возможно представить как результат конкатенации строки с1 с
+какой - либо строкой X, то П конкретизируется строкой X. Предикат
+истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СЦЕП(П1,с2,с3) Если
+строку с3 возможно представить как результат конкатенации некоторой
+строки X со строкой с2, то П конкретизируется строкой X. Предикат
+истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>СЦЕП(с1,с2,с3) Если с3
+является результатом конкатенации строк с1 и с2, то предикат истинен,
+иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат СЦЕП&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Примеры:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?СЦЕП(&quot;аб&quot;,&quot;вг&quot;,x);
+Ответ: &quot;абвг&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?СЦЕП(x,&quot;бвг&quot;,&quot;-абвг&quot;);
+Ответ: &quot;-а&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="54.Встроенный предикат КОПИЯ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат КОПИЯ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+КОПИЯ(Арг1,Арг2,Арг3,Арг4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет четыре
+аргумента. Результаты выполнения предиката представлены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>КОПИЯ(с1,ц2,ц3,П4) Из
+строки с1 с позиции ц2 выделяется подстрока длиной ц3 и унифицируется
+с переменной П4. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>КОПИЯ(с1,ц2,ц3,с4) Если
+выделенная из строки с1 с позиции ц2 подстрока длиной ц3 равна с4, то
+предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>КОПИЯ(с1,П2,ц3,с4) Если
+длина строки с4 равна ц3 и строка с4 входит в строку с1 с некоторой
+позиции X, то П2:= X, предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>КОПИЯ(с1,П2,П3,с4) Если
+строка с4 входит в строку с1 с некоторой позиции X, то П2:= X,
+П3:=длина строки с4, предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>КОПИЯ(с1,ц2,П3,с4) Если
+строка с4 входит в строку с1 с позиции ц2, то П3 := длина строки с4,
+предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат КОПИЯ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:
+?КОПИЯ(&quot;ПРОЛОГ&quot;,x,y,&quot;ЛОГ&quot;);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ответ: x=3 y=3 ДА.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="55.Встроенный предикат ДЛИНА|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ДЛИНА</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ДЛИНА(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента, он реализован на ПРОЛОГе:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ДЛИНА(стр',длин')&lt;-КОПИЯ(стр',1,длин',стр');</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Результаты выполнения
+предиката представлены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ДЛИНА(с1,ц2) Если длина
+строки с1 равна ц2, то предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ДЛИНА(с1,П2) П2 := длина
+строки с1. Предикат истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается и выдается сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат КОПИЯ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:
+?ДЛИНА(&quot;ПРОЛОГ&quot;,x);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Ответ: x=6.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="56.Встроенный предикат ТЕРМ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ТЕРМ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ТЕРМ(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента. Первый аргумент может быть переменной или термом. Второй
+аргумент - переменной или списком. Если второй аргумент является
+списком, тогда встроенный предикат ТЕРМ воспринимает список следующим
+образом: если элементов в списке больше одного, то элементы, начиная
+со второго, рассматриваются как аргументы терма, имя которого задано
+головой списка, если же в списке один элемент, то терм не имеет
+аргументов.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Например:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>[КОПИЯ,&quot;ПРОЛОГ&quot;,x,y,&quot;ЛОГ&quot;]
+--&gt; КОПИЯ(&quot;ПРОЛОГ&quot;,x,y,&quot;ЛОГ&quot;)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>[пример] --&gt; пример</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Результаты работы
+предиката приведены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТЕРМ(П1,сп2) Делается
+попытка создать терм в соответствии с приведенными выше правилами.
+Если терм создан, то П1 := терм, предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТЕРМ(т1,П2) Делается
+попытка преобразовать пр1 в список в соответствии с приведенными выше
+правилами. Если список создан, то П2:= список, предикат истинен,
+иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ТЕРМ(т1,сп2) Если список
+можно преобразовать в терм и пр1 можно унифицировать с созданным
+термом, то предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>В остальных случаях или
+если вторым аргументом окажется пустой список, то выполнение
+программы прекратится и возникнет ошибка:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ТЕРМ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="57.Встроенный предикат ДОБ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ДОБ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ДОБ(Арг1,Арг2,Арг3)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Встроенный предикат ДОБ
+имеет три аргумента. Первый аргумент рассматривается, как голова
+добавляемого к базе знаний предложения, поэтому он может быть или
+термом или переменной, конкретизированной термом. Второй аргумент
+должен быть списком. Если список пустой, то предложение является
+фактом, иначе список рассматривается как список целей в предложении.
+Третий аргумент может быть целым или переменной, конкретизированной
+целым. Он является номером предложения с данной головой, перед
+которым необходимо вставить предложение. Если номер отрицательный, то
+предложение станет первым, если в базе знаний предложения с таким
+номером не существует, то данное предложение станет последним среди
+всех предложений с данной головой. Если не соблюдены ограничения на
+типы аргументов, то выполнение программы прекращается и выводится
+сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ДОБ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: пусть в базе
+знаний находятся предложения</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(1)&lt;-пример(3);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(2);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>На вопрос: ?пример(x);
+&quot;ПРОЛОГ-Д&quot; отвечает: x=2.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если задать тот же
+вопрос, но сперва добавить предложение</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ДОБ(пример(3),[],1),пример(x);,
+то ответ будет уже иным:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=3</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=1</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=2.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="58.Встроенный предикат УДАЛЕНИЕ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+УДАЛЕНИЕ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+УДАЛЕНИЕ(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента. Первый аргумент рассматривается как имя терма, а второй
+аргумент как номер предложения среди предложений с головой, имеющей
+имя Арг1. Второй аргумент может быть или целым, или переменной,
+конкретизированной целым. Если номер меньше нуля, то удаляется первое
+предложение (если оно существует). Если предложения с таким номером
+нет в базе знаний, то удаляется последнее предложение. Если
+ограничения на типы аргументов не выполняются, то программа
+прерывается и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат УДАЛЕНИЕ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: пусть в базе
+знаний есть предложения</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(1)&lt;-пример(3);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(2);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если выполнить удаление с
+помощью встроенного предиката УДАЛЕНИЕ и задать вопрос:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?УДАЛЕНИЕ(пример,2),пример(x);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ответ будет:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>НЕТ.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="59.Встроенный предикат СКОЛЬКО|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат
+СКОЛЬКО</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+СКОЛЬКО(Арг1,Арг2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет два
+аргумента. Первый аргумент рассматривается как имя терма, количество
+которых необходимо сосчитать, первый аргумент не может быть
+переменной. Второй аргумент может быть или неконкретизированной
+переменной или целым, или переменной, конкретизированной целым. Если
+ограничения на типы аргументов не выполняются, то программа
+прерывается и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат СКОЛЬКО&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: пусть в базе
+знаний есть предложения</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(1)&lt;-пример(3);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(2);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Если задать вопрос:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?СКОЛЬКО(пример,x);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ответ будет:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=2.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>На вопрос:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?СКОЛЬКО(пример,2)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>система ПРОЛОГ-Д ответит:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ДА.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=LEFT STYLE="page-break-before: always"><A NAME="60.Встроенный предикат ПРЕДЛ|outline"></A>
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ПРЕДЛ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис:
+ПРЕДЛ(Арг1,Арг2,Арг3,Арг4)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет четыре
+аргумента. Первый аргумент рассматривается как имя терма, второй -
+номер предложения среди предложений с данным именем головы. Третий
+аргумент может быть неконкретизированной переменной, термом или
+переменной, конкретизированной термом. Четвертый аргумент может быть
+переменной или списком, переменной, конкретизированной списком. Если
+четвертый аргумент список, то в он рассматривается как список целей
+данного предложения. Результаты выполнения предиката приведены ниже:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ПРЕДЛ(т1,ц2,П3,П4) Если в
+базе знаний существуют предложения, головы которых имеют имя т1 и
+среди этих предложений есть предложение с номером ц2 то П3 := голова
+предложения, П4 := список целей этого предложения, предикат истинен,
+иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ПРЕДЛ(т1,ц2,т3,П4) Если в
+базе знаний существуют предложения, головы которых имеют имя т1 и
+среди этих предложений есть предложение с номером ц2 и голова этого
+предложения унифицируема с т3, то П4 := список целей этого
+предложения, предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ПРЕДЛ(т1,ц2,П3,сп4) Если
+в базе знаний существуют предложения головы, которых имеют имя т1 и
+среди этих предложений есть предложение с номером ц2 и список целей
+этого предложения можно представить списком сп4, то П3 := голова
+предложения, предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ПРЕДЛ(т1,ц2,т3,сп4) Если
+в базе знаний существуют предложения головы, которых имеют имя т1 и
+среди этих предложений есть предложение с номером ц2 и голова этого
+предложения унифицируема с т3, а список целей можно представить
+списком сп4, то предикат истинен, иначе ложен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Во всех остальных случаях
+выполнение программы прекращается, и выводится сообщение об ошибке:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>&quot;Невыполнимый
+предикат ПРЕДЛ&quot;</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример: пусть в базе
+знаний заданы предложения</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(1)&lt;-пример(3);</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>пример(2);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>На вопрос:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ПРЕДЛ(пример,1,x,y);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ПРОЛОГ-Д ответит:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=пример(1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y=[пример(3)]</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>На вопрос:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>?ПРЕДЛ(пример,2,x,y);.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>будет получен ответ:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>x=пример(1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>y=[].</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<BR><BR>
+</P>
+<H1 LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-top: 0in; margin-bottom: 0.2in; page-break-before: always">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=4>Встроенный предикат ЖДИ</FONT></FONT></H1>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Синтаксис: <SPAN LANG="en-US">:</SPAN>ЖДИ<SPAN LANG="en-US">(</SPAN>Арг1)</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Предикат имеет один
+аргумент. Аргумент должен быть целым. Этот предикат всегда истинен.</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЖДИ<SPAN LANG="en-US">(ц</SPAN>1)
+- блокирует выполнение по крайней мере на указанное значение ц1 в
+миллисекундах. Эта функция может заблокировать выполнение больше, чем
+ц1 из-за задержек планировщика ОС. </FONT></FONT>
+</P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>Пример:</FONT></FONT></P>
+<P LANG="ru-RU" CLASS="western" ALIGN=JUSTIFY STYLE="margin-bottom: 0.2in">
+<FONT FACE="Arial, sans-serif"><FONT SIZE=3>ЖДИ(100). - блокировать
+выполнение на 100 мс.</FONT></FONT></P>
+</BODY>
+</HTML>
