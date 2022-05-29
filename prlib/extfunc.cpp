@@ -403,7 +403,7 @@ unsigned priocod(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   case 7://целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
     if (ClVar->PrSetting->out.is_open()) {
-      ClVar->PrSetting->out << occ(0, ScVar, ClVar, heap);
+      ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
     }
     return 3;
   }
