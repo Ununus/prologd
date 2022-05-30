@@ -324,7 +324,12 @@ unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       return 3;
     }
 
-    //АВ: пытаемся открыть файл для записи.
+    //если con:
+    if (strcmp(str, "con:") == 0) {
+        return 3;
+    }
+
+    // пытаемся открыть файл для записи.
     ClVar->PrSetting->out.open(str);
     if (!ClVar->PrSetting->out.is_open()) {
       outerror(43);
