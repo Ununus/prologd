@@ -29,7 +29,9 @@ set (SOURCES
 
 qt5_add_resources(SOURCES res.qrc)
 
-add_executable (Prolog-D ${SOURCES})
+set(APP_ICON_RES "icon.rc")
+
+add_executable (Prolog-D ${SOURCES} ${APP_ICON_RES})
 
 target_link_libraries(Prolog-D prlib)
 target_link_libraries(Prolog-D Qt5::Widgets)
