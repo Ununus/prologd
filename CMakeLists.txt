@@ -30,8 +30,11 @@ set (SOURCES
 qt5_add_resources(SOURCES res.qrc)
 
 set(APP_ICON_RES "icon.rc")
-
+if (WIN32)
+add_executable (Prolog-D WIN32 ${SOURCES} ${APP_ICON_RES})
+else()
 add_executable (Prolog-D ${SOURCES} ${APP_ICON_RES})
+endif()
 
 target_link_libraries(Prolog-D prlib)
 target_link_libraries(Prolog-D Qt5::Widgets)
