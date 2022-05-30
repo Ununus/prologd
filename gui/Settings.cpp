@@ -25,7 +25,7 @@ static const char* SAVE_BEFORE = "saveBeforeExec";
 static const char* FONT_FAMILY = "fontFamily";
 static const char* FONT_SIZE = "fontSize";
 static const char* FONT_SCALE = "fontScale";
-constexpr int FONT_SIZE_DEF = 12;
+constexpr int FONT_SIZE_DEF = 10;
 constexpr int FONT_SIZE_LO = 6;
 constexpr int FONT_SIZE_HI = 72;
 constexpr int FONT_SCALE_DEF = 2;
@@ -49,7 +49,7 @@ Settings::Settings(QWidget *parent)
   setFixedSize(360, 240);
   setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
 
-  // Çàãðóçèòü íàñòðîéêè
+  // Ð—Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸
   QSettings m_settings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);
   m_font_size->setValue(clamp(m_settings.value(FONT_SIZE, FONT_SIZE_DEF).toInt(), FONT_SIZE_LO, FONT_SIZE_HI));
   m_actions.font_scale_slider->setValue(clamp(m_settings.value(FONT_SCALE, FONT_SCALE_DEF).toInt(), FONT_SCALE_LO, FONT_SCALE_HI));

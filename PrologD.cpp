@@ -1,9 +1,11 @@
+//Encoding CP-1251
 #include "PrologD.h"
 
 #include "gui/MainWindow.h"
 #include <QApplication>
 #include <QSettings>
 #include <QTranslator>
+#include <QTextCodec>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,6 +14,7 @@
 #include "prlib/pstructs.h"
 #include "prlib/control.h"
 #include "prlib/functions.h"
+#include "prlib/err.h"
 
 #include <memory>
 #include <string>
@@ -83,25 +86,62 @@ static int Nstr;
 static int Ninp;
 static PrologDWorker* prd = nullptr;
 
+QString decode_cp1251_to_utf8 (const char* str) {
+    std::string res;
+    for (const char* c = str; *c; ++c) {
+        if (*c >= 'А' && *c <= 'я') {
+            auto v = static_cast<unsigned char>(*c - 'А') + 1040u;
+            unsigned char c1 = 192u + (v >> 6u);
+            unsigned char c2 = (v & 63u) + 128u;
+            res.push_back(c1);
+            res.push_back(c2);
+        }
+        else {
+            res.push_back(static_cast<unsigned char>(*c & 127u));
+        }
+    }
+    return QString(res.c_str());
+}
+
+std::string decode_utf8_to_cp1251(QString qstr) {
+    std::string str { qstr.toUtf8().toStdString() };
+    if (str.empty()) return str;
+    size_t si = 0;
+    for (size_t i = 0; i < str.size();) {
+        if ((str[i] & 128u) == 0) {
+            str[si++] = str[i++];
+        }
+        else if ((str[i] & 224u) == 192u && i + 1 != str.size()) {
+            str[si++] = ((str[i] ^ 192u) << 6u) + (str[i + 1] & 63u) - 1040u - 64u;
+            i += 2;
+        }
+        else {
+            throw std::runtime_error("Decoding error");
+        }
+    }
+    str.resize(si);
+    return str;
+}
+
 void out(const char* str) {
-  emit prd->signalStdOut(QString::fromLocal8Bit(str));
+  emit prd->signalStdOut(decode_cp1251_to_utf8(str));
 }
 void errout(const char* str) {
   char number[8];
   memset(number, 0, sizeof(char) * 8);
   std::to_chars(number, number + 8, Nstr + 1);
-  emit prd->signalStdErr(QString::fromLocal8Bit("<font color=\"Crimson\">Строка №") + QString::fromLocal8Bit(number) + ". " + QString::fromLocal8Bit(str));
+  emit prd->signalStdErr(decode_cp1251_to_utf8("<font color=\"Crimson\">Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
 int InputStringFromDialog(char* buf, size_t size, char *caption) {
-  emit prd->signalStdOut("<font color=\"#126799\">" + QString::fromLocal8Bit(caption));
+  emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
   std::string line;
   while (Ninp < prd->inputList.size() && prd->inputList[Ninp].isEmpty()) ++Ninp;
   if (Ninp < prd->inputList.size()) {
-    line = prd->inputList[Ninp].toLocal8Bit().toStdString();
+    line = decode_utf8_to_cp1251(prd->inputList[Ninp]);
     ++Ninp;
   } else {
     prd->haveInput = false;
-    emit prd->signalWantInput(QString::fromLocal8Bit(caption));
+    emit prd->signalWantInput(decode_cp1251_to_utf8(caption));
     while (!prd->haveInput && prd->EnableRunning) {
       std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
@@ -110,7 +150,7 @@ int InputStringFromDialog(char* buf, size_t size, char *caption) {
       return 1;
     }
     //out(caption);
-    line = prd->inputStr.toLocal8Bit().toStdString();
+    line = decode_utf8_to_cp1251(prd->inputStr);
   }
   if (size <= 0) return 1;
   int to = size - 1;
@@ -196,69 +236,60 @@ PrologDWorker::PrologDWorker(CanvasArea *canvas, QObject *parent)
 {
 
 }
-void PrologDWorker::run(const QStringList &program, const QStringList &input) {
+void PrologDWorker::run(const QStringList &program, const QStringList &input) try {
   inputList = input;
   prd = this;
   int serr = 0, cerr = 0;
   std::unique_ptr<array> heap;
   std::unique_ptr<TScVar> ScVar;
   std::unique_ptr<TClVar> ClVar;
-  try
-  { // инициализация переменных, необходимых для работы интерпретатора
-      heap = std::make_unique<array>(_maxarray_);
-      ScVar = std::make_unique<TScVar>();
-      ClVar = std::make_unique<TClVar>();
-      ClVar->PrSetting = std::make_unique<TPrSetting>();
-  }
-  catch (const std::bad_alloc& er) {
-      errout(er.what());
-      emit signalWorkEnded();
-      return;
-  }
-  catch (const std::runtime_error& er) {
-      errout(er.what());
-      emit signalWorkEnded();
-      return;
-  }
-  catch (...) {
-      errout("Prolog initialization failure");
-      emit signalWorkEnded();
-      return;
-  }
+
+  heap = std::make_unique<array>(_maxarray_);
+  ScVar = std::make_unique<TScVar>();
+  ClVar = std::make_unique<TClVar>();
+  ClVar->PrSetting = std::make_unique<TPrSetting>();
   EnableRunning = true;
   serr = buildin(ScVar.get(), heap.get());
+  if (serr) throw std::runtime_error(GetPrErrText(serr));
   Ninp = 0;
-  for (Nstr = 0; !serr && !cerr && EnableRunning && Nstr < program.size(); Nstr++) {
+  for (Nstr = 0; EnableRunning && Nstr < program.size(); Nstr++) {
     // трансляция построчно
-    std::string line;
     QString lise = program[Nstr];
     lise.replace('\t', ' ');
-    line = lise.toLocal8Bit().toStdString();
+    std::string line = decode_utf8_to_cp1251(lise);
 
     char* p = const_cast<char*>(line.c_str()); // текущая строка
-    try
-    {
-      serr = scaner(p, ScVar.get(), heap.get());
 
-      if (!serr && ScVar->Query && ScVar->EndOfClause) //если конец предложения и вопрос то
+      serr = scaner(p, ScVar.get(), heap.get());
+      if (serr) throw std::runtime_error(GetPrErrText(serr));
+      if (ScVar->Query && ScVar->EndOfClause) //если конец предложения и вопрос то
       {
         if (m_outQuestion) //вывод вопроса
         {
-          emit prd->signalStdOut("<font color=\"#0a22D6\">" + QString::fromLocal8Bit(p));
+          emit prd->signalStdOut("<font color=\"#0a22D6\">" + decode_cp1251_to_utf8(p));
           //out(p);
         }
         cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
+        if (cerr) throw std::runtime_error(GetPrErrText(cerr));
         ScVar->Query = ScVar->EndOfClause = false;     //на выполнение
-      }
-    }
-    catch (...) {
-      errout(const_cast<char*>("Ошибка исполнения"));
-      //if (ClVar && ClVar->PrSetting) delete ClVar->PrSetting;
-      emit signalWorkEnded();
-      return;
     }
   }
   emit signalWorkEnded();
+}
+catch (const std::bad_alloc& er) {
+    errout(er.what());
+    emit signalWorkEnded();
+    return;
+}
+catch (const std::runtime_error& er) {
+    errout(er.what());
+    emit signalWorkEnded();
+    return;
+}
+catch (...) {
+    errout("Prolog failure");
+    emit signalWorkEnded();
+    return;
 }
 void CanvasArea::resize(int w, int h)
 {
@@ -333,15 +364,14 @@ void CanvasArea::clear()
 }
 
 
-
-
 int main(int argc, char *argv[])
 {
   QCoreApplication::setApplicationName("Prolog-D");
   QCoreApplication::setOrganizationName("Celyabinsk SU");
   QApplication app(argc, argv);
 
-  setlocale(LC_ALL, "ru");
+  //setlocale(LC_ALL, "ru");
+  QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
   // loadTranslation
   QSettings settings (qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);

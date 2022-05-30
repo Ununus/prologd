@@ -1,15 +1,15 @@
 monk(n):-begin(n,A,B,C),move(n,1,2,3,A,B,C,D,E,F).
 move(1,x,y,z,A,B,C,D,E,F):-make(x,y,A,B,C,D,E,F).
-move(n,x,y,z,A,B,C,D,E,F):-¡ŒÀ‹ÿ≈(n,1),move(#n-1#,x,z,y,A,B,C,a,b,c),make(x,y,a,b,c,d,e,f), move(#n-1#,z,y,x,d,e,f,D,E,F).
-begin(n,A,[],[]):-¡ŒÀ‹ÿ≈(n,0),Ã≈Õ‹ÿ≈(n,15),list(n,B),rev(B,A),pyr(A).
+move(n,x,y,z,A,B,C,D,E,F):-–ë–û–õ–¨–®–ï(n,1),move(#n-1#,x,z,y,A,B,C,a,b,c),make(x,y,a,b,c,d,e,f), move(#n-1#,z,y,x,d,e,f,D,E,F).
+begin(n,A,[],[]):-–ë–û–õ–¨–®–ï(n,0),–ú–ï–ù–¨–®–ï(n,15),list(n,B),rev(B,A),pyr(A).
 list(1,[1]).
-list(n,[n|m]):-¡ŒÀ‹ÿ≈(n,1),list(#n-1#,m).
+list(n,[n|m]):-–ë–û–õ–¨–®–ï(n,1),list(#n-1#,m).
 rev([],[]).
 rev([h|t],L):-rev(t,T),conc(T,[h],L).
 conc([],L,L).
 conc([h|A],B,[h|C]):-conc(A,B,C).
 len([],0).
-len([a|b],l):-len(b,m),—ÀŒ∆≈Õ»≈(m,1,l).
+len([a|b],l):-len(b,m),–°–õ–û–ñ–ï–ù–ò–ï(m,1,l).
 pyr([]).
 pyr([n|t]):-len(t,h),disk(n,1,h,n),pyr(t).
 make(1,2,[a|A],B,C,A,[a|B],C):-len(A,d),disk(a,1,d,15),len(B,e),disk(a,2,e,a).
@@ -20,8 +20,8 @@ make(3,2,A,B,[c|C],A,[c|B],C):-len(C,d),disk(c,3,d,15),len(B,e),disk(c,2,e,c).
 make(3,1,A,B,[c|C],[c|A],B,C):-len(C,d),disk(c,3,d,15),len(A,e),disk(c,1,e,c).
 disk(n,s,h,c):-box(#s*160-5*n#,#300-10*h-1#,#s*160+5*n#,#300-10*h-10#,c).
 	
-%box(a,b,c,d,e):-À»Õ»ﬂ(a,b,a,d,e),À»Õ»ﬂ(a,d,c,d,e),À»Õ»ﬂ(c,d,c,b,e),À»Õ»ﬂ(c,b,a,b,e),«¿ –¿— ¿(#a+1#,#b-1#,e).
+%box(a,b,c,d,e):-–õ–ò–ù–ò–Ø(a,b,a,d,e),–õ–ò–ù–ò–Ø(a,d,c,d,e),–õ–ò–ù–ò–Ø(c,d,c,b,e),–õ–ò–ù–ò–Ø(c,b,a,b,e),–ó–ê–ö–†–ê–°–ö–ê(#a+1#,#b-1#,e).
 %?monk(14).
 
-box(a,b,c,d,e):-À»Õ»ﬂ(a,b,a,d,e),À»Õ»ﬂ(a,d,c,d,e),À»Õ»ﬂ(c,d,c,b,e),À»Õ»ﬂ(c,b,a,b,e),«¿ –¿— ¿(#a+1#,#b-1#,e),∆ƒ»(100).
+box(a,b,c,d,e):-–õ–ò–ù–ò–Ø(a,b,a,d,e),–õ–ò–ù–ò–Ø(a,d,c,d,e),–õ–ò–ù–ò–Ø(c,d,c,b,e),–õ–ò–ù–ò–Ø(c,b,a,b,e),–ó–ê–ö–†–ê–°–ö–ê(#a+1#,#b-1#,e),–ñ–î–ò(100).
 ?monk(6).

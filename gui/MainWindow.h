@@ -15,7 +15,7 @@ class QFileSystemWatcher;
 class QSettings;
 class QInputDialog;
 
-// Структуры вынес, чтобы добавить сюда свой input для editor
+// РЎС‚СЂСѓРєС‚СѓСЂС‹ РІС‹РЅРµСЃ, С‡С‚РѕР±С‹ РґРѕР±Р°РІРёС‚СЊ СЃСЋРґР° СЃРІРѕР№ input РґР»СЏ editor
 struct TabContent {
   Editor* editor { nullptr };
 };
@@ -93,8 +93,8 @@ private:
   QThread *m_execution_thread;
   PrologDWorker* m_prolog_worker;
   QMetaObject::Connection m_connection_current_index_changed;
-  QPushButton *m_input_spaces_as_separators;
-  QPushButton *m_output_print_questions;
+  QCheckBox *m_input_spaces_as_separators;
+  QCheckBox *m_output_print_questions;
   GraphicsDialog *m_grp;
 };
 

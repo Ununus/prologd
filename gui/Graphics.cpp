@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <QCheckBox>
 #include <QSpinBox>
 #include <QSettings>
 #include <QApplication>
@@ -19,7 +20,7 @@ GraphicsDialog::GraphicsDialog(QWidget *parent)
   , m_draw_area(new GraphicsWidget)
   , m_input_width(new QSpinBox)
   , m_input_height(new QSpinBox)
-  , m_clear_when_exec(new QPushButton(tr("Clear on startup")))
+  , m_clear_when_exec(new QCheckBox(tr("Clear on startup")))
 {
   setWindowFlags((windowFlags() ^ Qt::WindowContextHelpButtonHint) | Qt::WindowMinMaxButtonsHint);
   setWindowTitle(tr("Graphics"));
@@ -98,7 +99,7 @@ void GraphicsWidget::paintEvent(QPaintEvent *) {
   //painter.drawPath(path);
   QPixmap pixmap;
   if (!pixmap.convertFromImage(m_canvas.image())) {
-    qDebug() << "ØËßÏÀ";
+    qDebug() << "Error";
   }
   painter.drawPixmap(0, 0, width(), height(), pixmap, 0, 0, m_canvas.image().width(), m_canvas.image().height());
 }

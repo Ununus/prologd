@@ -263,11 +263,11 @@ void Editor::keyPressEvent(QKeyEvent *keyEvent)
     pressHome(keyEvent->modifiers().testFlag(Qt::KeyboardModifier::ShiftModifier));
     return;
   }
-  // Áûñòðûé ââîä êëþ÷åâûõ ñëîâ
+  // Ð‘Ñ‹ÑÑ‚Ñ€Ñ‹Ð¹ Ð²Ð²Ð¾Ð´ ÐºÐ»ÑŽÑ‡ÐµÐ²Ñ‹Ñ… ÑÐ»Ð¾Ð²
   if (keyEvent->modifiers().testFlag(Qt::KeyboardModifier::ControlModifier)) {
     if (keyEvent->modifiers().testFlag(Qt::KeyboardModifier::ShiftModifier) &&
         keyEvent->nativeVirtualKey() == 187) {
-      insertPlainText(QString::fromLocal8Bit("ÑËÎÆÅÍÈÅ(,)"));
+      insertPlainText(QString("Ð¡Ð›ÐžÐ–Ð•ÐÐ˜Ð•(,)"));
       return;
     }
     QTextCursor cur;
@@ -279,78 +279,78 @@ void Editor::keyPressEvent(QKeyEvent *keyEvent)
     switch(keyEvent->nativeVirtualKey())
     {
     case 187:
-      insertPlainText(QString::fromLocal8Bit("ÐÀÂÍÎ(,)"));
+      insertPlainText(QString("Ð ÐÐ’ÐÐž(,)"));
       corcur(2);
       return;
     case 188:
-      insertPlainText(QString::fromLocal8Bit("ÌÅÍÜØÅ(,)"));
+      insertPlainText(QString("ÐœÐ•ÐÐ¬Ð¨Ð•(,)"));
       corcur(2);
       return;
     case 190:
-      insertPlainText(QString::fromLocal8Bit("ÁÎËÜØÅ(,)"));
+      insertPlainText(QString("Ð‘ÐžÐ›Ð¬Ð¨Ð•(,)"));
       corcur(2);
       return;
     case 107:
-      insertPlainText(QString::fromLocal8Bit("ÑËÎÆÅÍÈÅ(,)"));
+      insertPlainText(QString("Ð¡Ð›ÐžÐ–Ð•ÐÐ˜Ð•(,)"));
       corcur(2);
       return;
     case 106:
-      insertPlainText(QString::fromLocal8Bit("ÓÌÍÎÆÅÍÈÅ(,)"));
+      insertPlainText(QString("Ð£ÐœÐÐžÐ–Ð•ÐÐ˜Ð•(,)"));
       corcur(2);
       return;
     case 220:
-      insertPlainText(QString::fromLocal8Bit("|"));
+      insertPlainText(QString("|"));
       return;
     case 111:
-      insertPlainText(QString::fromLocal8Bit("|"));
+      insertPlainText(QString("|"));
       return;
     case 191:
-      insertPlainText(QString::fromLocal8Bit("?"));
+      insertPlainText(QString("?"));
       return;
     case 55:
-      insertPlainText(QString::fromLocal8Bit("?"));
+      insertPlainText(QString("?"));
       return;
     case 186:
-      insertPlainText(QString::fromLocal8Bit(":-."));
+      insertPlainText(QString(":-."));
       corcur(1);
       return;
     case 54:
-      insertPlainText(QString::fromLocal8Bit(":-."));
+      insertPlainText(QString(":-."));
       corcur(1);
       return;
     case 51:
-      insertPlainText(QString::fromLocal8Bit("#"));
+      insertPlainText(QString("#"));
       return;
     case 57:
-      insertPlainText(QString::fromLocal8Bit("()"));
+      insertPlainText(QString("()"));
       corcur(1);
       return;
     case 219:
-      insertPlainText(QString::fromLocal8Bit("[]"));
+      insertPlainText(QString("[]"));
       corcur(1);
       return;
     case 49:
-      insertPlainText(QString::fromLocal8Bit("ÍÅ()"));
+      insertPlainText(QString("ÐÐ•()"));
       corcur(1);
       return;
     case 50:
-      insertPlainText(QString::fromLocal8Bit("ÊÎÏÈß(,)"));
+      insertPlainText(QString("ÐšÐžÐŸÐ˜Ð¯(,)"));
       corcur(2);
       return;
     case 52:
-      insertPlainText(QString::fromLocal8Bit("ÂÛÂÎÄ()"));
+      insertPlainText(QString("Ð’Ð«Ð’ÐžÐ”()"));
       corcur(1);
       return;
     case 53:
-      insertPlainText(QString::fromLocal8Bit("ÑÖÅÏ(,)"));
+      insertPlainText(QString("Ð¡Ð¦Ð•ÐŸ(,)"));
       corcur(2);
       return;
     case 56:
-      insertPlainText(QString::fromLocal8Bit("ÄËÈÍÀ(,)"));
+      insertPlainText(QString("Ð”Ð›Ð˜ÐÐ(,)"));
       corcur(2);
       return;
     case 48:
-      insertPlainText(QString::fromLocal8Bit("ÂÂÎÄÑÈÌÂ()"));
+      insertPlainText(QString("Ð’Ð’ÐžÐ”Ð¡Ð˜ÐœÐ’()"));
       corcur(1);
       return;
     }
@@ -371,7 +371,7 @@ void Editor::keyPressEvent(QKeyEvent *keyEvent)
     }
   }
 
-  // ×òî òî ñ completer îì ñâÿçàííîå
+  // Ð§Ñ‚Ð¾ Ñ‚Ð¾ Ñ completer Ð¾Ð¼ ÑÐ²ÑÐ·Ð°Ð½Ð½Ð¾Ðµ
   bool isShortcut = ((keyEvent->modifiers() & Qt::ControlModifier) && keyEvent->key() == Qt::Key_Space); // CTRL+E
   if (!m_completer || !isShortcut)
     PlainTextEditWithLineNumberArea::keyPressEvent (keyEvent);

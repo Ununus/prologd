@@ -8,6 +8,7 @@
 class QVBoxLayout;
 class QSpinBox;
 class QPushButton;
+class QCheckBox;
 
 class GraphicsWidget : public QWidget
 {
@@ -36,7 +37,7 @@ private:
   GraphicsWidget *m_draw_area;
   QSpinBox *m_input_width;
   QSpinBox *m_input_height;
-  QPushButton *m_clear_when_exec;
+  QCheckBox *m_clear_when_exec;
 };
 
 #endif // GRAPHICSWIDGET_H

@@ -37,7 +37,7 @@ Help::Help (QWidget *parent)
   QFile file(qApp->applicationDirPath() + "/prologd-help.html");;
   if (file.exists()) {
     file.open(QFile::OpenModeFlag::ReadOnly);
-    m_help_text->setHtml(QString::fromLocal8Bit(file.readAll()));
+    m_help_text->setHtml(QString(file.readAll()));
     file.close();
   } else {
     m_help_text->setHtml(tr("No documentation available"));
@@ -54,11 +54,11 @@ void Help::setCurosrIfFound(QString word)
   m_help_text->moveCursor(QTextCursor::MoveOperation::Start);
   bool fnd = false;
   if (!word.isEmpty()) {
-    fnd = m_help_text->find(QString::fromLocal8Bit("¬ÒÚÓÂÌÌ˚È ÔÂ‰ËÍ‡Ú ") + word, QTextDocument::FindWholeWords);
+    fnd = m_help_text->find(QString("–í—Å—Ç—Ä–æ–µ–Ω–Ω—ã–π –ø—Ä–µ–¥–∏–∫–∞—Ç ") + word, QTextDocument::FindWholeWords);
   }
   if (fnd) {
-    // œÂÂ‰‚ËÌÛÚ¸ Ì‡È‰ÂÌÌÓÂ Ì‡‚Âı.
-    // œÓ˜ÂÏÛ ÚÓ ÒÍÓÎÎ ÌÂ ‡·ÓÚ‡ÂÚ, ‰‚Ë„‡˛ ÍÛÒÓÓÏ
+    // –ü–µ—Ä–µ–¥–≤–∏–Ω—É—Ç—å –Ω–∞–π–¥–µ–Ω–Ω–æ–µ –Ω–∞–≤–µ—Ä—Ö.
+    // –ü–æ—á–µ–º—É —Ç–æ —Å–∫—Ä–æ–ª–ª –Ω–µ —Ä–∞–±–æ—Ç–∞–µ—Ç, –¥–≤–∏–≥–∞—é –∫—É—Ä—Å–æ—Ä–æ–º
     auto cur = m_help_text->textCursor();
     m_help_text->moveCursor(QTextCursor::MoveOperation::End);
     m_help_text->setTextCursor(cur);
@@ -100,22 +100,22 @@ AboutProgram::AboutProgram(QWidget *parent)
   tabWidget->addTab(aboutProgramTextEdit, tr("About Program"));
 
 
-  QString helpTxt = QString::fromLocal8Bit (
-        "Ctrl + '<' -> Ã≈Õ‹ÿ≈\n"
-        "Ctrl + '>' -> ¡ŒÀ‹ÿ≈\n"
-        "Ctrl + '=' -> –¿¬ÕŒ\n"
-        "Ctrl + '*' -> ”ÃÕŒ∆≈Õ»≈\n"
-        "Ctrl + '+' -> —ÀŒ∆≈Õ»≈\n"
-        "Ctrl + '1' -> Õ≈\n"
-        "Ctrl + '2' ->  Œœ»ﬂ\n"
+  QString helpTxt = QString (
+        "Ctrl + '<' -> –ú–ï–ù–¨–®–ï\n"
+        "Ctrl + '>' -> –ë–û–õ–¨–®–ï\n"
+        "Ctrl + '=' -> –†–ê–í–ù–û\n"
+        "Ctrl + '*' -> –£–ú–ù–û–ñ–ï–ù–ò–ï\n"
+        "Ctrl + '+' -> –°–õ–û–ñ–ï–ù–ò–ï\n"
+        "Ctrl + '1' -> –ù–ï\n"
+        "Ctrl + '2' -> –ö–û–ü–ò–Ø\n"
         "Ctrl + '3' -> #\n"
-        "Ctrl + '4' -> ¬€¬Œƒ\n"
-        "Ctrl + '5' -> —÷≈œ\n"
+        "Ctrl + '4' -> –í–´–í–û–î\n"
+        "Ctrl + '5' -> –°–¶–ï–ü\n"
         "Ctrl + '6' -> :-.\n"
         "Ctrl + '7' -> ?\n"
-        "Ctrl + '8' -> ƒÀ»Õ¿\n"
+        "Ctrl + '8' -> –î–õ–ò–ù–ê\n"
         "Ctrl + '9' -> ()\n"
-        "Ctrl + '0' -> ¬¬Œƒ—»Ã¬\n"
+        "Ctrl + '0' -> –í–í–û–î–°–ò–ú–í\n"
         "Ctrl + '|' -> |\n"
         "Ctrl + '/' -> |\n"
         "Ctrl + '[' -> []\n"

@@ -18,6 +18,7 @@
 #include <QSlider>
 #include <QLabel>
 #include <QPushButton>
+#include <QCheckBox>
 #include <algorithm>
 
 #include <QDebug>
@@ -43,8 +44,8 @@ MainWindow::MainWindow(QWidget *parent)
   , m_completer (new QCompleter)
   , m_execution_thread (nullptr)
   , m_prolog_worker (nullptr)
-  , m_input_spaces_as_separators(new QPushButton)
-  , m_output_print_questions(new QPushButton)
+  , m_input_spaces_as_separators(new QCheckBox)
+  , m_output_print_questions(new QCheckBox)
   , m_grp(new GraphicsDialog(this))
 {
   setWindowTitle(tr("Prolog-D"));
@@ -69,15 +70,14 @@ MainWindow::MainWindow(QWidget *parent)
   QWidget *outputWidget = new QWidget;
   QVBoxLayout *output_vlay = new QVBoxLayout;
   QHBoxLayout *output_hlay = new QHBoxLayout;
-  QLabel* output_label = new QLabel("   " + tr("Output")+ "    ");
+  QLabel* output_label = new QLabel(tr("Output"));
   output_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
-  output_label->setFixedWidth(5 * 11);
-  m_output_print_questions->setText("?W");
+  m_output_print_questions->setText(tr("Print questions"));
   //output_pb->setIcon(QIcon(":/images/file-new.png"));
   m_output_print_questions->setToolTip(tr("Print questions"));
-  m_output_print_questions->setCheckable(true);
+  //m_output_print_questions->setCheckable(true);
   m_output_print_questions->setChecked(true);
-  m_output_print_questions->setFixedWidth(32);
+  //m_output_print_questions->setFixedWidth(32);
   output_hlay->addWidget(output_label);
   output_hlay->addSpacing(4);
   output_hlay->addWidget(m_output_print_questions);
@@ -95,15 +95,14 @@ MainWindow::MainWindow(QWidget *parent)
   QWidget *inputWidget = new QWidget;
   QVBoxLayout *input_vlay = new QVBoxLayout;
   QHBoxLayout *input_hlay = new QHBoxLayout;
-  QLabel* input_label = new QLabel("    " + tr("Input") + "    ");
+  QLabel* input_label = new QLabel(tr("Input"));
   input_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
-  input_label->setFixedWidth(5 * 11);
-  m_input_spaces_as_separators->setText("__");
+  m_input_spaces_as_separators->setText(tr("Use spaces as separators"));
   //input_pb->setIcon(QIcon(":/images/file-new.png"));
   m_input_spaces_as_separators->setToolTip(tr("Use spaces as separators"));
-  m_input_spaces_as_separators->setCheckable(true);
+  //m_input_spaces_as_separators->setCheckable(true);
   m_input_spaces_as_separators->setChecked(true);
-  m_input_spaces_as_separators->setFixedWidth(32);
+  //m_input_spaces_as_separators->setFixedWidth(32);
   input_hlay->addWidget(input_label);
   input_hlay->addSpacing(4);
   input_hlay->addWidget(m_input_spaces_as_separators);
@@ -143,7 +142,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   QStringList keyWords;
   for(int i = 0; i < NamesCnt; ++i) {
-    keyWords.append(QString::fromLocal8Bit(KeyNames[i]));
+    keyWords.append(QString(KeyNames[i]));
   }
   std::sort (keyWords.begin(), keyWords.end());
   QStringListModel *stringListModel = new QStringListModel(keyWords, m_completer);
@@ -203,7 +202,7 @@ MainWindow::~MainWindow()
 }
 void MainWindow::connectEditActions()
 {
-  // Ñîõðàíÿþ connections, ÷òîáû ïåðåêëþ÷èòü ïðè ñìåíå òàáà
+  // Ð¡Ð¾Ñ…Ñ€Ð°Ð½ÑÑŽ connections, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¿ÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¸ ÑÐ¼ÐµÐ½Ðµ Ñ‚Ð°Ð±Ð°
   Actions* actions = m_settings->getActions();
   static QList<QMetaObject::Connection> connections;
   for (auto &it : connections) {
@@ -236,7 +235,7 @@ void MainWindow::connectEditActions()
 }
 void MainWindow::keyPressEvent(QKeyEvent *e) {
   if(e->key() == Qt::Key_Escape) {
-    // Çàêðûâàþ îòêðûòûå äèëîãîâûå îêíà
+    // Ð—Ð°ÐºÑ€Ñ‹Ð²Ð°ÑŽ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ñ‹Ðµ Ð´Ð¸Ð»Ð¾Ð³Ð¾Ð²Ñ‹Ðµ Ð¾ÐºÐ½Ð°
     bool any_closed = false;
     if (m_about_program && m_about_program->isVisible()) {
       m_about_program->hide();
