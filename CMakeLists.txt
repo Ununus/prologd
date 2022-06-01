@@ -5,7 +5,7 @@ project ("prologd")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(BUILD_GUI "Build GUI editor" ON)
+option(BUILD_GUI "Build GUI editor" OFF)
 
 add_subdirectory("prlib")
 
