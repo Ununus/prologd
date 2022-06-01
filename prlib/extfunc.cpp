@@ -362,6 +362,10 @@ unsigned infile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       break;
     }
 
+    if (strcmp(str, "con:") == 0) {
+        return 3;
+    }
+
     ClVar->PrSetting->in.open(str);
     if (!ClVar->PrSetting->in.is_open())
     {
@@ -2896,7 +2900,9 @@ int Inputstring(char* buf, int size, char* caption)
     pCaption = caption;
   int _err = InputStringFromDialog(buf, size, pCaption);
   if (!_err)
-    out(buf);
+  {
+      //out(buf);
+  }
   else
     err = 1;//
   return err;
@@ -2912,7 +2918,7 @@ int InputSymbol(char* c)
   {
     Buf[1] = 0;
     *c = Buf[0];
-    out(Buf);
+    //out(Buf);
     return 0;
   }
   return 1;
@@ -2933,7 +2939,7 @@ int InputInt(int* n, const char* caption)
       if (sscanf(Buf, "%d", n) != 1)
         continue;
       err = 0;
-      out(Buf);
+      //out(Buf);
     }
     else err = 1;//
   }
