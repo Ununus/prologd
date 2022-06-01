@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/edit-copy.png</file>
+        <file>images/edit-cut.png</file>
+        <file>images/edit-paste.png</file>
+        <file>images/edit-redo.png</file>
+        <file>images/edit-undo.png</file>
+        <file>images/execution-abort.png</file>
+        <file>images/execution-execute.png</file>
+        <file>images/file-close.png</file>
+        <file>images/file-close-all.png</file>
+        <file>images/file-exit.png</file>
+        <file>images/file-new.png</file>
+        <file>images/file-open.png</file>
+        <file>images/file-save.png</file>
+        <file>images/help-about-qt.png</file>
+        <file>images/search-find.png</file>
+        <file>images/execution-tracing.png</file>
+        <file>images/search-find-next.png</file>
+        <file>images/search-find-prev.png</file>
+        <file>images/search-find-selected-next.png</file>
+        <file>images/search-find-selected-prev.png</file>
+        <file>images/view-full-screen.png</file>
+        <file>images/file.png</file>
+        <file>images/tools-settings.png</file>
+        <file>images/prolog1.png</file>
+        <file>Russian.qm</file>
+        <file>images/edit-comment.png</file>
+        <file>images/edit-uncomment.png</file>
+        <file>images/help.png</file>
+        <file>images/edit-format.png</file>
+        <file>images/view-graphics.png</file>
+    </qresource>
+</RCC>

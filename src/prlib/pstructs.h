@@ -1,6 +1,9 @@
 #ifndef pstructsh
 #define pstructsh
+#include <fstream>
+#include <string>
 #include <stdio.h>
+#include <memory>
 //#include <limits.h>
 //#include "pdefs.h"
 
@@ -190,28 +193,15 @@ struct TScVar
   ~TScVar();
   void Init();
   void Clear();
-  bool InitOk;
-};
-
-enum TOutStream
-{
-  OutTWindow = 0,
-  OutGWindow,
-  OutPrinter,
-  OutFile,
-  OutUserFile
 };
 
 struct TPrSetting
 {
-  TOutStream OutStream;
-  bool Tracce;
-  bool OutQue;
-  bool AutoSave;
-  FILE* fin;
-  FILE* fout;
-  char* NameInFile;
-  char* NameOutFile;
+  std::ifstream in;
+  std::ofstream out;
+  std::string name_in_file;
+  std::string name_out_file;
+  bool Trace { false };
 };
 
 //структуры для хранения данных - программы
@@ -286,16 +276,12 @@ struct TClVar
   unsigned int* BPT; // для вывода пролога
   unsigned int* bpt; // указатель в массиве BPT
 
-  TPrSetting* PrSetting;
-  unsigned ch;//цвет
-  unsigned fn; //фон
+  std::unique_ptr<TPrSetting> PrSetting{};
 
   TClVar();
   ~TClVar();
   void Init();
   void Clear();
-  bool InitOk;
-
 };
 
 //-----------------------------------------
@@ -314,22 +300,19 @@ struct options
 #define hpmod    0 + sizeof("mod") - 1
 
 /* место con: в куче */
-#define hpcon    hpmod + sizeof(recordsconst) + sizeof("con:") - 1
+//#define hpcon    hpmod + sizeof(recordsconst) + sizeof("con:") - 1
 
 /* место grp: в куче */
-#define hpgrp    hpcon + sizeof(recordsconst) + sizeof("grp:") - 1
+//#define hpgrp    hpcon + sizeof(recordsconst) + sizeof("grp:") - 1
 
 /* место prn: в куче */
-#define hpprn    hpgrp+sizeof(recordsconst) + sizeof("prn:") - 1
+//#define hpprn    hpgrp+sizeof(recordsconst) + sizeof("prn:") - 1
 
 /* место ЛОЖЬ в куче */
-#define hpfail   hpprn + sizeof(recordsconst) + sizeof("ЛОЖЬ") - 1
-
-/* место СТАТУС в куче */
-#define hpstat   hpfail + sizeof(recordsconst) + sizeof("СТАТУС") -1
+#define hpfail   hpmod + sizeof(recordsconst) + sizeof("ЛОЖЬ") - 1
 
 /* место ТРАССА в куче */
-#define hptrace  hpstat + sizeof(recordsconst) + sizeof("ТРАССА") - 1
+#define hptrace  hpfail + sizeof(recordsconst) + sizeof("ТРАССА") - 1
 
 /* место НЕТ_ТРАССЫ в куче */
 #define hpnottr  hptrace + sizeof(recordsconst) + sizeof("НЕТ_ТРАССЫ") -1
@@ -373,11 +356,8 @@ struct options
 /* место БОЛЬШЕ в куче */
 #define hpgt     hpout + sizeof(recordsconst) + sizeof("БОЛЬШЕ") - 1
 
-/* место ФОН в куче */
-#define hpcolor  hpgt + sizeof(recordsconst) + sizeof("ФОН") - 1
-
 /* место СТРЦЕЛ в куче */
-#define hpstint  hpcolor + sizeof(recordsconst) + sizeof("СТРЦЕЛ") - 1
+#define hpstint  hpgt + sizeof(recordsconst) + sizeof("СТРЦЕЛ") - 1
 
 /* место СТРСПИС в куче */
 #define hpstlst  hpstint + sizeof(recordsconst) + sizeof("СТРСПИС") - 1
@@ -409,9 +389,6 @@ struct options
 /* место УМНОЖЕНИЕ в куче */
 #define hpmul    hpassrt + sizeof(recordsconst) + sizeof("УМНОЖЕНИЕ") - 1
 
-//добавлено умножение 3-х арное
-#define hpmul3   hpmul//+sizeof(recordsconst)
-
 /* место ОКРУЖНОСТЬ в куче */
 #define hpcircl  hpmul + sizeof(recordsconst) + sizeof("ОКРУЖНОСТЬ") - 1
 
@@ -427,20 +404,17 @@ struct options
 /* место ОТРЕЗОК(ЛИНИЯ) в куче */
 #define hpline   hpclaus + sizeof(recordsconst) + sizeof("ЛИНИЯ") - 1
 
-/* место КООРД в куче */
-#define hpxy     hpline + sizeof(recordsconst) + sizeof("КООРД") - 1
-
-/* место ПАМЯТЬ в куче */
-#define hpmem    hpxy + sizeof(recordsconst) + sizeof("ПАМЯТЬ") - 1
-
 // место СЛУЧ в куче
-#define hprand   hpmem + sizeof(recordsconst) + sizeof("СЛУЧ") - 1
+#define hprand   hpline + sizeof(recordsconst) + sizeof("СЛУЧ") - 1
 
 //место СЛОЖЕНИЕ
 #define hpadd    hprand + sizeof(recordsconst) + sizeof("СЛОЖЕНИЕ") - 1
 
+//место ЖДИ
+#define hpwait   hpadd + sizeof(recordsconst) + sizeof("ЖДИ") - 1
+
 //место div
-#define hpdiv    hpadd + sizeof(recordsconst) + sizeof("div") - 1
+#define hpdiv    hpwait + sizeof(recordsconst) + sizeof("div") - 1
 
 //место int
 #define hp_int   hpdiv + sizeof(recordsconst) + sizeof("int") - 1

@@ -10,22 +10,21 @@
 //#include "control.h"
 //#include "..\dinputdlg.h"
 #include "extfunc.h"
-constexpr int MAX_BUILD_PRED = 45;
+constexpr int MAX_BUILD_PRED = 39;
 constexpr int LEN_BUILD_LIBR = 9;
 
 //=======оЕПБНМЮВЮКЭМНЕ ГЮОНКМЕМХЕ
 const char* NamesOfPredicates[] =
-{ "mod", "con:", "grp:", "prn:", "кнфэ",
-  "ярюрся", "рпюяяю", "мер_рпюяяш", "!",
+{ "mod", "кнфэ",
+  "рпюяяю", "мер_рпюяяш", "!",
   "бшо", "ббндяхлб", "ббнджек", "ббйнд",
   "времхе_хг", "гюохяэ_б", "оеп", "жек","беы",
-  "яхлб", "бшбнд", "анкэье", "тнм", "ярпжек",
+  "яхлб", "бшбнд", "анкэье", "ярпжек",
   "ярпяохя", "асйбю", "жхтпю", "репл",
   "сдюкемхе", "яйнкэйн", "рнвйю", "яжео",
   "дна", "слмнфемхе", "нйпсфмнярэ", "гюйпюяйю",
-  "йнохъ", "опедк", "кхмхъ", "йннпд",
-  "оюлърэ", "яксв","якнфемхе","div","int",
-  "float"
+  "йнохъ", "опедк", "кхмхъ", "яксв","якнфемхе", "фдх",
+  "div","int", "float"
 };
 
 const char* Build_in_Libriary[] =
@@ -44,7 +43,6 @@ int buildin(TScVar* ScVar, array* heap)  //ОНДЙКЧВЕМХЕ БЯРПНЕММШУ ОПЕДХЙЮРНБ
 {
   int err = 0;
 
-  // extern char *NamesOfPredicates[];
   for (int i = 0; i < MAX_BUILD_PRED; i++)
   {
     unsigned index = heap->apend((void*)NamesOfPredicates[i],

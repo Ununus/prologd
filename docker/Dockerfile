@@ -1,4 +1,4 @@
-FROM gcc:10
+FROM gcc:10.3.0-buster
 
 # Install build system generator
 ARG CMAKE_VERSION=3.22.2

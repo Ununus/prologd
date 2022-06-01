@@ -3,13 +3,13 @@
 #include <string.h>
 #include <charconv>
 #include <random>
+#include <thread>
 #include "pdefs.h"
 #include "pstructs.h"
 #include "extfunc.h"
 #include "control.h"
 #include "functions.h"
 
-extern void ShowGWindow(bool clear = true);
 extern void Rectangle(int x1, int y1, int x2, int y2, unsigned color);
 extern void MoveTo_LineTo(int x1, int y1, int x2, int y2, unsigned color);
 extern void FloodFill(int x, int y, unsigned color);
@@ -22,22 +22,19 @@ extern void Ellipse(int x1, int y1, int x2, int y2, unsigned color);
 extern int InputStringFromDialog(char* Buf, size_t BufSize,
   char* pCaption);
 
-unsigned argnull(unsigned name, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
+unsigned argnull(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   switch (name)
   {
   case hpfail:
     return 5;//ложь
   case hptrace:
+    ClVar->PrSetting->Trace = true;
     //            sroptionsout.optionsrun |= tracce;//трасса
     break;
   case hpnottr:
-  {   //sroptionsout.optionsrun =
-      //    (soptionsout.optionsrun | tracce) ^ tracce;
-  }   break;
-  case hpstat:
-    //flstat=true;
+    ClVar->PrSetting->Trace = false;
+    //sroptionsout.optionsrun = (soptionsout.optionsrun | tracce) ^ tracce;
     break;
   case hpcut:
     ClVar->scptr = ClVar->parent;       //"!"
@@ -80,8 +77,7 @@ void conarg(unsigned numb, unsigned h, TScVar* ScVar, TClVar* ClVar, array* heap
 //extern unsigned newclause;
 //extern char *wr_line;
 //extern char *wptr;
-char* occ_line(int x, char* lnwr, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
+char* occ_line(int x, char* lnwr, TScVar* ScVar, TClVar* ClVar, array* heap)
   //получение строки связанной с переменной
 {
   char* ad;
@@ -151,8 +147,7 @@ int prcall(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
   return 1;
 }    //ok
 
-unsigned zap3(char* str, unsigned arg, TScVar* ScVar,
-  TClVar* ClVar, array* heap)
+unsigned zap3(const char* str, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
   //запись строки и унификация его с arg
 {//unsigned index=heap->apend(str,strlen(str));
   if (!str)
@@ -162,7 +157,7 @@ unsigned zap3(char* str, unsigned arg, TScVar* ScVar,
   }
   int l;
   unsigned bakindex = heap->last;
-  unsigned index = heap->apend(str, l = strlen(str));
+  unsigned index = heap->apend(const_cast<char*>(str), l = strlen(str));
   if (!index)
   {
     outerror(44);
@@ -185,8 +180,7 @@ unsigned zap3(char* str, unsigned arg, TScVar* ScVar,
   return 5;
 }
 
-unsigned zap1(int num, unsigned arg, TScVar* ScVar,
-  TClVar* ClVar, array* heap)   //нужна еще с float
+unsigned zap1(int num, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
 //унификация целого num с arg аргументом предиката
 {
   recordinteger pi(num);
@@ -208,8 +202,7 @@ unsigned zap1(int num, unsigned arg, TScVar* ScVar,
   return 5;
 }
 
-unsigned zap2(int num1, int num2, int arg1, int arg2,
-  TScVar* ScVar, TClVar* ClVar, array* heap)  //нужна еще с float
+unsigned zap2(int num1, int num2, int arg1, int arg2, TScVar* ScVar, TClVar* ClVar, array* heap)
 //унификация целого num1 с arg1 аргументом предиката
 //унификация целого num2 с arg2 аргументом предиката
 {
@@ -235,8 +228,7 @@ unsigned zap2(int num1, int num2, int arg1, int arg2,
   return 5;
 }
 
-unsigned zap1f(float num, unsigned arg, TScVar* ScVar,
-  TClVar* ClVar, array* heap)
+unsigned zap1f(float num, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
   //унификация float num с arg аргументом предиката
 {
   recordfloat pf(num);
@@ -258,8 +250,7 @@ unsigned zap1f(float num, unsigned arg, TScVar* ScVar,
   return 5;
 }
 
-unsigned zap2f(float num1, float num2, int arg1, int arg2,
-  TScVar* ScVar, TClVar* ClVar, array* heap)  //нужна еще с float
+unsigned zap2f(float num1, float num2, int arg1, int arg2, TScVar* ScVar, TClVar* ClVar, array* heap)
 //унификация float num1 с arg1 аргументом предиката
 //унификация float num2 с arg2 аргументом предиката
 {
@@ -285,20 +276,29 @@ unsigned zap2f(float num1, float num2, int arg1, int arg2,
   return 5;
 }
 
-
 int prrandom(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 // выполнение предиката СЛУЧ
 {
-  static std::random_device rd;
-  static std::mt19937 rng(rd());
+  int n, m;
+  static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
+  static std::uniform_int_distribution<int> dst;
   switch (sw)
   {
   case 7:   // целое: инициализация генератора
-      //randomize();
+    n = occ(0, ScVar, ClVar, heap);
+    rng = std::mt19937(n);
     return 3;
   case 5:   // переменная: получить новое значение
     return zap1(rng(), 1, ScVar, ClVar, heap);
-    //return zap1(rand(), 1, ScVar, ClVar, heap);
+  case 577:   // переменная: получить новое значение
+    n = occ(1, ScVar, ClVar, heap);
+    m = occ(2, ScVar, ClVar, heap);
+    if (n > m) {
+      outerror(24); // TODO: error
+      return 1;
+    }
+    dst = std::uniform_int_distribution<int>(n, m);
+    return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default:
     outerror(24); return 1;//!!!r_t_e(71);
   }
@@ -309,112 +309,36 @@ bool see( void ) { return false; };
 bool mytell( void ){ return false; };
 */
 //=========================конец содранного
-unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
+unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   char str[129];
-  //TPageControl * pagecontrol;
+
   switch (sw)
   {
   case 9:
   case 4: //char const
     occ_line(0, str, ScVar, ClVar, heap);
-    if (!strcmp(str, "grp:"))
-    {
-      if (ClVar->PrSetting->OutStream == OutGWindow)
-      {
-        ShowGWindow();
+    ClVar->PrSetting->out.close();
+    ClVar->PrSetting->name_out_file.clear();
+    if (str[0] == 0) {
+      return 3;
+    }
+
+    //если con:
+    if (strcmp(str, "con:") == 0) {
         return 3;
-      }
-      if (ClVar->PrSetting->OutStream == OutFile ||
-        ClVar->PrSetting->OutStream == OutUserFile)
-      {
-        //if (!ClVar->PrSetting->fout)
-        //	throw(T_Exception(ExErrAndMessage, LgError,
-        //		"out file no opened"));
-        fclose(ClVar->PrSetting->fout);
-        ClVar->PrSetting->fout = NULL;
-      }
-      ClVar->PrSetting->OutStream = OutGWindow;
-      ShowGWindow();
-      //pagecontrol = (TPageControl *)application->MainForm->ActiveMDIChild->FindComponent("Pagecontrol");
-      //pagecontrol->ActivePage=pagecontrol->Pages[2];
-
-      return 3;
-    }
-    if (!strcmp(str, "con:"))
-    {
-      switch (ClVar->PrSetting->OutStream)
-      {
-      case OutGWindow: //closegraph();
-        break;
-      case OutFile:
-      case OutUserFile:
-        if (ClVar->PrSetting->fout) fclose(ClVar->PrSetting->fout);
-        break;
-      case OutTWindow:
-      case OutPrinter: break;
-      }
-      ClVar->PrSetting->OutStream = OutTWindow;
-      ClVar->PrSetting->fout = NULL;
-      //pagecontrol = (TPageControl *)application->MainForm->ActiveMDIChild->FindComponent("Pagecontrol");
-      //pagecontrol->ActivePage=pagecontrol->Pages[1];
-      return 3;
-    }
-    if (!strcmp(str, "window:"))
-    {
-      switch (ClVar->PrSetting->OutStream)
-      {
-      case OutGWindow:// closegraph();
-        break;
-      case OutFile:
-      case OutUserFile:
-        if (ClVar->PrSetting->fout)
-          fclose(ClVar->PrSetting->fout);
-        ClVar->PrSetting->fout = NULL;
-        break;
-      case tscreen:
-      case printer: break;
-      }
-      ClVar->PrSetting->OutStream = OutTWindow;
-      ClVar->PrSetting->fout = NULL;
-      return 3;
     }
 
-    if (!strcmp(str, "prn:"))
-    {
-      switch (ClVar->PrSetting->OutStream)
-      {
-      case outfiles:
-        if (ClVar->PrSetting->fout)
-          fclose(ClVar->PrSetting->fout); break;
-      }
-      ClVar->PrSetting->OutStream = OutPrinter;
-      ClVar->PrSetting->fout = NULL;
+    // пытаемся открыть файл для записи.
+    ClVar->PrSetting->out.open(str);
+    if (!ClVar->PrSetting->out.is_open()) {
+      outerror(43);
+      return 5; //r_t_e_(не могу открыть файл)
     }
-    else
-    {
-      switch (ClVar->PrSetting->OutStream)
-      {
-      case OutUserFile:
-      case OutFile:
-        if (ClVar->PrSetting->fout)
-          fclose(ClVar->PrSetting->fout);
-        break;
-      }
-      ClVar->PrSetting->fout = fopen(str, "wt");
-      if (!ClVar->PrSetting->fout)
-      {
-        outerror(43);
-        return 5;
-      }//r_t_e_(не могу открыть файл)
-      //!!!strcpy(namefileout,str);
-      ClVar->PrSetting->OutStream = OutUserFile;
-    }
-
+    ClVar->PrSetting->name_out_file = std::string(str);
     return 3;
   case 5: //char* ps=newStr(namefileout);
-    return zap3(ClVar->PrSetting->NameOutFile, 1,
+    return zap3(ClVar->PrSetting->name_out_file.c_str(), 1,
       ScVar, ClVar, heap);
 
   default:
@@ -423,36 +347,32 @@ unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;
 }
 
-unsigned infile(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
-  // unsigned *x -- место в куче имени файла
+unsigned infile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
-  // FILE *fnew;
-
   char str[129];
+
   switch (sw)
   {
   case 9:
   case 4:          // char const
     occ_line(0, str, ScVar, ClVar, heap);
-    if (!strcmp(str, "con:"))
-    {
-      if (ClVar->PrSetting->fin != stdin)
-        fclose(ClVar->PrSetting->fin);
-      ClVar->PrSetting->fin = NULL;
-      return 3;
+    ClVar->PrSetting->in.close();
+    ClVar->PrSetting->name_in_file.clear();
+    if (str[0] == 0) {
+      break;
     }
-    ClVar->PrSetting->fin = fopen(str, "rt");
-    if (ClVar->PrSetting->fin == NULL)
+
+    ClVar->PrSetting->in.open(str);
+    if (!ClVar->PrSetting->in.is_open())
     {
       outerror(43);
-      return 5;
-    }//r_t_e_(не могу открыть файл)
-    strcpy(ClVar->PrSetting->NameInFile, str);
+      return 5; //r_t_e_(не могу открыть файл)
+    }
+    ClVar->PrSetting->name_in_file = std::string(str);
     return 3;
 
   case 5: //char* ps=newStr(namefilein);
-    return zap3(ClVar->PrSetting->NameInFile, 1, ScVar, ClVar, heap);
+    return zap3(ClVar->PrSetting->name_in_file.c_str(), 1, ScVar, ClVar, heap);
 
   default:
     return 1;//r_t_e(45); ошибка при открытии файла
@@ -487,40 +407,26 @@ unsigned priocod(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   {
   case 7://целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
-    if (ClVar->PrSetting->OutStream == OutTWindow)
-      return 3;//{outerror(24);return 1;}//r_t_e нельзя!!
-
-    if ((ClVar->PrSetting->OutStream == OutFile ||
-      ClVar->PrSetting->OutStream == OutUserFile)
-      && (ClVar->PrSetting->fout))
-      putc(occ(0, ScVar, ClVar, heap),
-        ClVar->PrSetting->fout);
+    if (ClVar->PrSetting->out.is_open()) {
+      ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
+    }
     return 3;
   }
   case 5://переменная
   {
     char w;
-    if (ClVar->PrSetting->fin)
-      w = getc(ClVar->PrSetting->fin);
-    else
-    {
-      /*
-      TForm * form =
-              (TForm *)application->MainForm->ActiveMDIChild;
-              form->Tag = 0;
-              while (!form->Tag)
-              {   application->ProcessMessages();
-              }
-              w = (char)form->Tag;
-      */
-      InputSymbol(&w);
-      return zap1(w, 1, ScVar, ClVar, heap);
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in >> w)) {
+        return 5;
+      }
     }
+    InputSymbol(&w);
+    return zap1(w, 1, ScVar, ClVar, heap);
   }
-  case 1://анонимка
-    if (ClVar->PrSetting->fin)
-      fgetc(ClVar->PrSetting->fin);//сдвинуть указатель файла ???
-    return 3;
+//  case 1://анонимка
+//    if (ClVar->PrSetting->fin)
+//      fgetc(ClVar->PrSetting->fin);//сдвинуть указатель файла ???
+//    return 3;
   default:
     outerror(24);
     return 1;//r_t_e(44);
@@ -528,188 +434,154 @@ unsigned priocod(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;
 }
 
-unsigned prrdint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)  //ввод целого   !!!нужно ввод вещств
+//ввод целого   !!!нужно ввод вещств
+//АВ: ВВОДЦЕЛ
+unsigned prrdint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
-  if (ClVar->PrSetting->fin)
-    fflush(ClVar->PrSetting->fin);
+  int w{};
+  char str0[129]{};
+  const char* caption = "Введите целое";
+
   switch (sw)
   {
-    int w;
-  case 7:
-  {   if (ClVar->PrSetting->fin)
-  {
-    if (!fscanf(ClVar->PrSetting->fin, "%d", &w))
-      return 5;
-  }  //целое
-  else
-  {
-    if (InputInt(&w))
-      return 5;
+  case 7: // Целое
+  case 74: // Целое, "caption"
+  case 79: // Целое, caption
+  {   // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in >> w)) {
+        return 5;
+      }
+    }
+    else
+    {
+      if (sw == 74 || sw == 79) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (InputInt(&w, str0)) {
+          return 5;
+        }
+      } else {
+        if (InputInt(&w, caption)) {
+          return 5;
+        }
+      }
+    }
+    return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
   }
-  return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
-  }
-  case 74:
-  case 79:
-  {   char str0[129];
-  occ_line(1, str0, ScVar, ClVar, heap);
-  if (ClVar->PrSetting->fin)
-  {
-    if (!fscanf(ClVar->PrSetting->fin, "%d", &w))
-      return 5;
-  }  //целое
-  else
-  {
-    if (InputInt(&w, str0))
-      return 5;
-  }
-  return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
-  }
-  case 5: //переменная
-  {   if (ClVar->PrSetting->fin)
-    return (fscanf(ClVar->PrSetting->fin, "%d", &w)) ?
-    zap1(w, 1, ScVar, ClVar, heap) : 5;
-  else
-    return (!InputInt(&w)) ?
-    zap1(w, 1, ScVar, ClVar, heap) : 5;
-  }
-  case 54: //переменная
-  case 59:
-  {   char str0[129];
-  occ_line(1, str0, ScVar, ClVar, heap);
-  if (ClVar->PrSetting->fin)
-    return (fscanf(ClVar->PrSetting->fin, "%d", &w)) ?
-    zap1(w, 1, ScVar, ClVar, heap) : 5;
-  else
-    return (!InputInt(&w, str0)) ?
-    zap1(w, 1, ScVar, ClVar, heap) : 5;
-  }
+  case 5:  // Переменная
+  case 54: // Переменная, "caption"
+  case 59: // Переменная, caption
+
   case 1:
-  {   if (ClVar->PrSetting->fin)
-    return (fscanf(ClVar->PrSetting->fin, "%d", &w)) ? 3 : 5;
-  else
-    return (!InputInt(&w)) ?
-    zap1(w, 1, ScVar, ClVar, heap) : 5;
-  }
   case 14:
   case 19:
-  {   char str0[129];
-  occ_line(1, str0, ScVar, ClVar, heap);
-  if (ClVar->PrSetting->fin)
-    return (fscanf(ClVar->PrSetting->fin, "%d", &w)) ? 3 : 5;
-  else
-    return (!InputInt(&w, str0)) ?
-    zap1(w, 1, ScVar, ClVar, heap) : 5;
+  {
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in >> w)) {
+        return 5;
+      }
+    }
+    else {
+      if (sw == 54 || sw == 59 || sw == 14 || sw == 19) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (InputInt(&w, str0)) {
+          return 5;
+        }
+      } else {
+        if (InputInt(&w, caption)) {
+          return 5;
+        }
+      }
+    }
+    return zap1(w, 1, ScVar, ClVar, heap);
   }
   default:
-    outerror(24);
-    return 1;//r_t_e
+    break;
   }
-  return 1;
+  outerror(24);
+  return 1; // rte
 }
 
-unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)   //вводсимв
+unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //вводсимв
 {
-  char str1[255], str2[255];
+  char str0[255]{}, str1[255]{}, str2[255]{};
   switch (sw)
   {
   case 9:
   case 4:
-  {   if (ClVar->PrSetting->fin)
-  {
-    if (!fgets(str2, sizeof(str2) - 1,
-      ClVar->PrSetting->fin)) break;  //строка
-  }
-  else
-  {
-    if (Inputstring(str2, sizeof(str2))) break; //по cancel вернет 1;
-  }
-  //str2[strlen(str2)]=NULL;
-  return (strcmp(occ_line(0, str1, ScVar, ClVar, heap),
-    str2)) ? 5 : 3;
-  }
-
   case 99: /*то же самое что и предыдущий пункт но с заголовком диалогового окна*/
   case 94:
   case 49:
   case 44:
-  {   char str0[255];
-  occ_line(1, str0, ScVar, ClVar, heap);
-  if (ClVar->PrSetting->fin)
   {
-    if (!fgets(str2, sizeof(str2) - 1,
-      ClVar->PrSetting->fin))
-      break;  //строка
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in.get(str2, 255))) {
+        break;
+      }
+    }
+    else
+    {
+      if (sw == 99 || sw == 94 || sw == 49 || sw == 44) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (Inputstring(str2, sizeof(str2), str0)) { //по cancel вернет 1;
+          break;
+        }
+      } else {
+        if (Inputstring(str2, sizeof(str2))) { //по cancel вернет 1;
+          break;
+        }
+      }
+    }
+    return (strcmp(occ_line(0, str1, ScVar, ClVar, heap), str2)) ? 5 : 3;
   }
-  else
-  {
-    if (Inputstring(str2, sizeof(str2), str0)) break; //по cancel вернет 1;
-  }
-  //str2[strlen(str2)]=NULL;
-  return (strcmp(occ_line(0, str1, ScVar, ClVar, heap),
-    str2)) ? 5 : 3;
-  }
-
   case 5:
-  {   if (ClVar->PrSetting->fin)
-  {
-    if (!fgets(str2, sizeof(str2) - 1,
-      ClVar->PrSetting->fin)) break;  //переменная
-  }
-  else
-  {
-    if (Inputstring(str2, sizeof(str2))) break; //по cancel вернет 1;
-  }
-  //str2[strlen(str2)]=NULL;
-  return zap3(str2, 1, ScVar, ClVar, heap);
-  }
   case 59:
   case 54:
-  {   char str0[255];
-  occ_line(1, str0, ScVar, ClVar, heap);
-  if (ClVar->PrSetting->fin)
   {
-    if (!fgets(str2, sizeof(str2) - 1,
-      ClVar->PrSetting->fin)) break;  //переменная
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in.get(str2, 255))) {
+        break;
+      }
+    }
+    else
+    {
+      if (sw == 59 || sw == 54) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (Inputstring(str2, sizeof(str2), str0)) { //по cancel вернет 1;
+          break;
+        }
+      } else {
+        if (Inputstring(str2, sizeof(str2))) { //по cancel вернет 1;
+          break;
+        }
+      }
+    }
+    return zap3(str2, 1, ScVar, ClVar, heap);
   }
-  else
-  {
-    if (Inputstring(str2, sizeof(str2), str0)) break; //по cancel вернет 1;
-  }
-  //str2[strlen(str2)]=NULL;
-  return zap3(str2, 1, ScVar, ClVar, heap);
-  }
-
-  case 1:
-  {   if (ClVar->PrSetting->fin)
-  {
-    if (fgets(str1, sizeof(str1) - 1,
-      ClVar->PrSetting->fin)) return 3;
-  }//анонимка
-  else
-  {
-    if (!Inputstring(str2, sizeof(str2)))
-      return 3; //по cancel вернет 1;
-  }
-  }   break;
+  case 1: //анонимка
   case 19:
   case 14:
-  {   char str0[255];
-  occ_line(1, str0, ScVar, ClVar, heap);
-  if (ClVar->PrSetting->fin)
   {
-    if (fgets(str1, sizeof(str1) - 1,
-      ClVar->PrSetting->fin))
-      return 3;
-  }//анонимка
-  else
-  {
-    if (!Inputstring(str2, sizeof(str2), str0))
-      return 3; //по cancel вернет 1;
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in.get(str2, 255))) {
+        break;
+      }
+    }
+    else
+    {
+      if (sw == 19 || sw == 14) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (Inputstring(str2, sizeof(str2), str0)) { //по cancel вернет 1;
+          break;
+        }
+      } else {
+        if (Inputstring(str2, sizeof(str2))) { //по cancel вернет 1;
+          break;
+        }
+      }
+    }
+    return 3;
   }
-  }   break;
-
   default:
     outerror(24);
     return 1;//r_t_e
@@ -717,8 +589,7 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 5;
 }
 
-unsigned print(unsigned sw, TScVar* ScVar,
-  TClVar* ClVar, array* heap) //преобразование в целое
+unsigned print(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //преобразование в целое
 {
   switch (sw)
   {
@@ -731,8 +602,7 @@ unsigned print(unsigned sw, TScVar* ScVar,
   return 1;
 }
 
-unsigned prfloat(unsigned sw, TScVar* ScVar,
-  TClVar* ClVar, array* heap) //преобразование в float
+unsigned prfloat(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //преобразование в float
 {
   switch (sw)
   {
@@ -745,8 +615,24 @@ unsigned prfloat(unsigned sw, TScVar* ScVar,
   return 1;
 }
 
-unsigned argone(unsigned name, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
+unsigned prwait(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) // жди
+{
+  switch (sw)
+  {
+  case 7:
+    break;
+  default:
+    outerror(24);
+    return 1;
+  }
+  int n = occ(0, ScVar, ClVar, heap);
+  if (n > 0) {
+    std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(n));
+  }
+  return 3;
+}
+
+unsigned argone(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   unsigned sw;
   conarg(1, ClVar->head, ScVar, ClVar, heap);
@@ -764,6 +650,9 @@ unsigned argone(unsigned name, TScVar* ScVar, TClVar* ClVar,
   case hpint: return (sw == 7) ? 3 : 5;  // ЦЕЛ
   case hpfloat: return (sw == 6) ? 3 : 5;  //вещественное
   case hpsym: return (sw == 4) ? 3 : 5;  // СИМВ
+
+  case hpwait: return prwait(sw, ScVar, ClVar, heap);  // ЖДИ
+
   case hprand: return prrandom(sw, ScVar, ClVar, heap); // СЛУЧ
   case hp_int: return print(sw, ScVar, ClVar, heap);  //преобразование int
   case hp_float: return prfloat(sw, ScVar, ClVar, heap); //преобразование float
@@ -809,84 +698,9 @@ unsigned prgt(TScVar* ScVar, TClVar* ClVar, array* heap)
   return (af[0] > af[1]) ? 3 : 5;
 }
 
-void phon(int a, int b)
-{
-  // textattr(a|(b<<4));
-  // window(1,1,80,25);
-  // clrscr();
-}
-
-unsigned prcolor(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
-{
-
-  if (ClVar->PrSetting->OutStream != OutTWindow)
-    return 3;//игнорировать
-  switch (sw)
-  {    //isinteger isinteger
-  case 77:
-  {	ClVar->ch = occ(0, ScVar, ClVar, heap);
-  ClVar->fn = occ(1, ScVar, ClVar, heap);
-  phon(ClVar->ch, ClVar->fn);
-  return 3;
-  }
-  //isvar isinteger
-  case 57:
-  {   ClVar->fn = occ(1, ScVar, ClVar, heap);
-  phon(ClVar->ch, ClVar->fn);
-  return zap1(ClVar->ch, 1, ScVar, ClVar, heap);
-  }
-  //isinteger isvar
-  case 75:
-  {
-    ClVar->ch = occ(0, ScVar, ClVar, heap);
-    phon(ClVar->ch, ClVar->fn);
-    return zap1(ClVar->fn, 2, ScVar, ClVar, heap);
-  }
-  //isvar isvar
-  case 55:
-    return zap2(ClVar->ch, ClVar->fn, 1, 2, ScVar, ClVar, heap);
-  default:
-    outerror(24);
-    return 1;//r_t_e(52);не верные аргументы фон
-  }
-  return 1;
-};
-
-unsigned prxy(unsigned sw, TClVar* ClVar)//!!! эта функция совсем не работает
-{
-
-  if (ClVar->PrSetting->OutStream != OutTWindow &&
-    ClVar->PrSetting->OutStream != OutGWindow)
-    return 1;//не возможно
-  else
-    return 1;//!!! остальное все закоментировано чтобы заработало
-/*
- switch(sw)
- {    //isinteger isinteger
-  case 77://gotoxy(occ(0),occ(1));
-          return 3;
-      //isvar isinteger
-  case 57://gotoxy(wherex(),occ(1));
-          return zap1(wherex(),1);
-      //isinteger isvar
-  case 75://gotoxy(occ(0),wherey());
-          return zap1(wherey(),2);
-      //isvar isvar
-  case 55:return zap2(wherey(),wherex(),1,2);
-  default :outerror(24);return 1;//r_t_e(52);не верные аргументы фон
-  }
-*/
-};
-
-
 int GetStrFromList(char* Buf, size_t BufSize, baserecord* tp,
   TScVar* ScVar, TClVar* ClVar, array* heap)
 {//составить строку символов из элементов tp - tp должен быть list 
-#ifdef _DEBUG_
-  out("GetStrFromLIst");
-  PrintTerm(tp, 0, ScVar, ClVar, heap);
-#endif
 
   char* p = Buf;
   int len = 0;
@@ -967,8 +781,7 @@ int GetStrFromList(char* Buf, size_t BufSize, baserecord* tp,
   return len;
 }
 
-unsigned prstlst(unsigned sw,
-  TScVar* ScVar, TClVar* ClVar, array* heap)
+unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   unsigned k, i = 0;
   char lnwr[maxlinelen];
@@ -1195,11 +1008,6 @@ unsigned whatisit(unsigned sw, bool (*f)(char), unsigned i,
   return 5;
 }
 
-unsigned prmem(unsigned sw) //не понимаю для чего нужна такая ф-ция
-{
-  return (sw == sw) ? 5 : 5;
-}            //и поэтому так сделал!!!
-
 unsigned prskol(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   array* heap)
 {
@@ -1229,8 +1037,7 @@ unsigned prskol(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;//r_t_e
 }
 
-unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)  //терм
+unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //терм
 {
   baserecord* tp;
   recordlist* plist;
@@ -1390,8 +1197,7 @@ unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 5;
 }
 
-unsigned prdel(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
+unsigned prdel(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   if (sw != 47)
   {
@@ -1425,8 +1231,7 @@ unsigned prdel(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 3;
 }
 
-unsigned argtwo(unsigned name, TScVar* ScVar, TClVar* ClVar,
-  array* heap)
+unsigned argtwo(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   unsigned sw;
   conarg(2, ClVar->head, ScVar, ClVar, heap);
@@ -1434,7 +1239,6 @@ unsigned argtwo(unsigned name, TScVar* ScVar, TClVar* ClVar,
   switch (name)
   {
   case hpgt: return prgt(ScVar, ClVar, heap);         // БОЛЬШЕ
-  case hpcolor: return prcolor(sw, ScVar, ClVar, heap);      // ФОН
   case hpstint: return prstint(sw, ScVar, ClVar, heap);      // СТРЦЕЛ
   case hpstlst: return prstlst(sw, ScVar, ClVar, heap);      // СТРСПИС
   case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);// БУКВА
@@ -1442,16 +1246,13 @@ unsigned argtwo(unsigned name, TScVar* ScVar, TClVar* ClVar,
   case hpterm: return prterm(sw, ScVar, ClVar, heap);       // ТЕРМ    return 5;
   case hpdel: return prdel(sw, ScVar, ClVar, heap);        // УДАЛ
   case hpskol: return prskol(sw, ScVar, ClVar, heap);       // СКОЛЬКО
-  case hpxy: return prxy(sw, ClVar);         // КООРД
-  case hpmem: return prmem(sw);        // ПАМЯТЬ   return 5;
   case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);      // ВВОДСИМВ (с заголовком)
   case hprdint: return prrdint(sw, ScVar, ClVar, heap);      // ВВОДЦЕЛ
   }
   return 1;
 }
 
-unsigned prset(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)//точка
+unsigned prset(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//точка
 {
   //	if ( !canvas) return 3;
   int xy, x1, x2, y1, y2, color;
@@ -1541,8 +1342,7 @@ unsigned prset(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 3;
 }
 
-unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)//сцеп
+unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//сцеп
 {
   char wrln1[maxlinelen], wrln2[maxlinelen];
   unsigned w, i;
@@ -1612,11 +1412,9 @@ unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar,
 //глобальную переменную count_var и общий массив tvar
 //первой стартует VarOnList
 int count_var;//
-int VarOnList(baserecord* pb, TScVar* ScVar, TClVar* ClVar,
-  array* heap);//подсчет переменных в списке вернет 1 если ошибка
+int VarOnList(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap);//подсчет переменных в списке вернет 1 если ошибка
 
-int VarOnFunc(baserecord* pb, TScVar* ScVar,
-  TClVar* ClVar, array* heap)//подсчет переменных в функции вернет 1 если ошибка
+int VarOnFunc(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap)//подсчет переменных в функции вернет 1 если ошибка
 {
   if (pb->ident != isfunction)
     return 1;//ошибка
@@ -1799,8 +1597,7 @@ unsigned int prepare_target(unsigned term, TScVar* ScVar, TClVar* ClVar,
 }
 
 //2006/10/24
-void PrintFunction(recordfunction* prf, int Level, TScVar* ScVar,
-  TClVar* ClVar, array* heap)
+void PrintFunction(recordfunction* prf, int Level, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   char pBuf[255];
   memset(pBuf, ' ', Level);
@@ -1826,8 +1623,7 @@ void PrintFunction(recordfunction* prf, int Level, TScVar* ScVar,
   }
 }
 
-void PrintRecordsconst(recordsconst* pbr, int Level, TScVar* Scvar,
-  TClVar* ClVar, array* heap)
+void PrintRecordsconst(recordsconst* pbr, int Level, TScVar* Scvar, TClVar* ClVar, array* heap)
 {
   char pBuf[255];
   memset(pBuf, ' ', Level);
@@ -1842,8 +1638,7 @@ void PrintRecordsconst(recordsconst* pbr, int Level, TScVar* Scvar,
   out(pBuf);
 }
 
-void PrintVar(recordvar* pbr, int Level, TScVar* ScVar,
-  TClVar* ClVar, array* heap)
+void PrintVar(recordvar* pbr, int Level, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   char pBuf[255];
   memset(pBuf, ' ', Level);
@@ -2015,8 +1810,7 @@ int GetVarsFromFunction(recordvar* Vars[], int VarCount,
   return Count;
 };
 
-int GetVarCountFromClause(recordclause* rc, TScVar* ScVar,
-  TClVar* ClVar, array* heap)
+int GetVarCountFromClause(recordclause* rc, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   //    recordclause * rc = (recordclause*)&heap->heaps[index];
   int VarCount = 0;
@@ -2069,8 +1863,7 @@ int GetVarCountFromClause(recordclause* rc, TScVar* ScVar,
   return VarCount;
 }
 
-unsigned prassrt(unsigned sw, TScVar* ScVar,
-  TClVar* ClVar, array* heap)//доб
+unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//доб
 {
   unsigned old_index = heap->last;
   unsigned error = 0;
@@ -2307,8 +2100,7 @@ unsigned prassrt(unsigned sw, TScVar* ScVar,
   return 3;
 }
 
-unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap) //СЛОЖЕНИЕ
+unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //СЛОЖЕНИЕ
 {
   long l[4];
   float f[4];
@@ -2366,8 +2158,7 @@ unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;
 }
 
-unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)     //умножение   в goal[0].. 1 .. идетифик параметр
+unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //умножение   в goal[0].. 1 .. идетифик параметр
 {
   long l[3];
   float f[3];
@@ -2434,6 +2225,7 @@ unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;//r_t_e не вып пред умножение
 }
 
+unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap);/* закраска */
 
 unsigned argthree(unsigned name, TScVar* ScVar,
   TClVar* ClVar, array* heap)
@@ -2448,12 +2240,13 @@ unsigned argthree(unsigned name, TScVar* ScVar,
   case hpapp:  return prapp(sw, ScVar, ClVar, heap);//сцеп
   case hpassrt:return prassrt(sw, ScVar, ClVar, heap);//доб
   case hpadd:return pradd(sw, ScVar, ClVar, heap); //сложение
+  case hppaint:return prpaint(sw, ScVar, ClVar, heap);//закраска
+  case hprand: return prrandom(sw, ScVar, ClVar, heap); // СЛУЧ
   }
   return 0;
 }
 
-unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)     //умножение   в goal[0].. 1 .. идетифик параметр
+unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //умножение   в goal[0].. 1 .. идетифик параметр
 {
   long l[4];
   float f[4];
@@ -2583,8 +2376,9 @@ unsigned prcircl(unsigned sw, TScVar* ScVar, TClVar* ClVar,
         canvas->Pen->Color=(TColor)color;
         canvas->Ellipse(x1 - r, y1 - r, x1 + r, y1+r);
   */
-  x2 = y2 = 0;
-  Ellipse(x1, y1, x2, y2, color);
+  //x2 = y2 = 0;
+  //Ellipse(x1, y1, x2, y2, color);
+  Ellipse(x1, y1, r, r, color);
   }   break;
 
   case 7577:
@@ -2645,33 +2439,18 @@ unsigned prcircl(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 3;
 }
 
-unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)/* закраска */
+unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)/* закраска */
 {
-
   int x, y, color;
-  if (sw != 7777)
+  if (sw != 777)
   {
     outerror(24);
     return 1;
   }
-  color = occ(2, ScVar, ClVar, heap);
   x = occ(0, ScVar, ClVar, heap);
   y = occ(1, ScVar, ClVar, heap);
-  color = occ(3, ScVar, ClVar, heap);
+  color = occ(2, ScVar, ClVar, heap);
   FloodFill(x, y, color);
-  /*
-      if (color > -1 && color < _MaxColors_)
-      {   color = colorstable[color];
-      }
-      canvas->Brush->Color=(TColor)color;
-
-      if (r > -1 && r < _MaxColors_)
-          r = colorstable[r];
-
-      canvas->FloodFill(x1,y1,(TColor)r,fsBorder);
-      canvas->Brush->Color=clMax;
-  */
   return 3;
 }
 
@@ -2913,8 +2692,7 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
   return 5;
 }
 
-unsigned argfour(unsigned name, TScVar* ScVar,
-  TClVar* ClVar, array* heap)
+unsigned argfour(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   unsigned sw;
   conarg(4, ClVar->head, ScVar, ClVar, heap);
@@ -2924,7 +2702,6 @@ unsigned argfour(unsigned name, TScVar* ScVar,
   {
   case hpmul:return prmul(sw, ScVar, ClVar, heap);//умножение
   case hpcircl:return prcircl(sw, ScVar, ClVar, heap);//окружность
-  case hppaint:return prpaint(sw, ScVar, ClVar, heap);//закраска
   case hpcopy:return prcopy(sw, ScVar, ClVar, heap);//копия
   case hpclaus:return prclaus(sw, ScVar, ClVar, heap);//предл
   }
@@ -3065,7 +2842,6 @@ bool bpred(unsigned name, unsigned narg)
   case hpfail:
   case hptrace:
   case hpnottr:
-  case hpstat:
   case hpcut: return (narg == 0) ? true : false;//0
   case hp_int:
   case hp_float:
@@ -3078,32 +2854,30 @@ bool bpred(unsigned name, unsigned narg)
   case hpint:
   case hpfloat:
   case hpsym:
-  case hprand: return (narg == 1) ? true : false;//1
+  case hpwait: return (narg == 1) ? true : false;//1
 
   case hprdint:
   case hprdsym: return (narg == 1 || narg == 2) ? true : false;
 
+  case hprand: return (narg == 1 || narg == 3) ? true : false;
+
   case hpgt:
-  case hpcolor:
   case hpstint:
   case hpstlst:
   case hplettr:
   case hpdigit:
   case hpterm:
   case hpdel:
-  case hpskol:
-  case hpxy:
-  case hpmem: return (narg == 2) ? true : false;//2
+  case hpskol: return (narg == 2) ? true : false;//2
 
-  //  case hpmul3 : //добавлено УМНОЖЕНИЕ(3Х АРНОЕ)
-  case hpadd: //добавлено СЛОЖЕНИЕ
+  case hpadd:
   case hpset:
   case hpapp:
+  case hppaint:
   case hpassrt: return (narg == 3) ? true : false;//3
 
   case hpmul: return (narg == 3 || narg == 4) ? true : false;
   case hpcircl:
-  case hppaint:
   case hpcopy:
   case hpclaus: return (narg == 4) ? true : false;//4
 
@@ -3144,16 +2918,16 @@ int InputSymbol(char* c)
   return 1;
 }
 
-int InputInt(int* n, char* caption)
+int InputInt(int* n, const char* caption)
 {
   int err = 2;       //!!! нужна проверка на правильность ввода
-  char* pCaption = const_cast<char*>("ВВедите целое");
-  if (caption)
-    pCaption = caption;
+//  char* pCaption = const_cast<char*>("Введите целое");
+//  if (caption)
+//    pCaption = caption;
   char Buf[255];
   while (err == 2)
   {
-    int _err = InputStringFromDialog(Buf, sizeof(Buf), pCaption);
+    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char*>(caption));
     if (!_err)
     {
       if (sscanf(Buf, "%d", n) != 1)
