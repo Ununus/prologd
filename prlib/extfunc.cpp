@@ -850,8 +850,8 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     case 53: //heap->insert(str);
       return zap3(lnwr, 1, ScVar, ClVar, heap);
     case 43:
-    case 93:
-      char str[maxlinelen];
+    case 93: 
+      char str[maxlinelen]{};
       occ_line(0, lnwr, ScVar, ClVar, heap);
       k = strncmp(str, lnwr, strlen(str));
       return (k == NULL) ? 3 : 5;
@@ -2173,7 +2173,8 @@ unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //ум
     if (ScVar->goal[i] == 6)
       fl = true;
   }
-  for (i = 0; i < 4; i++)
+  //for (i = 0; i < 4; i++)
+  for (i = 0; i < 3; i++)
   {
     switch (ScVar->goal[i])
     {

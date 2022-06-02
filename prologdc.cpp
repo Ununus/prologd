@@ -169,7 +169,8 @@ int InputStringFromDialog(char* buf, size_t size, char* caption)
         }
         if (!std::getline(*input_stream, line))
         {
-            errout("Expected input, but got end of stream");
+            //errout("Expected input, but got end of stream");
+            errout("Недостаточно входных данных");
             return 1;
         }
     }

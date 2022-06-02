@@ -660,7 +660,7 @@ void PrintClauses(recordclause* rc, TScVar* ScVar, array* heap)
 
 void PrintProgram(TScVar* ScVar, array* heap)
 {
-#if 0
+#if 1
   return;
 #else
 
