@@ -79,7 +79,7 @@ int expand_stack(TClVar* ClVar)
     if (st_conN) delete[] st_conN;
     if (st_vr1N) delete[] st_vr1N;
     if (st_vr2N) delete[] st_vr2N;
-    if (st_trailN) delete st_trailN;
+    if (st_trailN) delete[] st_trailN;
     return 28;/*message_no_memory|=no_memory_stac;*/
   }
 
@@ -686,6 +686,7 @@ int control(TScVar* ScVar, TClVar* ClVar, array* heap, bool* EnableRunning)
       if (ClVar->ntro)
         ClVar->parent = ClVar->scptr;   //место записи в стеке управления о вызывающем предл
       ClVar->frame2 = ClVar->frame1;  //если stat = 2 то выполнение сразу же и 3
+      [[fallthrough]];
     case 3:
       if (!heap->pacltarget[++ClVar->atomp]) // все цели удовлетворены
         if (ClVar->parent == NULL)       //есть ответ на вопрос

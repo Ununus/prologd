@@ -14,5 +14,5 @@ ENV PATH="/usr/bin/cmake/bin:${PATH}"
 # Build prologd
 COPY ./src /src
 WORKDIR /src
-RUN cmake -BUILD_GUI=OFF . && make && mkdir -m 777 /compiled
+RUN cmake . && make && mkdir -m 777 /compiled
 CMD mv ./prologd /compiled/ && chmod 777 /compiled/prologd
