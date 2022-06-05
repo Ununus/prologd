@@ -38,6 +38,8 @@ endif()
 
 target_link_libraries(Prolog-D prlib)
 target_link_libraries(Prolog-D Qt5::Widgets)
+
+add_custom_command(TARGET Prolog-D POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/src/prologd-help.html ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 add_executable(prologd "prologdc.cpp")
