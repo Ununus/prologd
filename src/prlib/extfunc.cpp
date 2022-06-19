@@ -4,6 +4,7 @@
 #include <charconv>
 #include <random>
 #include <thread>
+#include <iostream>
 #include "pdefs.h"
 #include "pstructs.h"
 #include "extfunc.h"
@@ -508,6 +509,7 @@ unsigned prrdint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 
 unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //��������
 {
+    std::cout << "DEBUG HERE" << std::endl;
   char str0[255]{}, str1[255]{}, str2[255]{};
   switch (sw)
   {
@@ -519,7 +521,11 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //�
   case 44:
   {
     if (ClVar->PrSetting->in.is_open()) {
-      if (!(ClVar->PrSetting->in.get(str2, 255))) {
+        ClVar->PrSetting->in.get(str2, 255);
+        for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
+            ClVar->PrSetting->in.get();
+        }
+      if (!(str2[0])) {
         break;
       }
     }
@@ -543,7 +549,11 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //�
   case 54:
   {
     if (ClVar->PrSetting->in.is_open()) {
-      if (!(ClVar->PrSetting->in.get(str2, 255))) {
+        ClVar->PrSetting->in.get(str2, 255);
+        for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
+            ClVar->PrSetting->in.get();
+        }
+      if (!(str2[0])) {
         break;
       }
     }
@@ -567,7 +577,11 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //�
   case 14:
   {
     if (ClVar->PrSetting->in.is_open()) {
-      if (!(ClVar->PrSetting->in.get(str2, 255))) {
+        ClVar->PrSetting->in.get(str2, 255);
+        for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
+            ch = ClVar->PrSetting->in.get();
+        }
+      if (!(str2[0])) {
         break;
       }
     }
