@@ -10,8 +10,7 @@ class QLabel;
 
 #include <QFont>
 
-class Actions
-{
+class Actions {
 public:
   Actions();
   void setActionsFont(const QFont &font);
@@ -72,8 +71,8 @@ public:
   QAction *action_about_prolog;
   QAction *action_about_qt;
 
-  QSlider* font_scale_slider;
-  QLabel* font_scale_label;
+  QSlider *font_scale_slider;
+  QLabel *font_scale_label;
 };
 
-#endif // ACTIONS_H
+#endif  // ACTIONS_H

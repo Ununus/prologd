@@ -17,25 +17,26 @@ class QInputDialog;
 
 // Структуры вынес, чтобы добавить сюда свой input для editor
 struct TabContent {
-  Editor* editor { nullptr };
+  Editor *editor{ nullptr };
 };
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
   Q_OBJECT
 public:
   MainWindow(QWidget *parent = 0);
   ~MainWindow();
 public slots:
-  bool loadFileToTopTabWidget (const QString &filePath);
+  bool loadFileToTopTabWidget(const QString &filePath);
+
 protected:
-  bool loadFileToEditor (const QString &filePath, Editor* Editor);
-  bool safeToFileFromEditor (const QString &filePath, Editor* Editor);
-  bool safeToFileFromEditor (Editor* Editor);
+  bool loadFileToEditor(const QString &filePath, Editor *Editor);
+  bool safeToFileFromEditor(const QString &filePath, Editor *Editor);
+  bool safeToFileFromEditor(Editor *Editor);
   void keyPressEvent(QKeyEvent *e) override;
   void closeEvent(QCloseEvent *event) override;
+
 private:
-  void searchInEditor (Editor *editor, bool backwardFlag = false);
+  void searchInEditor(Editor *editor, bool backwardFlag = false);
 
   void connectEditActions();
 private slots:
@@ -67,17 +68,18 @@ private slots:
   void showAboutProlog();
 
   void updateEditor(Editor *editor = nullptr);
-  void updateEditor (QString filePath);
-  void setCurrentEditor (int index);
+  void updateEditor(QString filePath);
+  void setCurrentEditor(int index);
   bool closeEditor(int index);
 
   void prologInputBox(QString);
 signals:
   void executeProlog(QStringList, QStringList);
   void inputReq(QString);
+
 private:
-  QSplitter* m_main_widget;
-  QSplitter* m_put_widget;
+  QSplitter *m_main_widget;
+  QSplitter *m_put_widget;
   QTabWidget *m_editors;
   PlainTextEditWithLineNumberArea *m_output_text;
   PlainTextEditWithLineNumberArea *m_input_text;
@@ -91,11 +93,11 @@ private:
   Settings *m_settings;
   QCompleter *m_completer;
   QThread *m_execution_thread;
-  PrologDWorker* m_prolog_worker;
+  PrologDWorker *m_prolog_worker;
   QMetaObject::Connection m_connection_current_index_changed;
   QCheckBox *m_input_spaces_as_separators;
   QCheckBox *m_output_print_questions;
   GraphicsDialog *m_grp;
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

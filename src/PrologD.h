@@ -5,10 +5,11 @@
 #include <QStringList>
 #include <QImage>
 
-class CanvasArea
-{
+class CanvasArea {
 public:
-  QImage& image() { return m_image; }
+  QImage &image() {
+    return m_image;
+  }
   void resize(int w, int h);
 
   void ellipse(int x, int y, int w, int h, unsigned int c);
@@ -23,15 +24,18 @@ private:
   QImage m_image;
 };
 
-class PrologDWorker : public QObject
-{
+class PrologDWorker : public QObject {
   Q_OBJECT
 public:
-  PrologDWorker (CanvasArea *canvas, QObject *parent = nullptr);
-  void setOutQustion(bool f) { m_outQuestion = f; }
+  PrologDWorker(CanvasArea *canvas, QObject *parent = nullptr);
+  void setOutQustion(bool f) {
+    m_outQuestion = f;
+  }
   bool EnableRunning{ true };
 
-  CanvasArea& canvas() { return *m_canvas; }
+  CanvasArea &canvas() {
+    return *m_canvas;
+  }
 
   QStringList inputList;
   QString inputStr;
@@ -45,9 +49,10 @@ signals:
   void signalWantInput(QString);
   void signalShowGWindow();
   void signalCanvasUpdated();
+
 private:
   bool m_outQuestion{ true };
   CanvasArea *m_canvas;
 };
 
-#endif // PROLOGD_H
+#endif  // PROLOGD_H

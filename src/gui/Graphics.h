@@ -10,14 +10,17 @@ class QSpinBox;
 class QPushButton;
 class QCheckBox;
 
-class GraphicsWidget : public QWidget
-{
+class GraphicsWidget : public QWidget {
   Q_OBJECT
 public:
   explicit GraphicsWidget(QWidget *parent = nullptr);
-  CanvasArea& canvas() { return m_canvas; }
+  CanvasArea &canvas() {
+    return m_canvas;
+  }
+
 protected:
   void paintEvent(QPaintEvent *) override;
+
 private:
   CanvasArea m_canvas;
 };
@@ -32,6 +35,7 @@ public:
 protected slots:
   void okClicked(bool);
   void acClicked(bool);
+
 private:
   QVBoxLayout *m_main_layout;
   GraphicsWidget *m_draw_area;
@@ -40,4 +44,4 @@ private:
   QCheckBox *m_clear_when_exec;
 };
 
-#endif // GRAPHICSWIDGET_H
+#endif  // GRAPHICSWIDGET_H

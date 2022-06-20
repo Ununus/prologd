@@ -20,8 +20,7 @@ GraphicsDialog::GraphicsDialog(QWidget *parent)
   , m_draw_area(new GraphicsWidget)
   , m_input_width(new QSpinBox)
   , m_input_height(new QSpinBox)
-  , m_clear_when_exec(new QCheckBox(tr("Clear on startup")))
-{
+  , m_clear_when_exec(new QCheckBox(tr("Clear on startup"))) {
   setWindowFlags((windowFlags() ^ Qt::WindowContextHelpButtonHint) | Qt::WindowMinMaxButtonsHint);
   setWindowTitle(tr("Graphics"));
 
@@ -51,24 +50,21 @@ GraphicsDialog::GraphicsDialog(QWidget *parent)
 
   m_clear_when_exec->setCheckable(true);
   m_clear_when_exec->setChecked(true);
-  //m_draw_area->setFixedSize(m_input_width->value(), m_input_height->value());
+  // m_draw_area->setFixedSize(m_input_width->value(), m_input_height->value());
   resize(800, 600);
   m_draw_area->resize(m_input_width->value(), m_input_height->value());
   m_draw_area->canvas().resize(m_input_width->value(), m_input_height->value());
   connect(clear_pb, SIGNAL(clicked(bool)), SLOT(okClicked(bool)));
   connect(accept_pb, SIGNAL(clicked(bool)), SLOT(acClicked(bool)));
 }
-bool GraphicsDialog::isClearOnExec() const
-{
+bool GraphicsDialog::isClearOnExec() const {
   return m_clear_when_exec->isChecked();
 }
-void GraphicsDialog::okClicked(bool)
-{
+void GraphicsDialog::okClicked(bool) {
   m_draw_area->canvas().clear();
   m_draw_area->update();
 }
-void GraphicsDialog::acClicked(bool)
-{
+void GraphicsDialog::acClicked(bool) {
   m_main_layout->removeWidget(m_draw_area);
   m_draw_area->resize(m_input_width->value(), m_input_height->value());
   m_draw_area->canvas().resize(m_input_width->value(), m_input_height->value());
@@ -80,23 +76,19 @@ GraphicsDialog::~GraphicsDialog() {
   s.setValue("graphAreaHeight", m_input_height->value());
 }
 
-GraphicsWidget *GraphicsDialog::drawArea()
-{
+GraphicsWidget *GraphicsDialog::drawArea() {
   return m_draw_area;
 }
 
 GraphicsWidget::GraphicsWidget(QWidget *parent)
-  : QWidget{parent}
-{
-
-}
+  : QWidget{ parent } {}
 
 void GraphicsWidget::paintEvent(QPaintEvent *) {
-  //qDebug() << "Paint Event";
+  // qDebug() << "Paint Event";
   QPainter painter(this);
-  //painter.setBrush(brush);
-  //painter.setPen(pen);
-  //painter.drawPath(path);
+  // painter.setBrush(brush);
+  // painter.setPen(pen);
+  // painter.drawPath(path);
   QPixmap pixmap;
   if (!pixmap.convertFromImage(m_canvas.image())) {
     qDebug() << "Error";

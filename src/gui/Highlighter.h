@@ -5,17 +5,17 @@
 #include <QSyntaxHighlighter>
 #include <QRegularExpression>
 
-class Highlighter : public QSyntaxHighlighter
-{
+class Highlighter : public QSyntaxHighlighter {
   Q_OBJECT
 public:
   explicit Highlighter(QTextDocument *parent = 0);
-  void setSearchString (const QString &string);
+  void setSearchString(const QString &string);
+
 protected:
   void highlightBlock(const QString &text) Q_DECL_OVERRIDE;
+
 private:
-  struct HighlightingRule
-  {
+  struct HighlightingRule {
     QRegularExpression pattern;
     QTextCharFormat format;
   };
@@ -29,4 +29,4 @@ private:
   QString m_search_string;
 };
 
-#endif // HIGHLIGHTER_H
+#endif  // HIGHLIGHTER_H
