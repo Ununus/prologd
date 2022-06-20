@@ -365,11 +365,15 @@ float occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
 }
 
 unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+    static char str0 [2]{};
   switch (sw) {
   case 7:  //целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
     if (ClVar->PrSetting->out.is_open()) {
       ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
+    } else {
+        str0[0] = char(occ(0, ScVar, ClVar, heap));
+        out(str0);
     }
     return 3;
   }
