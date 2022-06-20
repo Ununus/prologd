@@ -4,7 +4,6 @@
 #include <charconv>
 #include <random>
 #include <thread>
-#include <iostream>
 #include "pdefs.h"
 #include "pstructs.h"
 #include "extfunc.h"
@@ -28,10 +27,10 @@ unsigned argnull(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
   switch (name)
   {
   case hpfail:
-    return 5;//пїЅпїЅпїЅпїЅ
+    return 5;//ложь
   case hptrace:
     ClVar->PrSetting->Trace = true;
-    //            sroptionsout.optionsrun |= tracce;//пїЅпїЅпїЅпїЅпїЅпїЅ
+    //            sroptionsout.optionsrun |= tracce;//трасса
     break;
   case hpnottr:
     ClVar->PrSetting->Trace = false;
@@ -71,7 +70,7 @@ void conarg(unsigned numb, unsigned h, TScVar* ScVar, TClVar* ClVar, array* heap
   }
 
 }
-//====================================пїЅпїЅпїЅпїЅпїЅпїЅпїЅ=============
+//====================================содрано=============
 
 //extern unsigned head;
 //extern unsigned frame2;
@@ -79,7 +78,7 @@ void conarg(unsigned numb, unsigned h, TScVar* ScVar, TClVar* ClVar, array* heap
 //extern char *wr_line;
 //extern char *wptr;
 char* occ_line(int x, char* lnwr, TScVar* ScVar, TClVar* ClVar, array* heap)
-  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  //получение строки связанной с переменной
 {
   char* ad;
   recordstring* ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
@@ -94,7 +93,7 @@ char* occ_line(int x, char* lnwr, TScVar* ScVar, TClVar* ClVar, array* heap)
 }
 
 int prcall(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+// выполнение предиката ВЫП
 {
 
   unsigned w;
@@ -111,7 +110,7 @@ int prcall(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 
   default:
     outerror(24);
-    return 1;//r_t_e(41);                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    return 1;//r_t_e(41);                // невыполнимая функция
   }
   if (w < heap->freeheap)
   {
@@ -122,10 +121,10 @@ int prcall(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     } //r_t_e(41);
     ClVar->head = ScVar->goal[maxarity];
     ClVar->frame2 = ScVar->goal[2 * maxarity];
-    return 6;            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    return 6;            // встроенный предикат
   }
 
-  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ call
+  // невстроенный предикат под call
   recordsconst* ps = heap->GetPrecordsconst(w);
   //(recordsconst *)&heap->heaps[w];
   if (ps->begin && ps->begin != isnil)
@@ -144,12 +143,12 @@ int prcall(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
   {
     outerror(24);
     return 1;
-  }//r_t_e(41) пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+  }//r_t_e(41) не выполнимый предикат ВЫП
   return 1;
 }    //ok
 
 unsigned zap3(const char* str, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
-  //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ arg
+  //запись строки и унификация его с arg
 {//unsigned index=heap->apend(str,strlen(str));
   if (!str)
   {
@@ -182,7 +181,7 @@ unsigned zap3(const char* str, unsigned arg, TScVar* ScVar, TClVar* ClVar, array
 }
 
 unsigned zap1(int num, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ num пїЅ arg пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//унификация целого num с arg аргументом предиката
 {
   recordinteger pi(num);
   unsigned bakindex = heap->last;
@@ -204,8 +203,8 @@ unsigned zap1(int num, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
 }
 
 unsigned zap2(int num1, int num2, int arg1, int arg2, TScVar* ScVar, TClVar* ClVar, array* heap)
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ num1 пїЅ arg1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ num2 пїЅ arg2 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//унификация целого num1 с arg1 аргументом предиката
+//унификация целого num2 с arg2 аргументом предиката
 {
   recordinteger pi1(num1);
   recordinteger pi2(num2);
@@ -230,7 +229,7 @@ unsigned zap2(int num1, int num2, int arg1, int arg2, TScVar* ScVar, TClVar* ClV
 }
 
 unsigned zap1f(float num, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* heap)
-  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float num пїЅ arg пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  //унификация float num с arg аргументом предиката
 {
   recordfloat pf(num);
   unsigned bakindex = heap->last;
@@ -252,8 +251,8 @@ unsigned zap1f(float num, unsigned arg, TScVar* ScVar, TClVar* ClVar, array* hea
 }
 
 unsigned zap2f(float num1, float num2, int arg1, int arg2, TScVar* ScVar, TClVar* ClVar, array* heap)
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float num1 пїЅ arg1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float num2 пїЅ arg2 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//унификация float num1 с arg1 аргументом предиката
+//унификация float num2 с arg2 аргументом предиката
 {
   recordfloat pf1(num1);
   recordfloat pf2(num2);
@@ -278,20 +277,20 @@ unsigned zap2f(float num1, float num2, int arg1, int arg2, TScVar* ScVar, TClVar
 }
 
 int prrandom(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+// выполнение предиката СЛУЧ
 {
   int n, m;
   static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
   static std::uniform_int_distribution<int> dst;
   switch (sw)
   {
-  case 7:   // пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 7:   // целое: инициализация генератора
     n = occ(0, ScVar, ClVar, heap);
     rng = std::mt19937(n);
     return 3;
-  case 5:   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 5:   // переменная: получить новое значение
     return zap1(rng(), 1, ScVar, ClVar, heap);
-  case 577:   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 577:   // переменная: получить новое значение
     n = occ(1, ScVar, ClVar, heap);
     m = occ(2, ScVar, ClVar, heap);
     if (n > m) {
@@ -309,7 +308,7 @@ int prrandom(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 bool see( void ) { return false; };
 bool mytell( void ){ return false; };
 */
-//=========================пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//=========================конец содранного
 unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   char str[129];
@@ -325,16 +324,16 @@ unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       return 3;
     }
 
-    //пїЅпїЅпїЅпїЅ con:
+    //если con:
     if (strcmp(str, "con:") == 0) {
         return 3;
     }
 
-    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
+    // пытаемся открыть файл для записи.
     ClVar->PrSetting->out.open(str);
     if (!ClVar->PrSetting->out.is_open()) {
       outerror(43);
-      return 5; //r_t_e_(пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
+      return 5; //r_t_e_(не могу открыть файл)
     }
     ClVar->PrSetting->name_out_file = std::string(str);
     return 3;
@@ -343,7 +342,7 @@ unsigned outfile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       ScVar, ClVar, heap);
 
   default:
-    return 1;//r_t_e(45); пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    return 1;//r_t_e(45); ошибка при открытии файла
   }
   return 1;
 }
@@ -371,7 +370,7 @@ unsigned infile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     if (!ClVar->PrSetting->in.is_open())
     {
       outerror(43);
-      return 5; //r_t_e_(пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
+      return 5; //r_t_e_(не могу открыть файл)
     }
     ClVar->PrSetting->name_in_file = std::string(str);
     return 3;
@@ -380,7 +379,7 @@ unsigned infile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     return zap3(ClVar->PrSetting->name_in_file.c_str(), 1, ScVar, ClVar, heap);
 
   default:
-    return 1;//r_t_e(45); пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    return 1;//r_t_e(45); ошибка при открытии файла
   }
   return 1;
 }
@@ -389,7 +388,7 @@ unsigned infile(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 
 
 int occ(unsigned x, TScVar* ScVar, TClVar* ClVar, array* heap)
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//получение целого связанного с переменной
 {
   recordinteger* pint =
     heap->GetPrecordinteger(ScVar->goal[maxarity + x]);
@@ -398,7 +397,7 @@ int occ(unsigned x, TScVar* ScVar, TClVar* ClVar, array* heap)
 }
 
 float occf(unsigned x, TScVar* ScVar, TClVar* ClVar, array* heap)
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//получение вещесв связанного с переменной
 {
   recordfloat* pf = heap->GetPrecordfloat(ScVar->goal[maxarity + x]);
   //	(recordfloat *)&heap->heaps[ScVar->goal[maxarity + x]];
@@ -410,14 +409,14 @@ unsigned priocod(unsigned sw, TScVar* ScVar, TClVar* ClVar,
 {
   switch (sw)
   {
-  case 7://пїЅпїЅпїЅпїЅпїЅ !!!пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+  case 7://целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
     if (ClVar->PrSetting->out.is_open()) {
       ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
     }
     return 3;
   }
-  case 5://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 5://переменная
   {
     char w;
     if (ClVar->PrSetting->in.is_open()) {
@@ -428,9 +427,9 @@ unsigned priocod(unsigned sw, TScVar* ScVar, TClVar* ClVar,
     InputSymbol(&w);
     return zap1(w, 1, ScVar, ClVar, heap);
   }
-//  case 1://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//  case 1://анонимка
 //    if (ClVar->PrSetting->fin)
-//      fgetc(ClVar->PrSetting->fin);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ???
+//      fgetc(ClVar->PrSetting->fin);//сдвинуть указатель файла ???
 //    return 3;
   default:
     outerror(24);
@@ -439,20 +438,20 @@ unsigned priocod(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;
 }
 
-//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ   !!!пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-//пїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//ввод целого   !!!нужно ввод вещств
+//АВ: ВВОДЦЕЛ
 unsigned prrdint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   int w{};
   char str0[129]{};
-  const char* caption = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ";
+  const char* caption = "Введите целое";
 
   switch (sw)
   {
-  case 7: // пїЅпїЅпїЅпїЅпїЅ
-  case 74: // пїЅпїЅпїЅпїЅпїЅ, "caption"
-  case 79: // пїЅпїЅпїЅпїЅпїЅ, caption
-  {   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+  case 7: // Целое
+  case 74: // Целое, "caption"
+  case 79: // Целое, caption
+  {   // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
         return 5;
@@ -473,9 +472,9 @@ unsigned prrdint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     }
     return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
   }
-  case 5:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case 54: // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, "caption"
-  case 59: // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, caption
+  case 5:  // Переменная
+  case 54: // Переменная, "caption"
+  case 59: // Переменная, caption
 
   case 1:
   case 14:
@@ -507,15 +506,14 @@ unsigned prrdint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
   return 1; // rte
 }
 
-unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //вводсимв
 {
-    std::cout << "DEBUG HERE" << std::endl;
   char str0[255]{}, str1[255]{}, str2[255]{};
   switch (sw)
   {
   case 9:
   case 4:
-  case 99: /*пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ*/
+  case 99: /*то же самое что и предыдущий пункт но с заголовком диалогового окна*/
   case 94:
   case 49:
   case 44:
@@ -525,7 +523,7 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
         for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
             ClVar->PrSetting->in.get();
         }
-      if (!(str2[0])) {
+        if (!(str2[0])) {
         break;
       }
     }
@@ -533,11 +531,11 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
     {
       if (sw == 99 || sw == 94 || sw == 49 || sw == 44) {
         occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) { //пїЅпїЅ cancel пїЅпїЅпїЅпїЅпїЅпїЅ 1;
+        if (Inputstring(str2, sizeof(str2), str0)) { //по cancel вернет 1;
           break;
         }
       } else {
-        if (Inputstring(str2, sizeof(str2))) { //пїЅпїЅ cancel пїЅпїЅпїЅпїЅпїЅпїЅ 1;
+        if (Inputstring(str2, sizeof(str2))) { //по cancel вернет 1;
           break;
         }
       }
@@ -553,7 +551,7 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
         for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
             ClVar->PrSetting->in.get();
         }
-      if (!(str2[0])) {
+        if (!(str2[0])) {
         break;
       }
     }
@@ -561,18 +559,18 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
     {
       if (sw == 59 || sw == 54) {
         occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) { //пїЅпїЅ cancel пїЅпїЅпїЅпїЅпїЅпїЅ 1;
+        if (Inputstring(str2, sizeof(str2), str0)) { //по cancel вернет 1;
           break;
         }
       } else {
-        if (Inputstring(str2, sizeof(str2))) { //пїЅпїЅ cancel пїЅпїЅпїЅпїЅпїЅпїЅ 1;
+        if (Inputstring(str2, sizeof(str2))) { //по cancel вернет 1;
           break;
         }
       }
     }
     return zap3(str2, 1, ScVar, ClVar, heap);
   }
-  case 1: //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 1: //анонимка
   case 19:
   case 14:
   {
@@ -581,7 +579,7 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
         for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
             ch = ClVar->PrSetting->in.get();
         }
-      if (!(str2[0])) {
+        if (!(str2[0])) {
         break;
       }
     }
@@ -589,11 +587,11 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
     {
       if (sw == 19 || sw == 14) {
         occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) { //пїЅпїЅ cancel пїЅпїЅпїЅпїЅпїЅпїЅ 1;
+        if (Inputstring(str2, sizeof(str2), str0)) { //по cancel вернет 1;
           break;
         }
       } else {
-        if (Inputstring(str2, sizeof(str2))) { //пїЅпїЅ cancel пїЅпїЅпїЅпїЅпїЅпїЅ 1;
+        if (Inputstring(str2, sizeof(str2))) { //по cancel вернет 1;
           break;
         }
       }
@@ -607,12 +605,12 @@ unsigned prrdsym(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)   //пїЅ
   return 5;
 }
 
-unsigned print(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+unsigned print(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //преобразование в целое
 {
   switch (sw)
   {
   case 7:
-    return 3;    //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    return 3;    //уже целое
   case 6:
     return zap1(static_cast<int>(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
@@ -620,7 +618,7 @@ unsigned print(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпїЅп
   return 1;
 }
 
-unsigned prfloat(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ float
+unsigned prfloat(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //преобразование в float
 {
   switch (sw)
   {
@@ -633,7 +631,7 @@ unsigned prfloat(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпї
   return 1;
 }
 
-unsigned prwait(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) // пїЅпїЅпїЅ
+unsigned prwait(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) // жди
 {
   switch (sw)
   {
@@ -657,23 +655,23 @@ unsigned argone(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
   sw = ScVar->goal[0];
   switch (name)
   {
-  case hpcall: return prcall(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅ
-  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hprdint: return prrdint(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpiocod: return priocod(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅпїЅпїЅ
-  case hpsee: return infile(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅпїЅ
+  case hpcall: return prcall(sw, ScVar, ClVar, heap); // ВЫП
+  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap); // ВВОДСИМВ
+  case hprdint: return prrdint(sw, ScVar, ClVar, heap); // ВВОДЦЕЛ
+  case hpiocod: return priocod(sw, ScVar, ClVar, heap); // ВВКОД
+  case hpsee: return infile(sw, ScVar, ClVar, heap);  // ЧТЕНИЕ_ИЗ
 
-  case hptell: return outfile(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅ
-  case hpvar: return (sw == 5) ? 3 : 5;  // пїЅпїЅпїЅ
-  case hpint: return (sw == 7) ? 3 : 5;  // пїЅпїЅпїЅ
-  case hpfloat: return (sw == 6) ? 3 : 5;  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpsym: return (sw == 4) ? 3 : 5;  // пїЅпїЅпїЅпїЅ
+  case hptell: return outfile(sw, ScVar, ClVar, heap); // ЗАПИСЬ_В
+  case hpvar: return (sw == 5) ? 3 : 5;  // ПЕР
+  case hpint: return (sw == 7) ? 3 : 5;  // ЦЕЛ
+  case hpfloat: return (sw == 6) ? 3 : 5;  //вещественное
+  case hpsym: return (sw == 4) ? 3 : 5;  // СИМВ
 
-  case hpwait: return prwait(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅ
+  case hpwait: return prwait(sw, ScVar, ClVar, heap);  // ЖДИ
 
-  case hprand: return prrandom(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅпїЅ
-  case hp_int: return print(sw, ScVar, ClVar, heap);  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ int
-  case hp_float: return prfloat(sw, ScVar, ClVar, heap); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float
+  case hprand: return prrandom(sw, ScVar, ClVar, heap); // СЛУЧ
+  case hp_int: return print(sw, ScVar, ClVar, heap);  //преобразование int
+  case hp_float: return prfloat(sw, ScVar, ClVar, heap); //преобразование float
   }
   return 1;
 }
@@ -711,14 +709,14 @@ unsigned prgt(TScVar* ScVar, TClVar* ClVar, array* heap)
     break;
   case 9: break;
   default:
-    outerror(24);   return 1;//r_t_e(51)//пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    outerror(24);   return 1;//r_t_e(51)//в больше не число
   }
   return (af[0] > af[1]) ? 3 : 5;
 }
 
 int GetStrFromList(char* Buf, size_t BufSize, baserecord* tp,
   TScVar* ScVar, TClVar* ClVar, array* heap)
-{//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ tp - tp пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ list 
+{//составить строку символов из элементов tp - tp должен быть list 
 
   char* p = Buf;
   int len = 0;
@@ -784,7 +782,7 @@ int GetStrFromList(char* Buf, size_t BufSize, baserecord* tp,
     {
       outerror(15);
       return -1;
-    }//R_t_e пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ []
+    }//R_t_e последний не []
     }
     tp = heap->GetPbaserecord(plist->link);
   }
@@ -793,7 +791,7 @@ int GetStrFromList(char* Buf, size_t BufSize, baserecord* tp,
   {
     outerror(15);
     return -1;
-  }//R_t_e пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ []
+  }//R_t_e последний не []
   */
   *(p + len) = 0;
   return len;
@@ -841,7 +839,7 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       {
         outerror(24);
         return 1;
-      }//r_t_e пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+      }//r_t_e нельзя преобразовать
       lnwr[i++] = (char)pint->value;
       tp = heap->GetPbaserecord(plist->link);
         //(baserecord *)&heap->heaps[plist->link];
@@ -850,7 +848,7 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     {
       outerror(24);
       return 1;
-    }//R_t_e пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ []
+    }//R_t_e последний не []
     */
     if (len < 0)
       return 1;
@@ -864,8 +862,8 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     case 53: //heap->insert(str);
       return zap3(lnwr, 1, ScVar, ClVar, heap);
     case 43:
-    case 93: 
-      char str[maxlinelen]{};
+    case 93:
+        char str[maxlinelen]{};
       occ_line(0, lnwr, ScVar, ClVar, heap);
       k = strncmp(str, lnwr, strlen(str));
       return (k == NULL) ? 3 : 5;
@@ -876,7 +874,7 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
     k = strlen(lnwr);
-    //unsigned *ptr=(unsigned *)&heap->heaps[head-1];//пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //unsigned *ptr=(unsigned *)&heap->heaps[head-1];//цели в предложении
     recordfunction* pfunction = heap->GetPrecordfunction(ClVar->head);
     //(recordfunction*)&heap->heaps[ClVar->head];
     unsigned* ptr = heap->GetPunsigned(pfunction->ptrarg);
@@ -893,7 +891,7 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       unify(index, ptr[1], ClVar->frame2, ClVar->frame2, ClVar, heap);
       return 3;
     }
-    else //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    else //строка не пустая
     {
       unsigned j = heap->last, index1, index2;
       for (i = 0; i < k; i++)
@@ -908,14 +906,14 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
       {
         outerror(44);
         return 1;
-      }//r_t_e пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+      }//r_t_e нет памяти
       recordemptylist pempty;
       unsigned index = heap->apend(&pempty, sizeof(recordemptylist));
       if (!index)
       {
         outerror(44);
         return 1;
-      }//r_t_e пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+      }//r_t_e нет памяти
       recordlist* plst = heap->GetPrecordlist(index2);
       //(recordlist*)&heap->heaps[index2];
       plst->link = index;
@@ -928,11 +926,11 @@ unsigned prstlst(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     outerror(24);
     return 1;//R_t_e
   }
-  return 5;//!!! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  return 5;//!!! посмотреть на код возврата
 }
 
 unsigned prstint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
-  array* heap)   //пїЅпїЅпїЅпїЅпїЅпїЅ
+  array* heap)   //стрцел
 {//int i;
   long w{};
   char lnwr[maxlinelen]{};
@@ -945,15 +943,15 @@ unsigned prstint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
     std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    //w = atol(lnwr); //!!!пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
     if (sw == 95 || sw == 45)
       return zap1(w, 2, ScVar, ClVar, heap);
     return (w == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
   }
-  case 57:   //var int  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ var float
+  case 57:   //var int  возможно нужно var float
   {
     std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
-    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ to_chars, пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    // Заменено на to_chars, но не поверено
     //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
     //char *str=newStr(lnwr);
 
@@ -963,8 +961,8 @@ unsigned prstint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   {
     float value = occf(1, ScVar, ClVar, heap);
     sprintf(lnwr, "%f", value);
-    //std::to_chars(lnwr, lnwr + maxlinelen, value); // пїЅ gcc пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ, пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
+    // Заменено на, но не поверено
     //int dec, sign, ndig = 5;
     //char* p = lnwr;
     //p = _fcvt(value, ndig, &dec, &sign);
@@ -986,7 +984,7 @@ unsigned prstint(unsigned sw, TScVar* ScVar, TClVar* ClVar,
     outerror(24);
     return 1;
   }//R_t_e
-  }// outerror(2);return 1;//R_T_e пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+  }// outerror(2);return 1;//R_T_e нет памяти
 }
 
 bool digit(char a)
@@ -1000,9 +998,9 @@ bool letter(char a)
 }
 
 unsigned whatisit(unsigned sw, bool (*f)(char), unsigned i,
-  TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпїЅпїЅпїЅпїЅ unsigned i ???
+  TScVar* ScVar, TClVar* ClVar, array* heap)//насчет unsigned i ???
 {
-  char lnwr[maxlinelen];                              //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ unsignedi !!!
+  char lnwr[maxlinelen];                              //может быть unsignedi !!!
   int w;
   occ_line(0, lnwr, ScVar, ClVar, heap);
   int len = strlen(lnwr);
@@ -1021,8 +1019,8 @@ unsigned whatisit(unsigned sw, bool (*f)(char), unsigned i,
       return zap1(w + 1, 2, ScVar, ClVar, heap);
     break;
   default:
-    return (i == i) ? 1 : 1;//r_t_e w пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
-  }                // i пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ r_t_e
+    return (i == i) ? 1 : 1;//r_t_e w код ошибки (обработка цифры или буквы)
+  }                // i использовать для r_t_e
   return 5;
 }
 
@@ -1055,7 +1053,7 @@ unsigned prskol(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 1;//r_t_e
 }
 
-unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //пїЅпїЅпїЅпїЅ
+unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //терм
 {
   baserecord* tp;
   recordlist* plist;
@@ -1083,13 +1081,13 @@ unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //пїЅпї
       plist = (recordlist*)tp;
       tp = heap->GetPbaserecord(plist->link);
       //(baserecord *)&heap->heaps[plist->link];
-      i++;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+      i++;//число элементов в списке
     }
     if (tp->ident != isemptylist)
     {
       outerror(24);
       return 1;
-    }//R_t_e пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ []
+    }//R_t_e последний не []
     if (i == 1)
     {
       recordfunction* pf = heap->GetPrecordfunction(ClVar->head);
@@ -1102,11 +1100,11 @@ unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //пїЅпї
       //				heap->last=bakindex; //??????
       return 5;
     }
-    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-    unsigned n = i - 1;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //сделать запись функции с аргументами из списка
+    unsigned n = i - 1;//число целей в новой функции
     unsigned int* ptrargs = new unsigned[n];
-    //!!! пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    //!!! нужно другой код возврата
+    //сообщение о том что нет памяти
     if (!ptrargs)
       return 5;
     plist = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
@@ -1120,7 +1118,7 @@ unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //пїЅпї
       ptrargs[i] = plist->head;
       plist = heap->GetPrecordlist(plist->link);
       //(recordlist *)&heap->heaps[plist->link];
-      i++;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+      i++;//число элементов в списке
     }
     unsigned int index =
       heap->apend(ptrargs, sizeof(unsigned int) * n);
@@ -1187,7 +1185,7 @@ unsigned prterm(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)  //пїЅпї
       ClVar->frame2, ClVar->frame2, ClVar, heap)) ? 3 : 5;
   }
   case 95://symb var
-  case 45://str var -пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ??
+  case 45://str var -над этим надо подумать ??
   {//symb -> list
     unsigned oldindex = heap->last;
     recordlist pl(ScVar->goal[maxarity],
@@ -1226,7 +1224,7 @@ unsigned prdel(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
   recordsconst* ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
-    return 5;//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    return 5;//нет предложения
   recordclause* pcpred = 0;
   recordclause* pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
@@ -1238,7 +1236,7 @@ unsigned prdel(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)
     //(recordclause *)&heap->heaps[pc->next];
   }
 
-  if (w == 1)//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  if (w == 1)//первое предложение  даже если последнее
     ps->begin = pc->next;
   else {
     if (!pcpred) {
@@ -1256,21 +1254,21 @@ unsigned argtwo(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
   sw = ScVar->goal[0] * 10 + ScVar->goal[1];
   switch (name)
   {
-  case hpgt: return prgt(ScVar, ClVar, heap);         // пїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpstint: return prstint(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpstlst: return prstlst(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);// пїЅпїЅпїЅпїЅпїЅ
-  case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅ
-  case hpterm: return prterm(sw, ScVar, ClVar, heap);       // пїЅпїЅпїЅпїЅ    return 5;
-  case hpdel: return prdel(sw, ScVar, ClVar, heap);        // пїЅпїЅпїЅпїЅ
-  case hpskol: return prskol(sw, ScVar, ClVar, heap);       // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
-  case hprdint: return prrdint(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpgt: return prgt(ScVar, ClVar, heap);         // БОЛЬШЕ
+  case hpstint: return prstint(sw, ScVar, ClVar, heap);      // СТРЦЕЛ
+  case hpstlst: return prstlst(sw, ScVar, ClVar, heap);      // СТРСПИС
+  case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);// БУКВА
+  case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);  // ЦИФРА
+  case hpterm: return prterm(sw, ScVar, ClVar, heap);       // ТЕРМ    return 5;
+  case hpdel: return prdel(sw, ScVar, ClVar, heap);        // УДАЛ
+  case hpskol: return prskol(sw, ScVar, ClVar, heap);       // СКОЛЬКО
+  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);      // ВВОДСИМВ (с заголовком)
+  case hprdint: return prrdint(sw, ScVar, ClVar, heap);      // ВВОДЦЕЛ
   }
   return 1;
 }
 
-unsigned prset(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпїЅпїЅпїЅ
+unsigned prset(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//точка
 {
   //	if ( !canvas) return 3;
   int xy, x1, x2, y1, y2, color;
@@ -1355,12 +1353,12 @@ unsigned prset(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпї
   {
     outerror(24);
     return 1;
-  }//r_t_e(пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  }//r_t_e(не вып предик точка
   }
   return 3;
 }
 
-unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпїЅпїЅ
+unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//сцеп
 {
   char wrln1[maxlinelen], wrln2[maxlinelen];
   unsigned w, i;
@@ -1373,7 +1371,7 @@ unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпї
   case 944:
   case 949:
   case 994:
-  case 999://пїЅпїЅпїЅ str str str
+  case 999://все str str str
   case 445:
   case 495:
   case 945:
@@ -1385,7 +1383,7 @@ unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпї
     {
       outerror(24); return 1;
     }
-    if (sw == 445 || sw == 495 || sw == 945 || sw == 995) //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    if (sw == 445 || sw == 495 || sw == 945 || sw == 995) //если переменная
     {
       return zap3(wrln1, 3, ScVar, ClVar, heap);
     }
@@ -1399,7 +1397,7 @@ unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпї
     occ_line(2, wrln2, ScVar, ClVar, heap);
     w = strlen(wrln1);
     i = strlen(wrln2);
-    //пїЅпїЅпїЅпїЅ lnwr1 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ lnwr2 пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //если lnwr1 входит в lnwr2 и причем спереди
 
     if (w <= i && !strncmp(wrln1, wrln2, w)) //2006/10/17
     {
@@ -1426,16 +1424,16 @@ unsigned prapp(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпї
   return 5;
 }
 
-// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ. пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ count_var пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ tvar
-//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ VarOnList
+// две функции работают в паре. они используют общую
+//глобальную переменную count_var и общий массив tvar
+//первой стартует VarOnList
 int count_var;//
-int VarOnList(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+int VarOnList(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap);//подсчет переменных в списке вернет 1 если ошибка
 
-int VarOnFunc(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+int VarOnFunc(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap)//подсчет переменных в функции вернет 1 если ошибка
 {
   if (pb->ident != isfunction)
-    return 1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+    return 1;//ошибка
   recordfunction* pf = (recordfunction*)pb;
   unsigned* ptrarg = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
@@ -1447,11 +1445,11 @@ int VarOnFunc(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
     {
     case isfunction:
       if (VarOnFunc((baserecord*)tp, ScVar, ClVar, heap))
-        return 1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+        return 1;//ошибка
       break;
     case islist:
       if (VarOnList((baserecord*)tp, ScVar, ClVar, heap))
-        return 1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+        return 1;//ошибка
       break;
     case isvar:
       count_var++;
@@ -1462,7 +1460,7 @@ int VarOnFunc(baserecord* pb, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
 };
 
 int VarOnList(baserecord* pb, TScVar* ScVar, TClVar* ClVar,
-  array* heap)//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+  array* heap)//подсчет переменных в списке вернет 1 если ошибка
 {
   if (pb->ident != islist)
     return 1;
@@ -1475,7 +1473,7 @@ int VarOnList(baserecord* pb, TScVar* ScVar, TClVar* ClVar,
     {
     case isfunction:
       if (VarOnFunc((baserecord*)pv, ScVar, ClVar, heap))
-        return 1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+        return 1;//ошибка
       break;
     case isvar:
       count_var++;
@@ -1496,8 +1494,8 @@ int VarFromFunc(baserecord* pbr)
   return 0;
 }
 
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ bpt
+//подготовка целей для предиката доб
+// поместит цели в массив bpt
 
 unsigned target_number;
 
@@ -1555,7 +1553,7 @@ unsigned int prepare_target_from_list(unsigned term, TScVar* ScVar,
   //(recordlist *)&heap->heaps[term];
   if (pl->ident != islist)
     return 1;
-  while (pl->ident == islist) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+  while (pl->ident == islist) //выбирають цели из списка
   {
     baserecord* tp = heap->GetPbaserecord(pl->head);
     //(baserecord *)&heap->heaps[pl->head];
@@ -1792,7 +1790,7 @@ int GetVarsFromFunction(recordvar* Vars[], int VarCount,
   recordfunction* pf, TScVar* ScVar, TClVar* ClVar, array* heap)
 {
   if (pf->ident != isfunction)
-    return -1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+    return -1;//ошибка
   int Count = 0;
   unsigned* ptrarg = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
@@ -1810,11 +1808,11 @@ int GetVarsFromFunction(recordvar* Vars[], int VarCount,
       /*
       case isfunction:
           if (VarOnFunc((baserecord*)tp))
-              return 1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+              return 1;//ошибка
           break;
       case islist:
           if (VarOnList((baserecord*)tp))
-              return 1;//пїЅпїЅпїЅпїЅпїЅпїЅ
+              return 1;//ошибка
           break;
       */
     default:
@@ -1881,7 +1879,7 @@ int GetVarCountFromClause(recordclause* rc, TScVar* ScVar, TClVar* ClVar, array*
   return VarCount;
 }
 
-unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅпїЅ
+unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//доб
 {
   unsigned old_index = heap->last;
   unsigned error = 0;
@@ -1889,26 +1887,26 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
   recordsconst* ps;
   recordlist* pl;
   recordfunction* pf;
-  recordclause* pfirstclause;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
-  recordclause* pclause;//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  recordclause* pfirstclause;//первое предложение данного типа
+  recordclause* pclause;//предложение на место которого вставиться требуемое
   unsigned int index;
-  unsigned int* ptarget;//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-  unsigned nvar = 0;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
+  unsigned int* ptarget;//указатель на массив с целями
+  unsigned nvar = 0;//число переменных в предложении(глоб перем)
 
-  unsigned ntarget = 1;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  unsigned ntarget = 1;//число целей в новом предложении
   switch (sw)
   {
   case 427:
   case 927:
-  case 827:// _,[],int  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
-                   // пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+  case 827:// _,[],int  //рассматриваем предложение как факт
+                   // в новом предолжении переменных не может быть
   {
     unsigned m = maxarity;
     tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
     //(baserecord *)&heap->heaps[ScVar->goal[maxarity]];
-    if (tp->ident != isfunction) // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    if (tp->ident != isfunction) // может быть либо функцией или переменной,конкретизированной функцией возможно что нужно поискать функцию
     {
-      out(const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 'пїЅпїЅпїЅ': пїЅпїЅпїЅ1 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+      out(const_cast<char*>("предикт 'ДОБ': АРГ1 не функция"));
       return 1;
     }
     recordfunction* prf = (recordfunction*)tp;
@@ -1922,7 +1920,7 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
     //(unsigned *)&heap->heaps[prf->ptrarg];
     for (int i = 0; i < static_cast<int>(prf->narg); i++)
     {
-      //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+      //достать константы из агрументов функции.
       unsigned Arg = GetConstTerm(*(prf_arg + i),
         ClVar->frame2, ClVar, heap);
       *(parg + i) = Arg;
@@ -1937,7 +1935,7 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
     recordfunction NewFunction(prf->narg, prf->func, ArgIndex);
     unsigned findex = heap->apend(&NewFunction, sizeof(recordfunction));
     int id = tp->ident;
-    ptarget = new unsigned[2];//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 0
+    ptarget = new unsigned[2];//последний будет 0
     if (!ptarget) { outerror(2); return 5; }
     ptarget[0] = findex; ptarget[1] = NULL;
     index = heap->apend(ptarget, sizeof(unsigned int) * 2);
@@ -1960,22 +1958,22 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
   case 837:  //_,list,int
   {   tp = heap->GetPbaserecord(ScVar->goal[maxarity + 1]);
   //(baserecord *)&heap->heaps[ScVar->goal[maxarity + 1]];
-      // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+      // нужно подсчитать число переменных
   count_var = 0;
-  if (VarOnList(tp, ScVar, ClVar, heap) != 0)//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  if (VarOnList(tp, ScVar, ClVar, heap) != 0)//подсчет числа переменных в новом предложении
   {
-    out(const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+    out(const_cast<char*>("Ошибка при подсчете числа переменных"));
     return 1;
   }
-  nvar += count_var;//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
-//            out("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
-            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  nvar += count_var;//еще нужно подсчитать число перем в голове
+//            out("Переменные подсчитаны");
+            //подготовка целей
   unsigned _maxarity = maxarity;
   error = prepare_target(ScVar->goal[maxarity + 1],
     ScVar, ClVar, heap);
   if (error)
   {
-    out(const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ"));
+    out(const_cast<char*>("Ошибка при поиске целей для ДОБ"));
     return 1;
   }
 
@@ -2008,7 +2006,7 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
     //(unsigned *)&heap->heaps[prf->ptrarg];
     for (int j = 0; j < static_cast<int>(prf->narg); j++)
     {
-      //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
+      //достать константы из агрументов функции.
       unsigned Arg = GetConstTerm(*(prf_arg + j),
         ClVar->frame2, ClVar, heap);
       Arg = 0;
@@ -2059,16 +2057,16 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
   }
   break;
   }
-  default: out(const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 'пїЅпїЅпїЅ'")); return 1;
+  default: out(const_cast<char*>("Недопустимый тип аргументов в 'ДОБ'")); return 1;
   }
   if (!index)
   {
     heap->last = old_index;
     outerror(44); return 5;
   }
-  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  int number = occ(2, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
-  //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  //включим в цепочку предложений
+  int number = occ(2, ScVar, ClVar, heap);//куда следует воткнуть новое
+  //поищем первое предложение
   tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
   //(baserecord *)&heap->heaps[ScVar->goal[maxarity]];
   if (tp->ident == issymbol)
@@ -2086,22 +2084,22 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
     //(recordsconst *)&heap->heaps[pf->func];
     recordsconst* _ps = ps;
 
-    //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    //теперь поискать сколько переменных в предложении
 
   }
   if (ps->begin != NULL && ps->begin != isnil)
     pfirstclause = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
-  else pfirstclause = NULL;//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  else pfirstclause = NULL;//нет таких предложения
 //===========
   recordclause* newcl = heap->GetPrecordclause(index);
   //(recordclause *)&heap->heaps[index];
-  if (number < 2 || !pfirstclause) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+  if (number < 2 || !pfirstclause) //поставим новое предложение первым в списке
   {
     newcl->next = ps->begin;
-    ps->begin = index;//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    ps->begin = index;//стало первым
   }
-  else //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  else //придется втыкать в средину или конец
   {
     int i = 1; pclause = pfirstclause;
     while (i < number - 1 && pclause->next && pclause->next != isnil)
@@ -2118,11 +2116,11 @@ unsigned prassrt(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)//пїЅпїЅ
   return 3;
 }
 
-unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //СЛОЖЕНИЕ
 {
   long l[4];
   float f[4];
-  bool fl = false;//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ true пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  bool fl = false;//если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++)
   {
@@ -2156,9 +2154,9 @@ unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпїЅп
   switch (sw)
   {
   case 777:
-    return (l[0] + l[1] == l[2]) ? 3 : 5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅ
+    return (l[0] + l[1] == l[2]) ? 3 : 5; //все целые  ццц
   case 666:
-    return (f[0] + f[1] == f[2]) ? 3 : 5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
+    return (f[0] + f[1] == f[2]) ? 3 : 5; //все веществ ffff
   case 775:
     return zap1(l[0] + l[1], 3, ScVar, ClVar, heap);
   case 665:
@@ -2176,11 +2174,11 @@ unsigned pradd(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap) //пїЅпїЅп
   return 1;
 }
 
-unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ   пїЅ goal[0].. 1 .. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //умножение   в goal[0].. 1 .. идетифик параметр
 {
   long l[3];
   float f[3];
-  bool fl = false;//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ true пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  bool fl = false;//если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++)
   {
@@ -2213,8 +2211,8 @@ unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пї
   }
   switch (sw)
   {
-  case 777:return (l[0] * l[1] == l[2]) ? 3 : 5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅ
-  case 666:return (f[0] * f[1] == f[2]) ? 3 : 5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
+  case 777:return (l[0] * l[1] == l[2]) ? 3 : 5; //все целые  ццц
+  case 666:return (f[0] * f[1] == f[2]) ? 3 : 5; //все веществ ffff
   case 775:return zap1(l[0] * l[1], 3, ScVar, ClVar, heap);
   case 665:return zap1f(f[0] * f[1], 3, ScVar, ClVar, heap);
   case 577:
@@ -2241,10 +2239,10 @@ unsigned prmul3(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пї
     return zap1f(f[2] / f[0], 2, ScVar, ClVar, heap);
   }
   outerror(30);
-  return 1;//r_t_e пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  return 1;//r_t_e не вып пред умножение
 }
 
-unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap);/* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap);/* закраска */
 
 unsigned argthree(unsigned name, TScVar* ScVar,
   TClVar* ClVar, array* heap)
@@ -2254,22 +2252,22 @@ unsigned argthree(unsigned name, TScVar* ScVar,
   sw = 100 * ScVar->goal[0] + 10 * ScVar->goal[1] + ScVar->goal[2];
   switch (name)
   {
-  case hpmul:  return prmul3(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpset:  return prset(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅ
-  case hpapp:  return prapp(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅ
-  case hpassrt:return prassrt(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅ
-  case hpadd:return pradd(sw, ScVar, ClVar, heap); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hppaint:return prpaint(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hprand: return prrandom(sw, ScVar, ClVar, heap); // пїЅпїЅпїЅпїЅ
+  case hpmul:  return prmul3(sw, ScVar, ClVar, heap);//умножение
+  case hpset:  return prset(sw, ScVar, ClVar, heap);//точка
+  case hpapp:  return prapp(sw, ScVar, ClVar, heap);//сцеп
+  case hpassrt:return prassrt(sw, ScVar, ClVar, heap);//доб
+  case hpadd:return pradd(sw, ScVar, ClVar, heap); //сложение
+  case hppaint:return prpaint(sw, ScVar, ClVar, heap);//закраска
+  case hprand: return prrandom(sw, ScVar, ClVar, heap); // СЛУЧ
   }
   return 0;
 }
 
-unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ   пїЅ goal[0].. 1 .. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //умножение   в goal[0].. 1 .. идетифик параметр
 {
   long l[4];
   float f[4];
-  bool fl = false;//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ true пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  bool fl = false;//если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 4; i++)
   {
@@ -2300,21 +2298,21 @@ unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅ
       else l[i] = occ(i, ScVar, ClVar, heap);
     }
   }
-  /* switch(sw)     //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float
-   {case 7777:return (occ(0)*occ(1)+occ(2)==occ(3))?3:5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ
-    case 6666:return (occf(0)*occf(1)+occf(2)==occf(3))?3:5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
+  /* switch(sw)     //так было до введения float
+   {case 7777:return (occ(0)*occ(1)+occ(2)==occ(3))?3:5; //все целые  цццц
+    case 6666:return (occf(0)*occf(1)+occf(2)==occf(3))?3:5; //все веществ ffff
     case 5777:if (occ(1))
               {int work;
                if ((work=occ(3)-occ(2))%occ(1)!=0) return 5;
                 return zap1(work/occ(1),1);
               }break;
 
-    case 7577:if (occ(0))                     //пїЅпїЅпїЅпїЅ
+    case 7577:if (occ(0))                     //цпцц
               {int work;
               if ((work=occ(3)-occ(2)) % occ(0)!=0) return 5;
               return zap1(work/occ(0),2);}break;
 
-    case 7757:return zap1(occ(3)-occ(0)*occ(1),3);    //пїЅпїЅпїЅпїЅ
+    case 7757:return zap1(occ(3)-occ(0)*occ(1),3);    //цпцц
     case 7775:return zap1(occ(0)*occ(1)+occ(2),4);
     case 7557:if (occ(0)) return zap2(occ(3)%occ(0),occ(3)/occ(0),3,2);break;
     case 5757:if (occ(1)) return zap2(occ(3)%occ(1),occ(3)/occ(1),3,1);break;
@@ -2323,8 +2321,8 @@ unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅ
 
   switch (sw)
   {
-  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? 3 : 5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ
-  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? 3 : 5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
+  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? 3 : 5; //все целые  цццц
+  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? 3 : 5; //все веществ ffff
   case 5777:
     if (l[1])
     {
@@ -2335,7 +2333,7 @@ unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅ
     }	break;
 
   case 7577:
-    if (l[0])                     //пїЅпїЅпїЅпїЅ
+    if (l[0])                     //цпцц
     {
       long work;
       if ((work = l[3] - l[2]) % l[0] != 0)
@@ -2343,8 +2341,8 @@ unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅ
       return zap1(work / l[0], 2, ScVar, ClVar, heap);
     }	break;
 
-  case 7757: return zap1(l[3] - l[0] * l[1], 3, ScVar, ClVar, heap);    //пїЅпїЅпїЅпїЅ
-  case 6656: return zap1f(f[3] - f[0] * f[1], 3, ScVar, ClVar, heap);    //пїЅпїЅпїЅпїЅ
+  case 7757: return zap1(l[3] - l[0] * l[1], 3, ScVar, ClVar, heap);    //цпцц
+  case 6656: return zap1f(f[3] - f[0] * f[1], 3, ScVar, ClVar, heap);    //цпцц
   case 7775: return zap1(l[0] * l[1] + l[2], 4, ScVar, ClVar, heap);
   case 6665: return zap1f(f[0] * f[1] + f[2], 4, ScVar, ClVar, heap);
   case 7557:
@@ -2362,7 +2360,7 @@ unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅ
            if ((work=f[3]-f[2])%f[1]!=0) return 5;
             return zap1f(work/f[1],1);
           }break; */
-  case 6566:/*if (f[0])                     //пїЅпїЅпїЅпїЅ
+  case 6566:/*if (f[0])                     //цпцц
           {float work;
           if ((work=f[3]-f[2]) % f[0]!=0) return 5;
           return zap1f(work/f[0],2);}break;*/
@@ -2370,7 +2368,7 @@ unsigned prmul(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)     //пїЅ
     return 1;
   }
   outerror(30);
-  return 1;//r_t_e пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  return 1;//r_t_e не вып пред умножение
 }
 
 
@@ -2458,7 +2456,7 @@ unsigned prcircl(unsigned sw, TScVar* ScVar, TClVar* ClVar,
   return 3;
 }
 
-unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)/* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */
+unsigned prpaint(unsigned sw, TScVar* ScVar, TClVar* ClVar, array* heap)/* закраска */
 {
   int x, y, color;
   if (sw != 777)
@@ -2565,13 +2563,13 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
   baserecord* tp;
   unsigned err = 0;
   unsigned index = 0;
-  //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  unsigned sw1;//пїЅпїЅпїЅпїЅпїЅпїЅ
-  unsigned sw2;//пїЅпїЅпїЅпїЅпїЅпїЅ
-  unsigned sw3;//пїЅпїЅпїЅпїЅпїЅпїЅ
+  //типы аргументов каждого по отдельности
+  unsigned sw1;//первый
+  unsigned sw2;//второй
+  unsigned sw3;//третий
   unsigned sw4 = sw;
 
-  //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  //разбор типов аргументов
 
   sw1 = sw4 / 1000;
   sw4 = sw4 - sw1 * 1000;
@@ -2580,7 +2578,7 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
   sw3 = sw4 / 10;
   sw4 = sw4 - sw3 * 10;
 
-  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  //проверка типов
   if (sw1 != 4 && sw1 != 9)
     err = 1;//symb/str
   if (sw2 != 7)
@@ -2591,16 +2589,16 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
     err = 4;//var/list/emptylist
   if (err != 0)
   {
-    out(const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 'пїЅпїЅпїЅпїЅпїЅ'."));//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    out(const_cast<char*>("Неверный тип аргументов в 'ПРЕДЛ'."));//как нибудь раскрою номер параметра
     return 5;
   }
 
-  //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  unsigned i = occ(1, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  //поищем заданное предложение
+  unsigned i = occ(1, ScVar, ClVar, heap);//номер заданного предл
   recordsconst* ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
-    return 5;//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    return 5;//нет предложения
   recordclause* pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
   unsigned w;
@@ -2610,29 +2608,29 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
     //(recordclause *)&heap->heaps[pc->next];
   }
   if (w != i)
-    return 5;//пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    return 5;//предл с данным номером отсутствует
 
-  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  //нашли нужное предложение
   recordfunction* pf = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction*)&heap->heaps[ClVar->head];
-//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+//аргументы функции предл
   unsigned* ptr = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
-//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+//цели найденного предложения
   unsigned* p = heap->GetPunsigned(pc->ptrtarget);
   //(unsigned *)&heap->heaps[pc->ptrtarget];
 
-// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+// запомним состояние
   unsigned oldindex = heap->last;
   ClVar->oldtptr = ClVar->tptr;
   ClVar->frame1 = ClVar->oldsvptr = ClVar->svptr;
-  ClVar->svptr = ClVar->frame1 + pc->nvars;//пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+  ClVar->svptr = ClVar->frame1 + pc->nvars;//это число переменных в предл
   if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0)
   {
-    out(const_cast<char*>("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
+    out(const_cast<char*>("Не достаточно памяти в стеке переменных"));
     return 5;
   }
-  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ ...
+  //унификация головы предлож с переменной или ...
   if (!unify(p[0], ptr[2], ClVar->frame1, ClVar->frame2, ClVar, heap))
   {
     ClVar->svptr = ClVar->oldsvptr;
@@ -2641,7 +2639,7 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
     return 5;
   }
 
-  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  // получим список из целей найденного предложения
   tp = heap->GetPbaserecord(pc->head);
   //(baserecord *)&heap->heaps[pc->head];
   unsigned tlist = 0;
@@ -2704,7 +2702,7 @@ unsigned prclaus(unsigned sw, TScVar* ScVar,
         zero(ClVar);
       }
 
-      return 3;//пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+      return 3;//удачная унификация
     }	break;
   }
   }
@@ -2719,10 +2717,10 @@ unsigned argfour(unsigned name, TScVar* ScVar, TClVar* ClVar, array* heap)
     ScVar->goal[2] * 10 + ScVar->goal[3];
   switch (name)
   {
-  case hpmul:return prmul(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpcircl:return prcircl(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
-  case hpcopy:return prcopy(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅ
-  case hpclaus:return prclaus(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅ
+  case hpmul:return prmul(sw, ScVar, ClVar, heap);//умножение
+  case hpcircl:return prcircl(sw, ScVar, ClVar, heap);//окружность
+  case hpcopy:return prcopy(sw, ScVar, ClVar, heap);//копия
+  case hpclaus:return prclaus(sw, ScVar, ClVar, heap);//предл
   }
   return 0;
 }
@@ -2848,7 +2846,7 @@ unsigned argfive(unsigned name, TScVar* ScVar, TClVar* ClVar,
   switch (name)
   {
   case hpline:
-    return prger(sw, ScVar, ClVar, heap);//пїЅпїЅпїЅпїЅпїЅ
+    return prger(sw, ScVar, ClVar, heap);//линия
   }
   return 1;
 }
@@ -2902,15 +2900,15 @@ bool bpred(unsigned name, unsigned narg)
 
   case hpline: return (narg == 5) ? true : false;//5
   }
-  return false;//пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  return false;//нечего сюда лезть
 }
 
-//=========== пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ==============
+//=========== функции ввода ==============
 
 int Inputstring(char* buf, int size, char* caption)
 {
   int err = 0;
-  char* pCaption = const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
+  char* pCaption = const_cast<char*>("Введите строку");
   if (caption)
     pCaption = caption;
   int _err = InputStringFromDialog(buf, size, pCaption);
@@ -2926,7 +2924,7 @@ int Inputstring(char* buf, int size, char* caption)
 int InputSymbol(char* c)
 {
   int err = 0;
-  char* pCaption = const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
+  char* pCaption = const_cast<char*>("Введите символ");
   char Buf[2];
   err = InputStringFromDialog(Buf, sizeof(Buf), pCaption);
   if (!err)
@@ -2941,8 +2939,8 @@ int InputSymbol(char* c)
 
 int InputInt(int* n, const char* caption)
 {
-  int err = 2;       //!!! пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
-//  char* pCaption = const_cast<char*>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ");
+  int err = 2;       //!!! нужна проверка на правильность ввода
+//  char* pCaption = const_cast<char*>("Введите целое");
 //  if (caption)
 //    pCaption = caption;
   char Buf[255];
