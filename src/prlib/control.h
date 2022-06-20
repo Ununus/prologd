@@ -4,6 +4,9 @@
 #undef PrintVarCount
 #define _tracce
 #undef _tracce
+
+#include "pstructs.h"
+
 void bound(unsigned *t, unsigned *f, unsigned *j, TClVar *ClVar, array *heap);
 void OnControl(TClVar *ClVar, array *heap);
 int control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning);

@@ -1,6 +1,8 @@
 #ifndef extfunch
 #define extfunch
 
+#include "pstructs.h"
+
 unsigned argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap);
 unsigned prout();
 bool bpred(unsigned name, unsigned narg);
