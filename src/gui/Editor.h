@@ -1,10 +1,9 @@
 #ifndef EDITOR_H
-#  ifndef EDITOR_H
-#    define EDITOR_H
+#define EDITOR_H
 
-#    include "Highlighter.h"
-#    include <QPlainTextEdit>
-#    include <QFileInfo>
+#include "Highlighter.h"
+#include <QPlainTextEdit>
+#include <QFileInfo>
 class LineNumberArea;
 class QCompleter;
 
@@ -99,4 +98,4 @@ private:
   PlainTextEditWithLineNumberArea *m_editor;
 };
 
-#  endif  // EDITOR_H
+#endif  // EDITOR_H
