@@ -298,8 +298,11 @@ struct options {
 /* место ВВОДЦЕЛ в куче */
 #define hprdint hprdsym + sizeof(recordsconst) + sizeof("ВВОДЦЕЛ") - 1
 
+/* место ВВОДВЕЩ в куче */
+#define hprdfloat hprdint + sizeof(recordsconst) + sizeof("ВВОДВЕЩ") - 1
+
 /* место ВВКОД в куче */
-#define hpiocod hprdint + sizeof(recordsconst) + sizeof("ВВКОД") - 1
+#define hpiocod hprdfloat + sizeof(recordsconst) + sizeof("ВВКОД") - 1
 
 /* место ЧТЕНИЕ_ИЗ в куче */
 #define hpsee hpiocod + sizeof(recordsconst) + sizeof("ЧТЕНИЕ_ИЗ") - 1

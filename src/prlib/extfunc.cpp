@@ -365,15 +365,15 @@ float occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
 }
 
 unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-    static char str0 [2]{};
+  static char str0[2]{};
   switch (sw) {
   case 7:  //целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
     if (ClVar->PrSetting->out.is_open()) {
       ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
     } else {
-        str0[0] = char(occ(0, ScVar, ClVar, heap));
-        out(str0);
+      str0[0] = char(occ(0, ScVar, ClVar, heap));
+      out(str0);
     }
     return 3;
   }
@@ -397,8 +397,7 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 1;
 }
 
-//ввод целого   !!!нужно ввод вещств
-//АВ: ВВОДЦЕЛ
+// ВВОДЦЕЛ
 unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   int w{};
   char str0[129]{};
@@ -451,6 +450,66 @@ unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
     }
     return zap1(w, 1, ScVar, ClVar, heap);
+  }
+  default: break;
+  }
+  outerror(24);
+  return 1;  // rte
+}
+
+// ВВОДВЕЩ
+unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  float w{};
+  char str0[129]{};
+  const char *caption = "Введите вещественное";
+
+  switch (sw) {
+  case 7:   // Целое
+  case 74:  // Целое, "caption"
+  case 79:  // Целое, caption
+  {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in >> w)) {
+        return 5;
+      }
+    } else {
+      if (sw == 74 || sw == 79) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (InputFloat(&w, str0)) {
+          return 5;
+        }
+      } else {
+        if (InputFloat(&w, caption)) {
+          return 5;
+        }
+      }
+    }
+    return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
+  }
+  case 5:   // Переменная
+  case 54:  // Переменная, "caption"
+  case 59:  // Переменная, caption
+
+  case 1:
+  case 14:
+  case 19: {
+    if (ClVar->PrSetting->in.is_open()) {
+      if (!(ClVar->PrSetting->in >> w)) {
+        return 5;
+      }
+    } else {
+      if (sw == 54 || sw == 59 || sw == 14 || sw == 19) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (InputFloat(&w, str0)) {
+          return 5;
+        }
+      } else {
+        if (InputFloat(&w, caption)) {
+          return 5;
+        }
+      }
+    }
+    return zap1f(w, 1, ScVar, ClVar, heap);
   }
   default: break;
   }
@@ -583,11 +642,12 @@ unsigned argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(1, ClVar->head, ScVar, ClVar, heap);
   sw = ScVar->goal[0];
   switch (name) {
-  case hpcall: return prcall(sw, ScVar, ClVar, heap);    // ВЫП
-  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);  // ВВОДСИМВ
-  case hprdint: return prrdint(sw, ScVar, ClVar, heap);  // ВВОДЦЕЛ
-  case hpiocod: return priocod(sw, ScVar, ClVar, heap);  // ВВКОД
-  case hpsee: return infile(sw, ScVar, ClVar, heap);     // ЧТЕНИЕ_ИЗ
+  case hpcall: return prcall(sw, ScVar, ClVar, heap);        // ВЫП
+  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);      // ВВОДСИМВ
+  case hprdint: return prrdint(sw, ScVar, ClVar, heap);      // ВВОДЦЕЛ
+  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);  // ВВОДВЕЩ
+  case hpiocod: return priocod(sw, ScVar, ClVar, heap);      // ВВКОД
+  case hpsee: return infile(sw, ScVar, ClVar, heap);         // ЧТЕНИЕ_ИЗ
 
   case hptell: return outfile(sw, ScVar, ClVar, heap);  // ЗАПИСЬ_В
   case hpvar: return (sw == 5) ? 3 : 5;                 // ПЕР
@@ -1121,6 +1181,7 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hpskol: return prskol(sw, ScVar, ClVar, heap);                 // СКОЛЬКО
   case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);               // ВВОДСИМВ (с заголовком)
   case hprdint: return prrdint(sw, ScVar, ClVar, heap);               // ВВОДЦЕЛ
+  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);           // ВВОДВЕЩ
   }
   return 1;
 }
@@ -2511,10 +2572,10 @@ bool bpred(unsigned name, unsigned narg) {
   case hptrace:
   case hpnottr:
   case hpcut: return (narg == 0) ? true : false;  // 0
+
   case hp_int:
   case hp_float:
   case hpcall:
-    //    case hprdint:
   case hpiocod:
   case hpsee:
   case hptell:
@@ -2525,6 +2586,7 @@ bool bpred(unsigned name, unsigned narg) {
   case hpwait: return (narg == 1) ? true : false;  // 1
 
   case hprdint:
+  case hprdfloat:
   case hprdsym: return (narg == 1 || narg == 2) ? true : false;
 
   case hprand: return (narg == 1 || narg == 3) ? true : false;
@@ -2593,6 +2655,22 @@ int InputInt(int *n, const char *caption) {
     int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
     if (!_err) {
       if (sscanf(Buf, "%d", n) != 1)
+        continue;
+      err = 0;
+      // out(Buf);
+    } else
+      err = 1;  //
+  }
+  return err;
+}
+
+int InputFloat(float *n, const char *caption) {
+  int err = 2;
+  char Buf[255];
+  while (err == 2) {
+    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
+    if (!_err) {
+      if (sscanf(Buf, "%f", n) != 1)
         continue;
       err = 0;
       // out(Buf);
