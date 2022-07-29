@@ -957,8 +957,7 @@ static float str2float(const char *beg, const char *ed) {
   }
   return res;
 }
-
-// Âûïîëíèíèå ïğåäèêàäà ÑÒĞÂÅÙ
+// Ôóíêöèÿ, êîòîğàÿ âûïîëíÿåò ïğåäèêàò ÑÒĞÂÅÙ
 unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   float w{};
   char lnwr[maxlinelen]{};
@@ -982,6 +981,32 @@ unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     float value = occf(1, ScVar, ClVar, heap);
     sprintf(lnwr, "%f", value);
     return zap3(lnwr, 1, ScVar, ClVar, heap);
+  }
+  default: {
+    outerror(24);
+    return 1;
+  }  // R_t_e
+  }
+}
+// Ôóíêöèÿ, êîòîğàÿ âûïîëíÿåò ïğåäèêàò ÖÅËÂÅÙ
+unsigned int printfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  int int_val = 0;
+  float float_val = 0.f;
+  char lnwr[maxlinelen]{};
+  switch (sw) {
+  case 76:  // int float
+    return (occ(0, ScVar, ClVar, heap) == (int)occf(1, ScVar, ClVar, heap)) ? 3 : 5;
+  case 75:  // int var
+  {
+    int_val = occ(0, ScVar, ClVar, heap);
+    float_val = static_cast<float>(int_val);
+    return zap1f(float_val, 2, ScVar, ClVar, heap);
+  }
+  case 56:  // var float
+  {
+    float_val = occf(1, ScVar, ClVar, heap);
+    int_val = static_cast<int>(float_val);
+    return zap1(int_val, 1, ScVar, ClVar, heap);
   }
   default: {
     outerror(24);
@@ -1232,6 +1257,7 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hpstint: return prstint(sw, ScVar, ClVar, heap);               // ÑÒĞÖÅË
   case hpstfloat: return prstfloat(sw, ScVar, ClVar, heap);           // ÑÒĞÂÅÙ
   case hpstlst: return prstlst(sw, ScVar, ClVar, heap);               // ÑÒĞÑÏÈÑ
+  case hpintfloat: return printfloat(sw, ScVar, ClVar, heap);         // ÖÅËÂÅÙ
   case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);  // ÁÓÊÂÀ
   case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);   // ÖÈÔĞÀ
   case hpterm: return prterm(sw, ScVar, ClVar, heap);                 // ÒÅĞÌ    return 5;
@@ -2653,6 +2679,7 @@ bool bpred(unsigned name, unsigned narg) {
   case hpstint:
   case hpstfloat:
   case hpstlst:
+  case hpintfloat:
   case hplettr:
   case hpdigit:
   case hpterm:

@@ -26,7 +26,7 @@
 #include <QDebug>
 
 // TODO: брать это из prlib
-const int NamesCnt = 47;
+const int NamesCnt = 48;
 extern const char *KeyNames[];
 
 MainWindow::MainWindow(QWidget *parent)

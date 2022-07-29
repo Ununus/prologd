@@ -337,8 +337,11 @@ struct options {
 /* место СТРСПИС в куче */
 #define hpstlst hpstfloat + sizeof(recordsconst) + sizeof("СТРСПИС") - 1
 
+/* место ЦЕЛВЕЩ в куче */
+#define hpintfloat hpstlst + sizeof(recordsconst) + sizeof("ЦЕЛВЕЩ") - 1
+
 /* место БУКВА в куче */
-#define hplettr hpstlst + sizeof(recordsconst) + sizeof("БУКВА") - 1
+#define hplettr hpintfloat + sizeof(recordsconst) + sizeof("БУКВА") - 1
 
 /* место ЦИФРА в куче */
 #define hpdigit hplettr + sizeof(recordsconst) + sizeof("ЦИФРА") - 1
