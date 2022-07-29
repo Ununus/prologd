@@ -19,11 +19,14 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QGroupBox>
+
 #include <algorithm>
 
 #include <QDebug>
 
-const int NamesCnt = 45;
+// TODO: брать это из prlib
+const int NamesCnt = 46;
 extern const char *KeyNames[];
 
 MainWindow::MainWindow(QWidget *parent)
@@ -46,7 +49,9 @@ MainWindow::MainWindow(QWidget *parent)
   , m_prolog_worker(nullptr)
   , m_input_spaces_as_separators(new QCheckBox)
   , m_output_print_questions(new QCheckBox)
-  , m_grp(new GraphicsDialog(this)) {
+  , m_grp(new GraphicsDialog(this))
+  , m_input_console(new QGroupBox)
+  , m_input_console_line_edit(new QLineEdit) {
   setWindowTitle(tr("Prolog-D"));
 
   Actions *actions = m_settings->getActions();
@@ -93,6 +98,16 @@ MainWindow::MainWindow(QWidget *parent)
 
   QWidget *inputWidget = new QWidget;
   QVBoxLayout *input_vlay = new QVBoxLayout;
+
+  QVBoxLayout *m_input_console_layout = new QVBoxLayout;
+  m_input_console_layout->addWidget(m_input_console_line_edit);
+  m_input_console->setLayout(m_input_console_layout);
+  m_input_console->setTitle("Введите целое число");
+  input_vlay->addWidget(m_input_console);
+  m_input_console->setVisible(false);
+  // m_input_console->setStyleSheet("border: 1px solid red; margin-top: 0.5em;");
+  m_input_console_line_edit->setStyleSheet("border: 1px solid gray; border-radius: 6px;");
+
   QHBoxLayout *input_hlay = new QHBoxLayout;
   QLabel *input_label = new QLabel(tr("Input"));
   input_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
@@ -111,6 +126,7 @@ MainWindow::MainWindow(QWidget *parent)
   input_vlay->setMargin(2);
   input_vlay->setSpacing(0);
   inputWidget->setLayout(input_vlay);
+
   m_input_text->setFont(m_settings->getFont());
   m_input_text->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAsNeeded);
   m_input_text->setLineWrapMode(QPlainTextEdit::LineWrapMode::NoWrap);
@@ -195,6 +211,8 @@ MainWindow::MainWindow(QWidget *parent)
   connect(actions->action_help, SIGNAL(triggered(bool)), SLOT(showHelp()));
   connect(actions->action_about_prolog, SIGNAL(triggered(bool)), SLOT(showAboutProlog()));
   connect(actions->action_about_qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
+
+  connect(m_input_console_line_edit, SIGNAL(returnPressed()), SLOT(inputConsoleReturn()));
 }
 MainWindow::~MainWindow() {
   QSettings qsettings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);
@@ -562,7 +580,7 @@ void MainWindow::prologExecute() {
   connect(m_prolog_worker, SIGNAL(signalStdErr(QString)), m_output_text, SLOT(appendHtml(QString)));
   connect(this, SIGNAL(executeProlog(QStringList, QStringList)), m_prolog_worker, SLOT(run(QStringList, QStringList)));
   connect(m_prolog_worker, SIGNAL(signalWorkEnded()), SLOT(prologEndWork()));
-  connect(m_prolog_worker, SIGNAL(signalWantInput(QString)), SLOT(prologInputBox(QString)));
+  connect(m_prolog_worker, SIGNAL(signalWantInput(QString)), SLOT(prologConsoleInput(QString)));
   connect(m_prolog_worker, SIGNAL(signalCanvasUpdated()), m_grp->drawArea(), SLOT(update()));
   connect(m_prolog_worker, SIGNAL(signalCanvasUpdated()), m_grp, SLOT(showNormal()));
 
@@ -594,6 +612,10 @@ void MainWindow::prologAbort() {
   m_settings->getActions()->action_trace->setEnabled(true);
   m_settings->getActions()->action_abort->setEnabled(false);
   // outputTextEdit->appendPlainText(tr("Process terminated"));
+
+  m_prolog_want_input = false;
+  m_input_console->setTitle("");
+  m_input_console->setVisible(false);
 }
 void MainWindow::prologTracing() {}
 void MainWindow::showHelp() {
@@ -658,30 +680,48 @@ void MainWindow::prologEndWork() {
   m_settings->getActions()->action_trace->setEnabled(true);
   m_settings->getActions()->action_abort->setEnabled(false);
   m_grp->drawArea()->update();
-}
-void MainWindow::prologInputBox(QString caption) {
-  Qt::WindowFlags flags = windowFlags();
-  static int last_x = -1, last_y;
-  if (!m_input_dialog) {
-    Qt::WindowFlags helpFlag = Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint;
-    flags = flags & (~helpFlag);
-    m_input_dialog = new QInputDialog(this, flags);
-    m_input_dialog->setWindowTitle(tr("Input"));
-  }
-  m_input_dialog->setLabelText(caption);
-  m_input_dialog->show();
-  if (last_x >= 0) {
-    m_input_dialog->move(last_x, last_y);
-  }
 
-  bool ok = m_input_dialog->exec();
-  last_x = m_input_dialog->pos().x();
-  last_y = m_input_dialog->pos().y();
-  if (!ok) {
-    m_prolog_worker->inputStr.clear();
-  } else {
-    m_prolog_worker->inputStr = m_input_dialog->textValue();
-  }
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  m_prolog_want_input = false;
+  m_input_console->setTitle("");
+  m_input_console->setVisible(false);
+}
+void MainWindow::inputConsoleReturn() {
+  if (!m_prolog_want_input)
+    return;
+  m_prolog_worker->inputStr = m_input_console_line_edit->text();
+  m_prolog_want_input = false;
+  m_input_console->setTitle("");
+  m_input_console->setVisible(false);
+
   m_prolog_worker->haveInput = true;
+}
+void MainWindow::prologConsoleInput(QString caption) {
+  m_prolog_want_input = true;
+  m_input_console->setTitle(caption);
+  m_input_console->setVisible(true);
+  m_input_console_line_edit->setFocus();
+  // Qt::WindowFlags flags = windowFlags();
+  // static int last_x = -1, last_y;
+  // if (!m_input_dialog) {
+  //   Qt::WindowFlags helpFlag = Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint;
+  //   flags = flags & (~helpFlag);
+  //   m_input_dialog = new QInputDialog(this, flags);
+  //   m_input_dialog->setWindowTitle(tr("Input"));
+  // }
+  // m_input_dialog->setLabelText(caption);
+  // m_input_dialog->show();
+  // if (last_x >= 0) {
+  //   m_input_dialog->move(last_x, last_y);
+  // }
+
+  // bool ok = m_input_dialog->exec();
+  // last_x = m_input_dialog->pos().x();
+  // last_y = m_input_dialog->pos().y();
+  // if (!ok) {
+  //   m_prolog_worker->inputStr.clear();
+  // } else {
+  //   m_prolog_worker->inputStr = m_input_dialog->textValue();
+  // }
+  // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  // m_prolog_worker->haveInput = true;
 }

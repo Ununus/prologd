@@ -14,6 +14,7 @@ class QSplitter;
 class QFileSystemWatcher;
 class QSettings;
 class QInputDialog;
+class QGroupBox;
 
 // Структуры вынес, чтобы добавить сюда свой input для editor
 struct TabContent {
@@ -72,7 +73,8 @@ private slots:
   void setCurrentEditor(int index);
   bool closeEditor(int index);
 
-  void prologInputBox(QString);
+  void inputConsoleReturn();
+  void prologConsoleInput(QString);
 signals:
   void executeProlog(QStringList, QStringList);
   void inputReq(QString);
@@ -98,6 +100,10 @@ private:
   QCheckBox *m_input_spaces_as_separators;
   QCheckBox *m_output_print_questions;
   GraphicsDialog *m_grp;
+
+  QGroupBox *m_input_console;
+  QLineEdit *m_input_console_line_edit;
+  bool m_prolog_want_input = false;
 };
 
 #endif  // MAINWINDOW_H

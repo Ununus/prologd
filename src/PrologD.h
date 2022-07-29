@@ -39,6 +39,7 @@ public:
 
   QStringList inputList;
   QString inputStr;
+  // TODO: atomic?
   bool haveInput{ false };
 public slots:
   void run(const QStringList &program, const QStringList &input);

@@ -146,7 +146,7 @@ void errout(const char *str) {
   emit prd->signalStdErr(decode_cp1251_to_utf8("<font color=\"Crimson\">Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
 int InputStringFromDialog(char *buf, size_t size, char *caption) {
-  emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
+  // emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
   std::string line;
   while (Ninp < prd->inputList.size() && prd->inputList[Ninp].isEmpty())
     ++Ninp;
@@ -166,11 +166,13 @@ int InputStringFromDialog(char *buf, size_t size, char *caption) {
     // out(caption);
     line = decode_utf8_to_cp1251(prd->inputStr);
   }
-  if (size <= 0)
+  if (size <= 0) {
     return 1;
-  int to = size - 1;
-  if (static_cast<int>(line.size()) < to)
-    to = static_cast<int>(line.size());
+  }
+  int to = size - 1, lnsz = static_cast<int>(line.size());
+  if (lnsz < to) {
+    to = lnsz;
+  }
   for (int i = 0; i < to; ++i) {
     buf[i] = line[i];
   }
