@@ -933,6 +933,63 @@ unsigned prstint(unsigned sw,
   }  // outerror(2);return 1;//R_T_e нет памяти
 }
 
+// TODO: заменить это на более подходящую функцию
+static float str2float(const char *beg, const char *ed) {
+  float res = 0.f;
+  const char *pt = beg;
+  while (*pt != '.' && *pt != '\0' && pt != ed) {
+    res *= 10.f;
+    res += (*pt - '0');
+    ++pt;
+  }
+  if (pt != ed) {
+    ++pt;
+  }
+  if (pt != ed) {
+    float af = 0.f;
+    float dv = 1.f;
+    while (*pt != '\0' && pt != ed) {
+      dv /= 10.f;
+      af += (*pt - '0') * dv;
+      ++pt;
+    }
+    res += af;
+  }
+  return res;
+}
+
+// Выполниние предикада СТРВЕЩ
+unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  float w{};
+  char lnwr[maxlinelen]{};
+  switch (sw) {
+  case 96:  // str float
+  case 95:  // str var
+  case 46:  // symb float
+  case 45:  // symb var
+  {
+    occ_line(0, lnwr, ScVar, ClVar, heap);
+    // std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    //  TODO: здесь нужна проверка правильности конвертации
+    w = str2float(lnwr, lnwr + sizeof(lnwr));
+
+    if (sw == 95 || sw == 45) {
+      return zap1f(w, 2, ScVar, ClVar, heap);
+    }
+    return (w == occf(1, ScVar, ClVar, heap)) ? 3 : 5;
+  }
+  case 56: {
+    float value = occf(1, ScVar, ClVar, heap);
+    sprintf(lnwr, "%f", value);
+    return zap3(lnwr, 1, ScVar, ClVar, heap);
+  }
+  default: {
+    outerror(24);
+    return 1;
+  }  // R_t_e
+  }
+}
+
 bool digit(char a) {
   return (isdigitrus(a) == NULL) ? false : true;
 }
@@ -1173,6 +1230,7 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
   case hpgt: return prgt(ScVar, ClVar, heap);                         // БОЛЬШЕ
   case hpstint: return prstint(sw, ScVar, ClVar, heap);               // СТРЦЕЛ
+  case hpstfloat: return prstfloat(sw, ScVar, ClVar, heap);           // СТРВЕЩ
   case hpstlst: return prstlst(sw, ScVar, ClVar, heap);               // СТРСПИС
   case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);  // БУКВА
   case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);   // ЦИФРА
@@ -2593,6 +2651,7 @@ bool bpred(unsigned name, unsigned narg) {
 
   case hpgt:
   case hpstint:
+  case hpstfloat:
   case hpstlst:
   case hplettr:
   case hpdigit:

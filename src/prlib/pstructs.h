@@ -316,7 +316,7 @@ struct options {
 // место ЦЕЛ в куче
 #define hpint hpvar + sizeof(recordsconst) + sizeof("ЦЕЛ") - 1
 
-//       ВЕЩ
+// место ВЕЩ в куче
 #define hpfloat hpint + sizeof(recordsconst) + sizeof("ВЕЩ") - 1
 
 /* место СИМВ в куче */
@@ -331,8 +331,11 @@ struct options {
 /* место СТРЦЕЛ в куче */
 #define hpstint hpgt + sizeof(recordsconst) + sizeof("СТРЦЕЛ") - 1
 
+/* место СТРВЕЩ в куче */
+#define hpstfloat hpstint + sizeof(recordsconst) + sizeof("СТРВЕЩ") - 1
+
 /* место СТРСПИС в куче */
-#define hpstlst hpstint + sizeof(recordsconst) + sizeof("СТРСПИС") - 1
+#define hpstlst hpstfloat + sizeof(recordsconst) + sizeof("СТРСПИС") - 1
 
 /* место БУКВА в куче */
 #define hplettr hpstlst + sizeof(recordsconst) + sizeof("БУКВА") - 1
