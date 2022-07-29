@@ -652,8 +652,9 @@ unsigned argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hptell: return outfile(sw, ScVar, ClVar, heap);  // ЗАПИСЬ_В
   case hpvar: return (sw == 5) ? 3 : 5;                 // ПЕР
   case hpint: return (sw == 7) ? 3 : 5;                 // ЦЕЛ
-  case hpfloat: return (sw == 6) ? 3 : 5;               //вещественное
+  case hpfloat: return (sw == 6) ? 3 : 5;               // ВЕЩ
   case hpsym: return (sw == 4) ? 3 : 5;                 // СИМВ
+  case hplst: return (sw == 2 || sw == 3) ? 3 : 5;      // СПИС (пустой или с чем-то)
 
   case hpwait: return prwait(sw, ScVar, ClVar, heap);  // ЖДИ
 
@@ -2667,6 +2668,7 @@ bool bpred(unsigned name, unsigned narg) {
   case hpint:
   case hpfloat:
   case hpsym:
+  case hplst:
   case hpwait: return (narg == 1) ? true : false;  // 1
 
   case hprdint:

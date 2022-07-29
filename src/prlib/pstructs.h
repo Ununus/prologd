@@ -322,8 +322,11 @@ struct options {
 /* место СИМВ в куче */
 #define hpsym hpfloat + sizeof(recordsconst) + sizeof("СИМВ") - 1
 
+/* место СПИС в куче */
+#define hplst hpsym + sizeof(recordsconst) + sizeof("СПИС") - 1
+
 /* место ВЫВОД в куче */
-#define hpout hpsym + sizeof(recordsconst) + sizeof("ВЫВОД") - 1
+#define hpout hplst + sizeof(recordsconst) + sizeof("ВЫВОД") - 1
 
 /* место БОЛЬШЕ в куче */
 #define hpgt hpout + sizeof(recordsconst) + sizeof("БОЛЬШЕ") - 1
