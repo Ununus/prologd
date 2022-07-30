@@ -149,12 +149,13 @@ public:
     *ptcltarget, *pncltarget;
 };
 
+constexpr int bruteExpand = 8;
 // структура для scaner
-constexpr int _maxbptr_ = 1024;
-constexpr int _maxgptr_ = 150;
-constexpr int _maxvar_ = 512;
-constexpr int _maxsymbol_ = 4096;
-constexpr int _maxarray_ = 5000;
+constexpr int _maxbptr_ = bruteExpand * 1024;
+constexpr int _maxgptr_ = bruteExpand * 150;
+constexpr int _maxvar_ = bruteExpand * 512;
+constexpr int _maxsymbol_ = bruteExpand * 4096;
+constexpr int _maxarray_ = bruteExpand * 5000;
 
 struct TScVar {
   unsigned int *buf;
@@ -186,9 +187,11 @@ struct TPrSetting {
   bool Trace{ false };
 };
 
+constexpr int bruteExpand2 = 32;
 //структуры для хранения данных - программы
-constexpr int _vmaxstack_ = 1000;
-constexpr int _maxbf_ = 2048;
+constexpr int _vmaxstack_ = bruteExpand2 * 1000;
+constexpr int _maxbf_ = bruteExpand2 * 2048;
+
 struct TClVar {
   unsigned int stat;
   unsigned int vmaxstack;
