@@ -75,6 +75,10 @@ private slots:
 
   void inputConsoleReturn();
   void prologConsoleInput(QString);
+  void prologPredicatValOut(bool);
+  void prologQuestionOut(QString);
+  void prologStdOut(QString);
+  void prologStdErr(QString);
 signals:
   void executeProlog(QStringList, QStringList);
   void inputReq(QString);
@@ -104,6 +108,7 @@ private:
   QGroupBox *m_input_console;
   QLineEdit *m_input_console_line_edit;
   bool m_prolog_want_input = false;
+  bool m_lastAppendHtml = false;
 };
 
 #endif  // MAINWINDOW_H

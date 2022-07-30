@@ -27,6 +27,8 @@ static std::unique_ptr<std::ofstream> error_file;
 
 static std::istream *source_stream{ nullptr };
 static std::istream *input_stream{ nullptr };
+// TODO: если открываем один и тот же файл для stdout и stderr, то не работает
+// Нужно сделать если output_filename == output_filename, то указатели на один и тот же поток
 static std::ostream *output_stream{ nullptr };
 static std::ostream *error_stream{ nullptr };
 
@@ -35,6 +37,10 @@ static bool dialog{ false };
 static int parsed_str_number{ 0 };
 
 static std::list<std::string> inputed_strs;
+
+// Для контроля перевода строк
+// Работает только с одним потоком вывода
+static bool last_srv = true;
 
 void print_cp1251_decoded_to_utf8(const char *str, std::ostream &out) {
   for (const char *c = str; *c; ++c) {
@@ -47,7 +53,7 @@ void print_cp1251_decoded_to_utf8(const char *str, std::ostream &out) {
       out << static_cast<unsigned char>(*c & 127u);
     }
   }
-  out << '\n';
+  // out << '\n';
 }
 
 void decode_utf8_to_cp1251(std::string &str) {
@@ -68,15 +74,32 @@ void decode_utf8_to_cp1251(std::string &str) {
   str.resize(si);
 }
 
+void outPredicateVal(bool value) {
+  if (!last_srv) {
+    *output_stream << '\n';
+  }
+  if (value) {
+    print_cp1251_decoded_to_utf8("ДА", *output_stream);
+  } else {
+    print_cp1251_decoded_to_utf8("НЕТ", *output_stream);
+  }
+  *output_stream << '\n';
+  last_srv = true;
+}
+
 void out(const char *str) {
-  //*output_stream << str << '\n';
   print_cp1251_decoded_to_utf8(str, *output_stream);
+  last_srv = false;
 }
 
 void errout(const char *str) {
-  //*error_stream << parsed_str_number << ' ' << str << std::endl;
+  if (!last_srv) {
+    *error_stream << '\n';
+  }
   *error_stream << parsed_str_number << ' ';
   print_cp1251_decoded_to_utf8(str, *error_stream);
+  *error_stream << std::endl;
+  last_srv = true;
 }
 
 int runProlog() {
@@ -123,7 +146,12 @@ int runProlog() {
       if (!serr && ScVar->Query && ScVar->EndOfClause)  //если конец предложения и вопрос то
       {
         if (out_questions) {
-          out(cur_str);
+          if (!last_srv) {
+            *output_stream << '\n';
+          }
+          print_cp1251_decoded_to_utf8(cur_str, *output_stream);
+          *output_stream << '\n';
+          last_srv = true;
         }
         cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
         ScVar->Query = ScVar->EndOfClause = false;  //на выполнение

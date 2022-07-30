@@ -100,13 +100,17 @@ MainWindow::MainWindow(QWidget *parent)
   QVBoxLayout *input_vlay = new QVBoxLayout;
 
   QVBoxLayout *m_input_console_layout = new QVBoxLayout;
-  m_input_console_layout->addWidget(m_input_console_line_edit);
+  QHBoxLayout *m_input_line_edit_layout = new QHBoxLayout;
+  QLabel *m_console_label = new QLabel(">_");
+  m_input_line_edit_layout->addWidget(m_console_label);
+  m_input_line_edit_layout->addWidget(m_input_console_line_edit);
+  m_input_line_edit_layout->setMargin(0);
+  m_input_console_layout->addLayout(m_input_line_edit_layout);
   m_input_console->setLayout(m_input_console_layout);
-  m_input_console->setTitle("Введите целое число");
   input_vlay->addWidget(m_input_console);
   m_input_console->setVisible(false);
   // m_input_console->setStyleSheet("border: 1px solid red; margin-top: 0.5em;");
-  m_input_console_line_edit->setStyleSheet("border: 1px solid gray; border-radius: 6px;");
+  // m_input_console_line_edit->setStyleSheet("border: 1px solid gray; border-radius: 6px;");
 
   QHBoxLayout *input_hlay = new QHBoxLayout;
   QLabel *input_label = new QLabel(tr("Input"));
@@ -576,8 +580,10 @@ void MainWindow::prologExecute() {
   m_prolog_worker->setOutQustion(m_output_print_questions->isChecked());
   m_prolog_worker->moveToThread(m_execution_thread);
 
-  connect(m_prolog_worker, SIGNAL(signalStdOut(QString)), m_output_text, SLOT(appendHtml(QString)));
-  connect(m_prolog_worker, SIGNAL(signalStdErr(QString)), m_output_text, SLOT(appendHtml(QString)));
+  connect(m_prolog_worker, SIGNAL(signalPredicatValOut(bool)), SLOT(prologPredicatValOut(bool)));
+  connect(m_prolog_worker, SIGNAL(signalOutQuestion(QString)), SLOT(prologQuestionOut(QString)));
+  connect(m_prolog_worker, SIGNAL(signalStdOut(QString)), SLOT(prologStdOut(QString)));
+  connect(m_prolog_worker, SIGNAL(signalStdErr(QString)), SLOT(prologStdErr(QString)));
   connect(this, SIGNAL(executeProlog(QStringList, QStringList)), m_prolog_worker, SLOT(run(QStringList, QStringList)));
   connect(m_prolog_worker, SIGNAL(signalWorkEnded()), SLOT(prologEndWork()));
   connect(m_prolog_worker, SIGNAL(signalWantInput(QString)), SLOT(prologConsoleInput(QString)));
@@ -700,28 +706,24 @@ void MainWindow::prologConsoleInput(QString caption) {
   m_input_console->setTitle(caption);
   m_input_console->setVisible(true);
   m_input_console_line_edit->setFocus();
-  // Qt::WindowFlags flags = windowFlags();
-  // static int last_x = -1, last_y;
-  // if (!m_input_dialog) {
-  //   Qt::WindowFlags helpFlag = Qt::WindowContextHelpButtonHint | Qt::WindowMinMaxButtonsHint;
-  //   flags = flags & (~helpFlag);
-  //   m_input_dialog = new QInputDialog(this, flags);
-  //   m_input_dialog->setWindowTitle(tr("Input"));
-  // }
-  // m_input_dialog->setLabelText(caption);
-  // m_input_dialog->show();
-  // if (last_x >= 0) {
-  //   m_input_dialog->move(last_x, last_y);
-  // }
-
-  // bool ok = m_input_dialog->exec();
-  // last_x = m_input_dialog->pos().x();
-  // last_y = m_input_dialog->pos().y();
-  // if (!ok) {
-  //   m_prolog_worker->inputStr.clear();
-  // } else {
-  //   m_prolog_worker->inputStr = m_input_dialog->textValue();
-  // }
-  // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-  // m_prolog_worker->haveInput = true;
+}
+void MainWindow::prologPredicatValOut(bool value) {
+  static QString yesno[] = { "НЕТ", "ДА" };
+  m_output_text->appendHtml("<font color=\"#0a22D6\">" + yesno[value]);
+  m_lastAppendHtml = true;
+}
+void MainWindow::prologQuestionOut(QString str) {
+  m_output_text->appendHtml("<font color=\"#0a22D6\">" + str);
+  m_lastAppendHtml = true;
+}
+void MainWindow::prologStdOut(QString str) {
+  if (m_lastAppendHtml) {
+    m_output_text->appendHtml("");
+  }
+  m_output_text->insertPlainText(str);
+  m_lastAppendHtml = false;
+}
+void MainWindow::prologStdErr(QString str) {
+  m_output_text->appendHtml("<font color=\"Crimson\">" + str);
+  m_lastAppendHtml = true;
 }

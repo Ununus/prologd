@@ -472,12 +472,10 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
   return j + i;
 }
 
-const char *yes = "ÄÀ";
-const char *no = "ÍÅÒ";
 void prvars(TScVar *ScVar, TClVar *ClVar, array *heap)  //ïîêà òîëüêî îïèñàíèå ôóíêöèè
 {
   if (!ClVar->varqu) {
-    out(yes);
+    outPredicateVal(true);
     ClVar->flag = false;
     ClVar->stat = 1;
   } else {
@@ -699,8 +697,9 @@ int control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
     if (!*EnableRunning)
       ClVar->err = 27;  // abort
   }
-  if (ClVar->flag)
-    out(no);
+  if (ClVar->flag) {
+    outPredicateVal(false);
+  }
   return ClVar->err;
 }
 

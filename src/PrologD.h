@@ -44,6 +44,8 @@ public:
 public slots:
   void run(const QStringList &program, const QStringList &input);
 signals:
+  void signalPredicatValOut(bool);
+  void signalOutQuestion(QString);
   void signalStdOut(QString);
   void signalStdErr(QString);
   void signalWorkEnded();

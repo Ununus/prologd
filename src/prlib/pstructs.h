@@ -7,6 +7,7 @@
 //#include <limits.h>
 //#include "pdefs.h"
 
+extern void outPredicateVal(bool value);
 extern void out(const char *str);
 extern void errout(const char *str);
 
