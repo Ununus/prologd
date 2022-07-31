@@ -580,10 +580,11 @@ void MainWindow::prologExecute() {
   m_prolog_worker->setOutQustion(m_output_print_questions->isChecked());
   m_prolog_worker->moveToThread(m_execution_thread);
 
-  connect(m_prolog_worker, SIGNAL(signalPredicatValOut(bool)), SLOT(prologPredicatValOut(bool)));
-  connect(m_prolog_worker, SIGNAL(signalOutQuestion(QString)), SLOT(prologQuestionOut(QString)));
-  connect(m_prolog_worker, SIGNAL(signalStdOut(QString)), SLOT(prologStdOut(QString)));
-  connect(m_prolog_worker, SIGNAL(signalStdErr(QString)), SLOT(prologStdErr(QString)));
+  connect(m_prolog_worker, SIGNAL(signalPredicatOut(bool)), SLOT(prologPredicatOut(bool)));
+  connect(m_prolog_worker, SIGNAL(signalPrologOut(QString)), SLOT(prologOut(QString)));
+  connect(m_prolog_worker, SIGNAL(signalUserOut(QString)), SLOT(prologUserOut(QString)));
+  connect(m_prolog_worker, SIGNAL(signalErrorOut(QString)), SLOT(prologErrorOut(QString)));
+
   connect(this, SIGNAL(executeProlog(QStringList, QStringList)), m_prolog_worker, SLOT(run(QStringList, QStringList)));
   connect(m_prolog_worker, SIGNAL(signalWorkEnded()), SLOT(prologEndWork()));
   connect(m_prolog_worker, SIGNAL(signalWantInput(QString)), SLOT(prologConsoleInput(QString)));
@@ -706,24 +707,27 @@ void MainWindow::prologConsoleInput(QString caption) {
   m_input_console->setTitle(caption);
   m_input_console->setVisible(true);
   m_input_console_line_edit->setFocus();
+  m_input_console_line_edit->selectAll();
 }
-void MainWindow::prologPredicatValOut(bool value) {
+void MainWindow::prologPredicatOut(bool value) {
   static QString yesno[] = { "НЕТ", "ДА" };
   m_output_text->appendHtml("<font color=\"#0a22D6\">" + yesno[value]);
   m_lastAppendHtml = true;
 }
-void MainWindow::prologQuestionOut(QString str) {
+void MainWindow::prologOut(QString str) {
   m_output_text->appendHtml("<font color=\"#0a22D6\">" + str);
   m_lastAppendHtml = true;
 }
-void MainWindow::prologStdOut(QString str) {
+void MainWindow::prologUserOut(QString str) {
   if (m_lastAppendHtml) {
     m_output_text->appendHtml("");
   }
   m_output_text->insertPlainText(str);
+  QString test = "abc\nder";
+  m_output_text->insertPlainText(test);
   m_lastAppendHtml = false;
 }
-void MainWindow::prologStdErr(QString str) {
+void MainWindow::prologErrorOut(QString str) {
   m_output_text->appendHtml("<font color=\"Crimson\">" + str);
   m_lastAppendHtml = true;
 }

@@ -75,10 +75,11 @@ private slots:
 
   void inputConsoleReturn();
   void prologConsoleInput(QString);
-  void prologPredicatValOut(bool);
-  void prologQuestionOut(QString);
-  void prologStdOut(QString);
-  void prologStdErr(QString);
+
+  void prologPredicatOut(bool);
+  void prologOut(QString);
+  void prologUserOut(QString);
+  void prologErrorOut(QString);
 signals:
   void executeProlog(QStringList, QStringList);
   void inputReq(QString);

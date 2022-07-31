@@ -373,7 +373,7 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
     } else {
       str0[0] = char(occ(0, ScVar, ClVar, heap));
-      out(str0);
+      usrout(str0);
     }
     return 3;
   }
@@ -1595,19 +1595,19 @@ void PrintFunction(recordfunction *prf, int Level, TScVar *ScVar, TClVar *ClVar,
   memset(pBuf, ' ', Level);
   char *p = pBuf + Level;
   sprintf(p, "PrintFunction: Level %d", Level);
-  out(pBuf);
+  pldout(pBuf);
   baserecord *pbr = heap->GetPbaserecord(prf->func);
   //(baserecord *)&heap->heaps[prf->func];
   sprintf(p, "func: (%d)", prf->func);
-  out(pBuf);
+  pldout(pBuf);
   PrintTerm(pbr, Level + 1, ScVar, ClVar, heap);
   unsigned *ptrarg = heap->GetPunsigned(prf->ptrarg);
   //(unsigned *)&heap->heaps[prf->ptrarg];
   sprintf(p, "arguments: (%d)", prf->narg);
-  out(pBuf);
+  pldout(pBuf);
   for (int i = 0; i < static_cast<int>(prf->narg); i++) {
     sprintf(p, "argument %d (%d)", i, ptrarg[i]);
-    out(pBuf);
+    pldout(pBuf);
     baserecord *pbr = heap->GetPbaserecord(ptrarg[i]);
     //(baserecord *)&heap->heaps[ptrarg[i]];
     PrintTerm(pbr, Level + 1, ScVar, ClVar, heap);
@@ -1625,7 +1625,7 @@ void PrintRecordsconst(recordsconst *pbr, int Level, TScVar *Scvar, TClVar *ClVa
   int len = strlen(p);
   strncpy(p + len, pc, pbr->length);
   *(p + len + pbr->length) = 0;
-  out(pBuf);
+  pldout(pBuf);
 }
 
 void PrintVar(recordvar *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *heap) {
@@ -1633,16 +1633,16 @@ void PrintVar(recordvar *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *he
   memset(pBuf, ' ', Level);
   char *p = pBuf + Level;
   sprintf(p, "PrintVar: Level %d", Level);
-  out(pBuf);
+  pldout(pBuf);
   char *pc = heap->GetPchar(pbr->ptrsymb);
   //(char *)&heap->heaps[pbr->ptrsymb];
   sprintf(p, "Name: ");
   int len = strlen(p);
   strncpy(p + len, pc, pbr->length);
   *(p + len + pbr->length) = 0;
-  out(pBuf);
+  pldout(pBuf);
   sprintf(p, "num of clause: %d", pbr->num);
-  out(pBuf);
+  pldout(pBuf);
 }
 
 void PrintInteger(recordinteger *pbr, int Level) {
@@ -1650,9 +1650,9 @@ void PrintInteger(recordinteger *pbr, int Level) {
   memset(pBuf, ' ', Level);
   char *p = pBuf + Level;
   sprintf(p, "PrintInteger: Level %d", Level);
-  out(pBuf);
+  pldout(pBuf);
   sprintf(p, "Value: %d", pbr->value);
-  out(pBuf);
+  pldout(pBuf);
 }
 
 void PrintTerm(baserecord *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *heap) {
@@ -1660,7 +1660,7 @@ void PrintTerm(baserecord *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *
   memset(pBuf, ' ', Level);
   char *p = pBuf + Level;
   sprintf(p, "PrintTerm: Level %d", Level);
-  out(pBuf);
+  pldout(pBuf);
   int ident = pbr->ident;
   switch (ident) {
   case isfunction: PrintFunction((recordfunction *)pbr, Level + 1, ScVar, ClVar, heap); return;
@@ -1668,7 +1668,7 @@ void PrintTerm(baserecord *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *
   case isvar: PrintVar((recordvar *)pbr, Level + 1, ScVar, ClVar, heap); return;
   case isinteger: PrintInteger((recordinteger *)pbr, Level + 1); return;
   case islist: PrintList((recordlist *)pbr, Level + 1, ScVar, ClVar, heap); return;
-  default: sprintf(pBuf, "unknown id of term: %d", ident); out(pBuf);
+  default: sprintf(pBuf, "unknown id of term: %d", ident); pldout(pBuf);
   }
 }
 
@@ -1677,7 +1677,7 @@ void PrintList(recordlist *pl, int Level, TScVar *ScVar, TClVar *ClVar, array *h
   memset(pBuf, ' ', Level);
   char *p = pBuf + Level;
   sprintf(p, "PrintList: Level %d", Level);
-  out(pBuf);
+  pldout(pBuf);
   while (pl->ident == islist) {
     baserecord *pb = heap->GetPbaserecord(pl->head);
     PrintTerm(pb, Level + 1, ScVar, ClVar, heap);
@@ -1690,7 +1690,7 @@ recordfunction *FindFuncFromFunc(baserecord *pbr) {
 }
 
 recordfunction *FindFuncFromTerm(baserecord *pbr) {
-  out(const_cast<char *>("FindFundFromterm"));
+  pldout(const_cast<char *>("FindFundFromterm"));
   int ident = pbr->ident;
   switch (pbr->ident) {
   case isfunction: {
@@ -1751,7 +1751,7 @@ int GetVarsFromFunction(recordvar *Vars[], int VarCount, recordfunction *pf, TSc
     default:
       char _Buf[255];
       sprintf(_Buf, "GetVarCountFromFunction: unknown term %d", tp->ident);
-      out(_Buf);
+      pldout(_Buf);
       return -1;
     }
   }
@@ -1762,7 +1762,7 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
   //    recordclause * rc = (recordclause*)&heap->heaps[index];
   int VarCount = 0;
   if (rc->ident != isclause) {
-    out(const_cast<char *>("No clause in func GetVarCountFromCluse"));
+    pldout(const_cast<char *>("No clause in func GetVarCountFromCluse"));
     return -1;
   }
 
@@ -1784,7 +1784,7 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
     default:
       char _Buf[255];
       sprintf(_Buf, "GetVarCountFromClause: unknown term %d", br->ident);
-      out(_Buf);
+      pldout(_Buf);
       return -1;
     }
     i++;
@@ -1832,7 +1832,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     if (tp->ident != isfunction)  // может быть либо функцией или переменной,конкретизированной функцией возможно что
                                   // нужно поискать функцию
     {
-      out(const_cast<char *>("предикт 'ДОБ': АРГ1 не функция"));
+      pldout(const_cast<char *>("предикт 'ДОБ': АРГ1 не функция"));
       return 1;
     }
     recordfunction *prf = (recordfunction *)tp;
@@ -1887,7 +1887,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     count_var = 0;
     if (VarOnList(tp, ScVar, ClVar, heap) != 0)  //подсчет числа переменных в новом предложении
     {
-      out(const_cast<char *>("Ошибка при подсчете числа переменных"));
+      pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
       return 1;
     }
     nvar += count_var;  //еще нужно подсчитать число перем в голове
@@ -1896,7 +1896,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     unsigned _maxarity = maxarity;
     error = prepare_target(ScVar->goal[maxarity + 1], ScVar, ClVar, heap);
     if (error) {
-      out(const_cast<char *>("Ошибка при поиске целей для ДОБ"));
+      pldout(const_cast<char *>("Ошибка при поиске целей для ДОБ"));
       return 1;
     }
 
@@ -1965,7 +1965,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
                       index);
       int Count = GetVarCountFromClause(&rc, ScVar, ClVar, heap);
       if (Count < 0) {
-        out(const_cast<char *>("Var count calculation in new clause failure"));
+        pldout(const_cast<char *>("Var count calculation in new clause failure"));
         return 5;
       }
       rc.nvars = Count;
@@ -1973,7 +1973,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     }
     break;
   }
-  default: out(const_cast<char *>("Недопустимый тип аргументов в 'ДОБ'")); return 1;
+  default: pldout(const_cast<char *>("Недопустимый тип аргументов в 'ДОБ'")); return 1;
   }
   if (!index) {
     heap->last = old_index;
@@ -2441,7 +2441,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw4 != 5 && sw4 != 2 && sw4 != 3)
     err = 4;  // var/list/emptylist
   if (err != 0) {
-    out(const_cast<char *>("Неверный тип аргументов в 'ПРЕДЛ'."));  //как нибудь раскрою номер параметра
+    pldout(const_cast<char *>("Неверный тип аргументов в 'ПРЕДЛ'."));  //как нибудь раскрою номер параметра
     return 5;
   }
 
@@ -2477,7 +2477,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   ClVar->frame1 = ClVar->oldsvptr = ClVar->svptr;
   ClVar->svptr = ClVar->frame1 + pc->nvars;  //это число переменных в предл
   if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
-    out(const_cast<char *>("Не достаточно памяти в стеке переменных"));
+    pldout(const_cast<char *>("Не достаточно памяти в стеке переменных"));
     return 5;
   }
   //унификация головы предлож с переменной или ...
@@ -2713,7 +2713,7 @@ int Inputstring(char *buf, int size, char *caption) {
     pCaption = caption;
   int _err = InputStringFromDialog(buf, size, pCaption);
   if (!_err) {
-    // out(buf);
+    // pldout(buf);
   } else
     err = 1;  //
   return err;
@@ -2727,7 +2727,7 @@ int InputSymbol(char *c) {
   if (!err) {
     Buf[1] = 0;
     *c = Buf[0];
-    // out(Buf);
+    // pldout(Buf);
     return 0;
   }
   return 1;
@@ -2745,7 +2745,7 @@ int InputInt(int *n, const char *caption) {
       if (sscanf(Buf, "%d", n) != 1)
         continue;
       err = 0;
-      // out(Buf);
+      // pldout(Buf);
     } else
       err = 1;  //
   }
@@ -2761,7 +2761,7 @@ int InputFloat(float *n, const char *caption) {
       if (sscanf(Buf, "%f", n) != 1)
         continue;
       err = 0;
-      // out(Buf);
+      // pldout(Buf);
     } else
       err = 1;  //
   }

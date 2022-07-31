@@ -187,7 +187,7 @@ array::~array() {
 
 int array::expand() {
 #ifdef _DEBUG_
-  out("array::expand");
+  pldout("array::expand");
 #endif
   unsigned sizenew = size << 1;
   unsigned char *heapsnew = new unsigned char[sizenew];
@@ -314,12 +314,12 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
     char *p = *Buf;
     PrintSconst(Buf, BufSize, (recordsconst *)pbr, ScVar, heap);
     //*Buf = 0;
-    out(const_cast<char *>("finction:"));
+    pldout(const_cast<char *>("finction:"));
     char Func[1024];
     int len = (*Buf - p);
     strncpy(Func, p, len);
     Func[len] = 0;
-    out(const_cast<const char *>(Func));
+    pldout(const_cast<const char *>(Func));
   }
   unsigned *ptrarg = heap->GetPunsigned(prf->ptrarg);
 
@@ -339,7 +339,7 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
       //(baserecord *)&heap->heaps[ptrarg[i]];
       char sarg[255];
       sprintf(sarg, "argument index: %d", ptrarg[i]);
-      out(const_cast<const char *>(sarg));
+      pldout(const_cast<const char *>(sarg));
       switch (pbr->ident) {
       case issymbol: PrintSconst(Buf, BufSize, (recordsconst *)pbr, ScVar, heap); break;
       case isvar: PrintVar(Buf, BufSize, (recordvar *)pbr, ScVar, heap); break;
@@ -353,10 +353,10 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
         if (len > 0) {
           strncpy(pBuf, p, len);
           pBuf[len] = 0;
-          out(pBuf);
+          pldout(pBuf);
         }
         sprintf(pBuf, "PrintFunction: unknown ident: %d", pbr->ident);
-        out(pBuf);
+        pldout(pBuf);
       }
     }
     if (*BufSize > 2) {
@@ -373,12 +373,12 @@ void PrintUnknown(char **Buf, size_t *BufSize, recordunknown *pru, TScVar *ScVar
     (*Buf) += 1;
     return;
   }
-  out(const_cast<char *>("Buffer for unknown out is too small"));
+  pldout(const_cast<char *>("Buffer for unknown out is too small"));
 }
 
 void PrintExpression(char **Buf, size_t *BufSize, recordexpression *pex, TScVar *ScVar, array *heap) {
   if (2 > *BufSize) {
-    out(const_cast<char *>("Buffer for unknown out is too small"));
+    pldout(const_cast<char *>("Buffer for unknown out is too small"));
     return;
   }
   strncpy(*Buf, "#", 1);
@@ -386,7 +386,7 @@ void PrintExpression(char **Buf, size_t *BufSize, recordexpression *pex, TScVar 
   (*Buf) += 1;
 
   if (2 > *BufSize) {
-    out(const_cast<char *>("Buffer for unknown out is too small"));
+    pldout(const_cast<char *>("Buffer for unknown out is too small"));
     return;
   }
   strncpy(*Buf, "#", 1);
@@ -398,7 +398,7 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
   char pBuf[255];
   char *p = *Buf;
   if (2 > *BufSize) {
-    out(const_cast<char *>("Buffer for unknown out is too small"));
+    pldout(const_cast<char *>("Buffer for unknown out is too small"));
     return;
   }
   strncpy(*Buf, "[", 1);
@@ -409,7 +409,7 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
   while (rl && rl->ident == islist) {
     if (count++) {
       if (2 > *BufSize) {
-        out(const_cast<char *>("Buffer for unknown out is too small"));
+        pldout(const_cast<char *>("Buffer for unknown out is too small"));
         return;
       }
       strncpy(*Buf, ",", 1);
@@ -430,10 +430,10 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
       if (len > 0) {
         strncpy(pBuf, p, len);
         pBuf[len] = 0;
-        out(pBuf);
+        pldout(pBuf);
       }
       sprintf(pBuf, "PrintList: unknown ident: %d", pbr->ident);
-      out(pBuf);
+      pldout(pBuf);
     }
     unsigned rl_link = rl->link;
     unsigned ident = pbr->ident;
@@ -445,7 +445,7 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
   }
 
   if (2 > *BufSize) {
-    out(const_cast<char *>("Buffer for unknown out is too small"));
+    pldout(const_cast<char *>("Buffer for unknown out is too small"));
     return;
   }
   strncpy(*Buf, "]", 1);
@@ -462,7 +462,7 @@ void PrintSconst(char **Buf, size_t *BufSize, recordsconst *rsc, TScVar *ScVar, 
     (*Buf) += rsc->length;
     return;
   }
-  out(const_cast<char *>("Buffer for sconst out is too small"));
+  pldout(const_cast<char *>("Buffer for sconst out is too small"));
 }
 
 void PrintVar(char **Buf, size_t *BufSize, recordvar *prv, TScVar *ScVar, array *heap) {
@@ -474,7 +474,7 @@ void PrintVar(char **Buf, size_t *BufSize, recordvar *prv, TScVar *ScVar, array 
     (*Buf) += prv->length;
     return;
   }
-  out(const_cast<char *>("Buffer for var out is too small"));
+  pldout(const_cast<char *>("Buffer for var out is too small"));
 }
 
 void PrintEmptyList(char **Buf, size_t *BufSize, recordemptylist *pr, TScVar *ScVar, array *heap) {
@@ -487,7 +487,7 @@ void PrintEmptyList(char **Buf, size_t *BufSize, recordemptylist *pr, TScVar *Sc
     (*Buf) += Length;
     return;
   }
-  out(const_cast<char *>("Buffer for Integer out is too small"));
+  pldout(const_cast<char *>("Buffer for Integer out is too small"));
 }
 
 void PrintInteger(char **Buf, size_t *BufSize, recordinteger *pri, TScVar *ScVar, array *heap) {
@@ -500,7 +500,7 @@ void PrintInteger(char **Buf, size_t *BufSize, recordinteger *pri, TScVar *ScVar
     (*Buf) += Length;
     return;
   }
-  out(const_cast<char *>("Buffer for Integer out is too small"));
+  pldout(const_cast<char *>("Buffer for Integer out is too small"));
 }
 
 void PrintClause(recordclause *rc, TScVar *ScVar, array *heap) {
@@ -532,7 +532,7 @@ void PrintClause(recordclause *rc, TScVar *ScVar, array *heap) {
   }
   if (BufSize > 2)
     sprintf(p, ".");
-  out(_Buf);
+  pldout(_Buf);
 }
 
 void PrintClauses(recordclause *rc, TScVar *ScVar, array *heap) {
@@ -551,8 +551,8 @@ void PrintProgram(TScVar *ScVar, array *heap) {
 #else
 
   char _Buf[1024];
-  out(const_cast<char *>("=========================================================="));
-  out(const_cast<char *>("Print program .."));
+  pldout(const_cast<char *>("=========================================================="));
+  pldout(const_cast<char *>("Print program .."));
   int i = 0;
   unsigned int &nosymbol = ScVar->nosymbol;
   unsigned int *tat = ScVar->tat;
@@ -567,7 +567,7 @@ void PrintProgram(TScVar *ScVar, array *heap) {
       Length = sizeof(_Buf) - 1;
     strncpy(_Buf, name, Length);
     _Buf[Length] = 0;
-    out(_Buf);
+    pldout(_Buf);
     if (ptr->begin) {
       recordclause *rc = heap->GetPrecordclause(ptr->begin);
       //(recordclause *)&heap->heaps[ptr->begin];

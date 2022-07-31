@@ -7,9 +7,14 @@
 //#include <limits.h>
 //#include "pdefs.h"
 
-extern void outPredicateVal(bool value);
-extern void out(const char *str);
-extern void errout(const char *str);
+// Вывод предиката
+void prdout(bool value);
+// Прологовский вывод
+void pldout(const char *str);
+// Пользовательский вывод (предикатом ВЫВОД)
+void usrout(const char *str);
+// Вывод ошибок
+void errout(const char *str);
 
 struct baserecord  //предок всех структур
 {

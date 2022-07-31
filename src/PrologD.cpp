@@ -24,6 +24,7 @@
 #include <thread>
 
 #include <QDebug>
+#include <iostream>
 #include <QPainter>
 
 const auto PROLOG_COLOR_BLACK = QColor(0, 0, 0).rgb();
@@ -135,17 +136,20 @@ std::string decode_utf8_to_cp1251(QString qstr) {
   str.resize(si);
   return str;
 }
-void outPredicateVal(bool value) {
-  emit prd->signalPredicatValOut(value);
+void prdout(bool value) {
+  emit prd->signalPredicatOut(value);
 }
-void out(const char *str) {
-  emit prd->signalStdOut(decode_cp1251_to_utf8(str));
+void pldout(const char *str) {
+  emit prd->signalPrologOut(decode_cp1251_to_utf8(str));
+}
+void usrout(const char *str) {
+  emit prd->signalUserOut(decode_cp1251_to_utf8(str));
 }
 void errout(const char *str) {
   char number[8];
   memset(number, 0, sizeof(char) * 8);
   std::to_chars(number, number + 8, Nstr + 1);
-  emit prd->signalStdErr(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
+  emit prd->signalErrorOut(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
 int InputStringFromDialog(char *buf, size_t size, char *caption) {
   // emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
@@ -285,8 +289,7 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) tr
     {
       if (m_outQuestion)  //вывод вопроса
       {
-        emit prd->signalOutQuestion(decode_cp1251_to_utf8(p));
-        // out(p);
+        pldout(p);
       }
       cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
       if (cerr)

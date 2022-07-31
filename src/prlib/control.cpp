@@ -11,7 +11,6 @@
 
 char buff[2048];
 void outerror(int err) {
-  // out(GetPrErrText(err));
   errout(GetPrErrText(err));
 }
 
@@ -315,7 +314,7 @@ unsigned prout(TScVar *ScVar, TClVar *ClVar, array *heap)  //ïğîëîãîâñêèé âûâîä
   if (ClVar->PrSetting->out.is_open()) {
     ClVar->PrSetting->out << buff;
   } else {
-    out(buff);
+    usrout(buff);
   }
   return 3;
 }
@@ -475,7 +474,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
 void prvars(TScVar *ScVar, TClVar *ClVar, array *heap)  //ïîêà òîëüêî îïèñàíèå ôóíêöèè
 {
   if (!ClVar->varqu) {
-    outPredicateVal(true);
+    prdout(true);
     ClVar->flag = false;
     ClVar->stat = 1;
   } else {
@@ -499,7 +498,7 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap)  //ïîêà òîëüêî îïèñàíèå ô
       term = from_stac(ClVar->st_vr1, k);
       //======================================// âûâîä terma  ïîêà íå âñå
       buff[write_term(term, frame, w, j, ScVar, ClVar, heap)] = 0;  //,//FILE *d)
-      out(buff);
+      pldout(buff);
     }  // delete BPT;
   }
 }
@@ -537,9 +536,9 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
       ClVar->stat = 1;
     } else {
       if (ClVar->PrSetting->Trace) {
-        out("Ñîãëàñóåòñÿ ñ ");
+        pldout("Ñîãëàñóåòñÿ ñ ");
         buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap)] = 0;
-        out(buff);
+        pldout(buff);
       }
       ClVar->oldtptr = ClVar->tptr;
       if (unify(heap->ptcltarget[ClVar->tryclause], ClVar->head, ClVar->frame1, ClVar->frame2, ClVar, heap)) {  //óäà÷íàÿ óíèôèêàöèÿ
@@ -550,7 +549,7 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
           ClVar->ntro = false;
         if (ClVar->stat != 5) {
           if (ClVar->PrSetting->Trace)
-            out("Óñïåõ");
+            pldout("Óñïåõ");
           ClVar->oldtptr = ClVar->tptr;
           ClVar->oldsvptr = ClVar->svptr;
           ClVar->atomp = ClVar->tryclause;
@@ -562,7 +561,7 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
         }
       } else if (ClVar->stat != 1) {
         if (ClVar->PrSetting->Trace)
-          out("Íåóäà÷à");
+          pldout("Íåóäà÷à");
         ClVar->svptr = ClVar->oldsvptr;
         zero(ClVar);
         ClVar->stat = 4;
@@ -571,10 +570,10 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
   } else {
     if (ClVar->PrSetting->Trace) {
       if (heap->ptcltarget) {
-        out("Öåëü");
+        pldout("Öåëü");
         buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
       }
-      out("Íåóäà÷íà ");
+      pldout("Íåóäà÷íà ");
     }
     ClVar->stat = 5;
   }
@@ -646,9 +645,9 @@ int control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
       break;
     case 6:
       if (ClVar->PrSetting->Trace) {
-        out("Öåëü ");
+        pldout("Öåëü ");
         buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-        out(buff);
+        pldout(buff);
       }
       ClVar->precordfunction = heap->GetPrecordfunction(ClVar->head);
       //(recordfunction *)&heap->heaps[ClVar->head];
@@ -687,9 +686,9 @@ int control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
         ClVar->head = heap->pacltarget[ClVar->atomp];
         ClVar->svptr = ClVar->oldsvptr;
         if (ClVar->PrSetting->Trace) {
-          out("Ïåğåäåëêà. Öåëü ");
+          pldout("Ïåğåäåëêà. Öåëü ");
           buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-          out(buff);
+          pldout(buff);
         }
         ClVar->stat = 4;
       }
@@ -698,7 +697,7 @@ int control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
       ClVar->err = 27;  // abort
   }
   if (ClVar->flag) {
-    outPredicateVal(false);
+    prdout(false);
   }
   return ClVar->err;
 }

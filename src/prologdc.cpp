@@ -73,8 +73,7 @@ void decode_utf8_to_cp1251(std::string &str) {
   }
   str.resize(si);
 }
-
-void outPredicateVal(bool value) {
+void prdout(bool value) {
   if (!last_srv) {
     *output_stream << '\n';
   }
@@ -86,12 +85,15 @@ void outPredicateVal(bool value) {
   *output_stream << '\n';
   last_srv = true;
 }
-
-void out(const char *str) {
+void pldout(const char *str) {
+  print_cp1251_decoded_to_utf8(str, *output_stream);
+  *output_stream << '\n';
+  last_srv = true;
+}
+void usrout(const char *str) {
   print_cp1251_decoded_to_utf8(str, *output_stream);
   last_srv = false;
 }
-
 void errout(const char *str) {
   if (!last_srv) {
     *error_stream << '\n';
@@ -188,7 +190,7 @@ int InputStringFromDialog(char *buf, size_t size, char *caption) {
     line.erase(line.begin());
   }
   if (out_questions) {
-    out(caption);
+    pldout(caption);
   }
   size_t to = line.size() < size - 1 ? line.size() : size - 1;
   for (size_t i = 0; i < to; ++i) {
