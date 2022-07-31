@@ -723,8 +723,6 @@ void MainWindow::prologUserOut(QString str) {
     m_output_text->appendHtml("");
   }
   m_output_text->insertPlainText(str);
-  QString test = "abc\nder";
-  m_output_text->insertPlainText(test);
   m_lastAppendHtml = false;
 }
 void MainWindow::prologErrorOut(QString str) {
