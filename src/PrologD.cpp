@@ -24,7 +24,6 @@
 #include <thread>
 
 #include <QDebug>
-#include <iostream>
 #include <QPainter>
 
 const auto PROLOG_COLOR_BLACK = QColor(0, 0, 0).rgb();

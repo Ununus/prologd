@@ -217,25 +217,19 @@ void Editor::pressEnter() {
   }
 }
 void Editor::pressHome(bool sh_mod) {
-  qDebug() << textCursor().position();
   QTextCursor cur = textCursor();
   cur.clearSelection();
   cur.movePosition(QTextCursor::MoveOperation::StartOfLine, QTextCursor::KeepAnchor);
   QString stxt = cur.selectedText();
   cur.clearSelection();
-  qDebug() << stxt;
-  qDebug() << cur.position();
   if (!stxt.trimmed().isEmpty()) {
     for (int i = 0; i < stxt.size(); ++i) {
       if (!stxt[i].isSpace())
         break;
       cur.movePosition(QTextCursor::MoveOperation::Right);
-      qDebug() << cur.position();
     }
   }
   auto newCursor = textCursor();
-  qDebug() << newCursor.position();
-  qDebug() << cur.position();
   auto cntMove = newCursor.position() - cur.position();
   if (sh_mod) {
     newCursor.movePosition(QTextCursor::MoveOperation::Left, QTextCursor::KeepAnchor, cntMove);
