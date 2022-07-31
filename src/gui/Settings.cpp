@@ -74,10 +74,10 @@ Settings::Settings(QWidget *parent)
   //
   QVBoxLayout *main_layout = new QVBoxLayout;
 
-  QGroupBox *font_settings_group = new QGroupBox(tr("Font"));
+  QGroupBox *font_settings_group = new QGroupBox(tr("Шрифт"));
   QHBoxLayout *font_settings_layout = new QHBoxLayout;
   font_settings_layout->addWidget(m_font_family);
-  font_settings_layout->addWidget(new QLabel(tr("Size: ")));
+  font_settings_layout->addWidget(new QLabel(tr("Размер: ")));
   font_settings_layout->addWidget(m_font_size);
   font_settings_layout->setAlignment(Qt::AlignmentFlag::AlignLeft);
   font_settings_group->setLayout(font_settings_layout);
@@ -85,8 +85,8 @@ Settings::Settings(QWidget *parent)
   m_font_size->setFixedWidth(SPIN_BOX_WIDTH);
 
   QHBoxLayout *ok_close_layout = new QHBoxLayout;
-  QPushButton *ok_button = new QPushButton(tr("Ok"));
-  // QPushButton *close_button = new QPushButton (tr("Cencel"));
+  QPushButton *ok_button = new QPushButton(tr("OK"));
+  // QPushButton *close_button = new QPushButton (tr("Отмена"));
   // ok_close_layout->addSpacing(120);
   ok_close_layout->addSpacing(240);
   ok_close_layout->addWidget(ok_button);
@@ -103,7 +103,7 @@ Settings::Settings(QWidget *parent)
   connect(ok_button, SIGNAL(clicked(bool)), SLOT(okButtonPressed()));
 
   connect(m_actions.font_scale_slider, SIGNAL(valueChanged(int)), this, SLOT(fontScaleValueChanged(int)));
-  setWindowTitle(tr("Settings"));
+  setWindowTitle(tr("Настройки"));
 }
 Settings::~Settings() {
   QSettings m_settings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);

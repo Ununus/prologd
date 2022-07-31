@@ -104,7 +104,7 @@ private:
   QMetaObject::Connection m_connection_current_index_changed;
   QCheckBox *m_input_spaces_as_separators;
   QCheckBox *m_output_print_questions;
-  GraphicsDialog *m_grp;
+  GraphicsWidget *m_grp;
 
   QGroupBox *m_input_console;
   QLineEdit *m_input_console_line_edit;

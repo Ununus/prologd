@@ -16,12 +16,12 @@ TextFinder::TextFinder(QWidget *parent)
   , button_advanced(new QPushButton) {
   button_find_prev->setIcon(QIcon(":/images/search-find-prev.png"));
   button_find_next->setIcon(QIcon(":/images/search-find-next.png"));
-  button_replace->setText(tr("Replace"));
-  button_replace_all->setText(tr("Replace All"));
-  button_advanced->setText(tr("Advanced"));
+  button_replace->setText(tr("Заменить"));
+  button_replace_all->setText(tr("Заменить всё"));
+  button_advanced->setText(tr("Дополнительно"));
   button_advanced->setEnabled(false);
-  QLabel *findLabel = new QLabel(tr("Find:"));
-  QLabel *replaceLabel = new QLabel(tr("Replace:"));
+  QLabel *findLabel = new QLabel(tr("Найти:"));
+  QLabel *replaceLabel = new QLabel(tr("Заменить на:"));
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(findLabel, 0, 0);
   layout->addWidget(replaceLabel, 1, 0);

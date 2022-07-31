@@ -15,7 +15,7 @@ Help::Help(QWidget *parent)
   : QDialog(parent)
   , m_help_text(new QTextBrowser) {
   setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
-  setWindowTitle(tr("Help"));
+  setWindowTitle(tr("Помощь"));
 
   QVBoxLayout *layout = new QVBoxLayout;
   QHBoxLayout *head_layout = new QHBoxLayout;
@@ -67,7 +67,7 @@ void Help::setCurosrIfFound(QString word) {
 AboutProgram::AboutProgram(QWidget *parent)
   : QDialog(parent) {
   setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
-  setWindowTitle(tr("About Program"));
+  setWindowTitle(tr("О Программе"));
 
   QTabWidget *tabWidget = new QTabWidget;
   QVBoxLayout *layout = new QVBoxLayout;
@@ -75,8 +75,8 @@ AboutProgram::AboutProgram(QWidget *parent)
   QLabel *programIcon = new QLabel;
   programIcon->setPixmap(QPixmap(":/images/prolog1.png").scaled(42, 42, Qt::IgnoreAspectRatio, Qt::FastTransformation));
   programIcon->setFixedSize(42, 42);
-  QLabel *programName = new QLabel(tr("Prolog-D"));
-  QLabel *programVersion = new QLabel(tr("Version: ") + " " + qApp->applicationVersion().chopped(2));
+  QLabel *programName = new QLabel(tr("Пролог-Д"));
+  QLabel *programVersion = new QLabel(tr("Версия: ") + " " + qApp->applicationVersion().chopped(2));
   head->addWidget(programIcon);
   head->addWidget(programName);
   head->addWidget(programVersion);
@@ -90,12 +90,12 @@ AboutProgram::AboutProgram(QWidget *parent)
 
   QPlainTextEdit *aboutProgramTextEdit = new QPlainTextEdit;
   aboutProgramTextEdit->setPlainText(
-    tr("Tutorial system - interpreter\n"
-       "1987-1996 Grigoriev S.G. - idea and algorithms\n"
-       "1996-2008 Alexeev M.N., Baldin V.M. - realization\n"
-       "2017-2022 Voronin A.V.  - interface\n"));
+    tr("Учебная система - интерпретатор\n"
+       "1987-1996 Григорьев С.Г. - идея и алгоритмы\n"
+       "1996-2008 Алексеев М.Н., Балдин В.М. - реализация\n"
+       "2017-2022 Воронин А.В. - интерфейс"));
   aboutProgramTextEdit->setReadOnly(true);
-  tabWidget->addTab(aboutProgramTextEdit, tr("About Program"));
+  tabWidget->addTab(aboutProgramTextEdit, tr("О Программе"));
 
   QString helpTxt = QString(
     "Ctrl + '<' -> МЕНЬШЕ\n"
@@ -121,7 +121,7 @@ AboutProgram::AboutProgram(QWidget *parent)
   QPlainTextEdit *helpAbout = new QPlainTextEdit;
   helpAbout->setPlainText(helpTxt);
   helpAbout->setReadOnly(true);
-  tabWidget->addTab(helpAbout, tr("Shortcuts"));
+  tabWidget->addTab(helpAbout, tr("Горячие клавиши"));
 
   setLayout(layout);
   setFixedWidth(360);

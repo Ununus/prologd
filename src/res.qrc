@@ -13,7 +13,6 @@
         <file>images/file-new.png</file>
         <file>images/file-open.png</file>
         <file>images/file-save.png</file>
-        <file>images/help-about-qt.png</file>
         <file>images/search-find.png</file>
         <file>images/execution-tracing.png</file>
         <file>images/search-find-next.png</file>
@@ -24,7 +23,6 @@
         <file>images/file.png</file>
         <file>images/tools-settings.png</file>
         <file>images/prolog1.png</file>
-        <file>Russian.qm</file>
         <file>images/edit-comment.png</file>
         <file>images/edit-uncomment.png</file>
         <file>images/help.png</file>

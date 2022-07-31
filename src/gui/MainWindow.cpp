@@ -49,10 +49,10 @@ MainWindow::MainWindow(QWidget *parent)
   , m_prolog_worker(nullptr)
   , m_input_spaces_as_separators(new QCheckBox)
   , m_output_print_questions(new QCheckBox)
-  , m_grp(new GraphicsDialog(this))
+  , m_grp(new GraphicsWidget(nullptr))
   , m_input_console(new QGroupBox)
   , m_input_console_line_edit(new QLineEdit) {
-  setWindowTitle(tr("Prolog-D"));
+  setWindowTitle(tr("Пролог-Д"));
 
   Actions *actions = m_settings->getActions();
   setMenuBar(actions->menu_bar);
@@ -74,11 +74,10 @@ MainWindow::MainWindow(QWidget *parent)
   QWidget *outputWidget = new QWidget;
   QVBoxLayout *output_vlay = new QVBoxLayout;
   QHBoxLayout *output_hlay = new QHBoxLayout;
-  QLabel *output_label = new QLabel(tr("Output"));
+  QLabel *output_label = new QLabel(tr("Вывод"));
   output_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
-  m_output_print_questions->setText(tr("Print questions"));
+  m_output_print_questions->setText(tr("Выводить вопросы"));
   // output_pb->setIcon(QIcon(":/images/file-new.png"));
-  m_output_print_questions->setToolTip(tr("Print questions"));
   // m_output_print_questions->setCheckable(true);
   m_output_print_questions->setChecked(true);
   // m_output_print_questions->setFixedWidth(32);
@@ -113,11 +112,10 @@ MainWindow::MainWindow(QWidget *parent)
   // m_input_console_line_edit->setStyleSheet("border: 1px solid gray; border-radius: 6px;");
 
   QHBoxLayout *input_hlay = new QHBoxLayout;
-  QLabel *input_label = new QLabel(tr("Input"));
+  QLabel *input_label = new QLabel(tr("Ввод"));
   input_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
-  m_input_spaces_as_separators->setText(tr("Use spaces as separators"));
+  m_input_spaces_as_separators->setText(tr("Использовать пробелы как разделитель"));
   // input_pb->setIcon(QIcon(":/images/file-new.png"));
-  m_input_spaces_as_separators->setToolTip(tr("Use spaces as separators"));
   // m_input_spaces_as_separators->setCheckable(true);
   m_input_spaces_as_separators->setChecked(true);
   // m_input_spaces_as_separators->setFixedWidth(32);
@@ -214,13 +212,15 @@ MainWindow::MainWindow(QWidget *parent)
   connect(actions->action_graphics, SIGNAL(triggered(bool)), m_grp, SLOT(showNormal()));
   connect(actions->action_help, SIGNAL(triggered(bool)), SLOT(showHelp()));
   connect(actions->action_about_prolog, SIGNAL(triggered(bool)), SLOT(showAboutProlog()));
-  connect(actions->action_about_qt, SIGNAL(triggered(bool)), qApp, SLOT(aboutQt()));
 
   connect(m_input_console_line_edit, SIGNAL(returnPressed()), SLOT(inputConsoleReturn()));
+  connect(m_grp, SIGNAL(signalWantClose()), SLOT(prologAbort()));
 }
 MainWindow::~MainWindow() {
   QSettings qsettings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);
   qsettings.setValue("geometry", saveGeometry());
+
+  delete m_grp;
 }
 void MainWindow::connectEditActions() {
   // Сохраняю connections, чтобы переключить при смене таба
@@ -323,7 +323,7 @@ bool MainWindow::loadFileToTopTabWidget(const QString &filePath) {
 bool MainWindow::loadFileToEditor(const QString &filePath, Editor *editor) {
   QFile file(filePath);
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
-    QMessageBox::warning(this, tr("Application"), tr("Cannot read file %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
+    QMessageBox::warning(this, tr("Программа"), tr("Не могу прочитать файл %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
     return false;
   }
   editor->loadFile(&file);
@@ -349,7 +349,7 @@ bool MainWindow::safeToFileFromEditor(const QString &filePath, Editor *editor) {
   }
   QFile file(filePath);
   if (!file.open(QFile::WriteOnly | QFile::Text)) {
-    QMessageBox::warning(this, tr("Application"), tr("Cannot write file %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
+    QMessageBox::warning(this, tr("Программа"), tr("Не могу записать файл %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
     return false;
   }
   if (filePath != editor->getFilePath()) {
@@ -383,11 +383,12 @@ void MainWindow::updateEditor(Editor *editor) {
   if (editor->isModifiedByAnotherProgram()) {
     editor->setModifiedByAnotherProgram(false);
     if (QFile::exists(editor->getFilePath())) {
-      int reply = QMessageBox::question(this, tr("Prolog-D"), tr("This file has been modified by another program\nReload it?"), tr("Reload"), tr("Keep"));
+      int reply =
+        QMessageBox::question(this, tr("Пролог-Д"), tr("Этот файл был изменён другой программой\nПерезагрузить?"), tr("Перезагрузить"), tr("Оставить"));
       if (reply == 0)
         loadFileToEditor(editor->getFilePath(), editor);
     } else {
-      int reply = QMessageBox::question(this, tr("File non exist"), tr("This file does not exist anymore\nKeep it?"), tr("Keep"), tr("Close"));
+      int reply = QMessageBox::question(this, tr("Пролог-Д"), tr("Этот файл больше не существует\nОставить?"), tr("Оставить"), tr("Закрыть"));
       if (reply == 1)
         closeFile();
     }
@@ -429,13 +430,13 @@ void MainWindow::searchInEditor(Editor *editor, bool backwardFlag) {
 
 void MainWindow::newFile() {
   Editor *editor = new Editor(this);
-  int idx = m_editors->addTab(editor, tr("Untitled"));
+  int idx = m_editors->addTab(editor, tr("Без имени"));
   m_editors->setCurrentIndex(idx);
   updateEditor(editor);
   m_editors->setTabIcon(m_editors->currentIndex(), QIcon(":/images/file.png"));
 }
 void MainWindow::openFile() {
-  QString filePath = QFileDialog::getOpenFileName(this, tr("Open"), QString(), tr("Prolog-D files (*.pld);;Prolog files (*.pl);;All files (*)"));
+  QString filePath = QFileDialog::getOpenFileName(this, tr("Открыть"), QString(), tr("Пролог-Д - файлы (*.pld);;Prolog - файлы (*.pl);;Все файлы (*)"));
   if (!filePath.isEmpty()) {
     loadFileToTopTabWidget(filePath);
     updateEditor();
@@ -449,7 +450,7 @@ bool MainWindow::saveFileAs() {
   QFileDialog dialog(this);
   dialog.setWindowModality(Qt::WindowModal);
   dialog.setAcceptMode(QFileDialog::AcceptSave);
-  dialog.setNameFilter(tr("Prolog-D files (*.pld);;Prolog files (*.pl);;All files (*)"));
+  dialog.setNameFilter(tr("Пролог-Д - файлы (*.pld);;Prolog - файлы (*.pl);;Все файлы (*)"));
   if (dialog.exec() != QDialog::Accepted)
     return false;
   Editor *editor = static_cast<Editor *>(m_editors->currentWidget());
@@ -618,11 +619,12 @@ void MainWindow::prologAbort() {
   m_settings->getActions()->action_execute->setEnabled(true);
   m_settings->getActions()->action_trace->setEnabled(true);
   m_settings->getActions()->action_abort->setEnabled(false);
-  // outputTextEdit->appendPlainText(tr("Process terminated"));
 
   m_prolog_want_input = false;
   m_input_console->setTitle("");
   m_input_console->setVisible(false);
+
+  m_grp->hide();
 }
 void MainWindow::prologTracing() {}
 void MainWindow::showHelp() {
@@ -655,7 +657,7 @@ void MainWindow::updateEditor(QString filePath) {
 bool MainWindow::closeEditor(int index) {
   Editor *editor = static_cast<Editor *>(m_editors->widget(index));
   if (editor->document()->isModified() && !editor->document()->isEmpty()) {
-    int reply = QMessageBox::question(this, tr("Prolog-D"), tr("This file has been modified\nSave it?"), tr("Save"), tr("No"), tr("Cancel"));
+    int reply = QMessageBox::question(this, tr("Пролог-Д"), tr("Этот файл был изменён\nСохранить?"), tr("Сохранить"), tr("Нет"), tr("Отмена"));
     if (reply == 0)
       safeToFileFromEditor(editor);
     else if (reply == 2)

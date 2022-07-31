@@ -10,10 +10,10 @@ class QSpinBox;
 class QPushButton;
 class QCheckBox;
 
-class GraphicsWidget : public QWidget {
+class GraphicsCanvas : public QWidget {
   Q_OBJECT
 public:
-  explicit GraphicsWidget(QWidget *parent = nullptr);
+  explicit GraphicsCanvas(QWidget *parent = nullptr);
   CanvasArea &canvas() {
     return m_canvas;
   }
@@ -25,20 +25,25 @@ private:
   CanvasArea m_canvas;
 };
 
-class GraphicsDialog : public QDialog {
+class GraphicsWidget : public QWidget {
   Q_OBJECT
 public:
-  explicit GraphicsDialog(QWidget *parent = nullptr);
-  ~GraphicsDialog();
-  GraphicsWidget *drawArea();
+  explicit GraphicsWidget(QWidget *parent = nullptr);
+  ~GraphicsWidget();
+  GraphicsCanvas *drawArea();
   bool isClearOnExec() const;
+signals:
+  void signalWantClose();
 protected slots:
   void okClicked(bool);
   void acClicked(bool);
 
+protected:
+  void closeEvent(QCloseEvent *event) override;
+
 private:
   QVBoxLayout *m_main_layout;
-  GraphicsWidget *m_draw_area;
+  GraphicsCanvas *m_draw_area;
   QSpinBox *m_input_width;
   QSpinBox *m_input_height;
   QCheckBox *m_clear_when_exec;

@@ -69,7 +69,6 @@ public:
   QMenu *menu_help;
   QAction *action_help;
   QAction *action_about_prolog;
-  QAction *action_about_qt;
 
   QSlider *font_scale_slider;
   QLabel *font_scale_label;

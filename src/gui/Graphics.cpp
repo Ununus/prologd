@@ -14,20 +14,20 @@
 
 #include <QDebug>
 
-GraphicsDialog::GraphicsDialog(QWidget *parent)
-  : QDialog(parent)
+GraphicsWidget::GraphicsWidget(QWidget *parent)
+  : QWidget(parent)
   , m_main_layout(new QVBoxLayout)
-  , m_draw_area(new GraphicsWidget)
+  , m_draw_area(new GraphicsCanvas)
   , m_input_width(new QSpinBox)
   , m_input_height(new QSpinBox)
-  , m_clear_when_exec(new QCheckBox(tr("Clear on startup"))) {
+  , m_clear_when_exec(new QCheckBox(tr("Очищать при запуске"))) {
   setWindowFlags((windowFlags() ^ Qt::WindowContextHelpButtonHint) | Qt::WindowMinMaxButtonsHint);
-  setWindowTitle(tr("Graphics"));
+  setWindowTitle(tr("Графика"));
 
   QHBoxLayout *control_layout = new QHBoxLayout;
-  QPushButton *clear_pb = new QPushButton(tr("Clear"));
-  QPushButton *accept_pb = new QPushButton(tr("Accept"));
-  QLabel *size_lb = new QLabel(tr("Canvas size:"));
+  QPushButton *clear_pb = new QPushButton(tr("Очистить"));
+  QPushButton *accept_pb = new QPushButton(tr("Принять"));
+  QLabel *size_lb = new QLabel(tr("Размер холста:"));
 
   m_input_width->setRange(1, 3840);
   m_input_height->setRange(1, 2160);
@@ -57,33 +57,36 @@ GraphicsDialog::GraphicsDialog(QWidget *parent)
   connect(clear_pb, SIGNAL(clicked(bool)), SLOT(okClicked(bool)));
   connect(accept_pb, SIGNAL(clicked(bool)), SLOT(acClicked(bool)));
 }
-bool GraphicsDialog::isClearOnExec() const {
+bool GraphicsWidget::isClearOnExec() const {
   return m_clear_when_exec->isChecked();
 }
-void GraphicsDialog::okClicked(bool) {
+void GraphicsWidget::okClicked(bool) {
   m_draw_area->canvas().clear();
   m_draw_area->update();
 }
-void GraphicsDialog::acClicked(bool) {
+void GraphicsWidget::acClicked(bool) {
   m_main_layout->removeWidget(m_draw_area);
   m_draw_area->resize(m_input_width->value(), m_input_height->value());
   m_draw_area->canvas().resize(m_input_width->value(), m_input_height->value());
   m_main_layout->addWidget(m_draw_area);
 }
-GraphicsDialog::~GraphicsDialog() {
+void GraphicsWidget::closeEvent(QCloseEvent *event) {
+  emit signalWantClose();
+}
+GraphicsWidget::~GraphicsWidget() {
   QSettings s(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat, this);
   s.setValue("graphAreaWidth", m_input_width->value());
   s.setValue("graphAreaHeight", m_input_height->value());
 }
 
-GraphicsWidget *GraphicsDialog::drawArea() {
+GraphicsCanvas *GraphicsWidget::drawArea() {
   return m_draw_area;
 }
 
-GraphicsWidget::GraphicsWidget(QWidget *parent)
+GraphicsCanvas::GraphicsCanvas(QWidget *parent)
   : QWidget{ parent } {}
 
-void GraphicsWidget::paintEvent(QPaintEvent *) {
+void GraphicsCanvas::paintEvent(QPaintEvent *) {
   // qDebug() << "Paint Event";
   QPainter painter(this);
   // painter.setBrush(brush);

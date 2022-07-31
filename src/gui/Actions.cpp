@@ -50,20 +50,19 @@ Actions::Actions()
   , action_tools_settings(new QAction)
   , menu_help(new QMenu)
   , action_help(new QAction)
-  , action_about_prolog(new QAction)
-  , action_about_qt(new QAction) {
+  , action_about_prolog(new QAction) {
   tool_bar->layout()->setContentsMargins(0, 0, 0, 0);
   tool_bar->layout()->setSpacing(0);
   tool_bar->setFloatable(false);
   tool_bar->setMovable(false);
 
   initializeActions();
-  menu_file->setTitle(QObject::tr("&File"));
-  menu_edit->setTitle(QObject::tr("&Edit"));
-  menu_search->setTitle(QObject::tr("&Search"));
-  menu_view->setTitle(QObject::tr("&View"));
-  menu_execution->setTitle(QObject::tr("E&xecution"));
-  menu_help->setTitle(QObject::tr("&About"));
+  menu_file->setTitle(QObject::tr("&Файл"));
+  menu_edit->setTitle(QObject::tr("&Правка"));
+  menu_search->setTitle(QObject::tr("&Поиск"));
+  menu_view->setTitle(QObject::tr("&Вид"));
+  menu_execution->setTitle(QObject::tr("&Исполнение"));
+  menu_help->setTitle(QObject::tr("&Справка"));
 
   menu_file->addAction(action_new_file);
   menu_file->addAction(action_open_file);
@@ -111,7 +110,6 @@ Actions::Actions()
 
   menu_help->addAction(action_help);
   menu_help->addAction(action_about_prolog);
-  menu_help->addAction(action_about_qt);
 
   menu_bar->addMenu(menu_file);
   menu_bar->addMenu(menu_edit);
@@ -165,155 +163,150 @@ void Actions::initializeActions() {
   initializeHelpActions();
 }
 void Actions::initializeFileActions() {
-  action_new_file->setText(QObject::tr("&New"));
-  action_new_file->setToolTip(QObject::tr("Create new file") + " (Ctrl+N)");
+  action_new_file->setText(QObject::tr("&Новый"));
+  action_new_file->setToolTip(QObject::tr("Создать новый файл") + " (Ctrl+N)");
   action_new_file->setIcon(QIcon(":/images/file-new.png"));
   action_new_file->setShortcut(Qt::CTRL + Qt::Key_N);
 
-  action_open_file->setText(QObject::tr("&Open..."));
-  action_open_file->setToolTip(QObject::tr("Open an existing file") + " (Ctrl+O)");
+  action_open_file->setText(QObject::tr("&Открыть..."));
+  action_open_file->setToolTip(QObject::tr("Открыть существующий файл") + " (Ctrl+O)");
   action_open_file->setIcon(QIcon(":/images/file-open.png"));
   action_open_file->setShortcut(Qt::CTRL + Qt::Key_O);
 
-  action_save_file->setText(QObject::tr("&Save"));
-  action_save_file->setToolTip(QObject::tr("Save current file") + " (Ctrl+S)");
+  action_save_file->setText(QObject::tr("&Сохранить"));
+  action_save_file->setToolTip(QObject::tr("Сохранить текущий файл") + " (Ctrl+S)");
   action_save_file->setIcon(QIcon(":/images/file-save.png"));
   action_save_file->setShortcut(Qt::CTRL + Qt::Key_S);
 
-  action_save_file_as->setText(QObject::tr("&Save As..."));
-  // actionSaveFileAs->setToolTip(QObject::tr("Save current file as..."));
+  action_save_file_as->setText(QObject::tr("&Сохранить как..."));
   action_save_file_as->setIcon(QIcon(":/images/file-save.png"));
 
-  action_save_all_files->setText(QObject::tr("&Save All"));
+  action_save_all_files->setText(QObject::tr("&Сохранить все"));
   action_save_all_files->setIcon(QIcon(":/images/file-save.png"));
 
-  action_close_file->setText(QObject::tr("&Close"));
-  // actionCloseFile->setToolTip(QObject::tr("Close current file"));
+  action_close_file->setText(QObject::tr("&Закрыть"));
   action_close_file->setIcon(QIcon(":/images/file-close.png"));
 
-  action_close_all_files->setText(QObject::tr("&Close All"));
+  action_close_all_files->setText(QObject::tr("&Закрыть все"));
   action_close_all_files->setIcon(QIcon(":/images/file-close-all.png"));
 
-  action_exit->setText(QObject::tr("&Exit"));
-  action_exit->setStatusTip(QObject::tr("Exit the application"));
+  action_exit->setText(QObject::tr("&Выход"));
+  action_exit->setStatusTip(QObject::tr("Выйти из приложения"));
   action_exit->setIcon(QIcon(":/images/file-exit.png"));
   action_exit->setShortcut(Qt::ALT + Qt::Key_F4);
 }
 void Actions::initializeEditActions() {
-  action_cut->setText(QObject::tr("&Cut"));
+  action_cut->setText(QObject::tr("&Вырезать"));
   action_cut->setIcon(QIcon(":/images/edit-cut.png"));
   action_cut->setShortcut(Qt::CTRL + Qt::Key_X);
 
-  action_copy->setText(QObject::tr("&Copy"));
+  action_copy->setText(QObject::tr("&Копировать"));
   action_copy->setIcon(QIcon(":/images/edit-copy.png"));
   action_copy->setShortcut(Qt::CTRL + Qt::Key_C);
 
-  action_paste->setText(QObject::tr("&Paste"));
+  action_paste->setText(QObject::tr("&Вставить"));
   action_paste->setIcon(QIcon(":/images/edit-paste.png"));
   action_paste->setShortcut(Qt::CTRL + Qt::Key_V);
 
-  action_undo->setText(QObject::tr("&Undo"));
+  action_undo->setText(QObject::tr("&Отменить"));
   action_undo->setIcon(QIcon(":/images/edit-undo.png"));
   action_undo->setShortcut(Qt::CTRL + Qt::Key_Z);
 
-  action_redo->setText(QObject::tr("&Redo"));
+  action_redo->setText(QObject::tr("&Повторить"));
   action_redo->setIcon(QIcon(":/images/edit-redo.png"));
   action_redo->setShortcut(Qt::CTRL + Qt::Key_Y);
 
-  action_comment->setText(QObject::tr("&Comment"));
-  action_comment->setToolTip(QObject::tr("Comment out selected lines") + " (Ctrl+K)");
+  action_comment->setText(QObject::tr("&Закомментировать"));
+  action_comment->setToolTip(QObject::tr("Закомментировать выделенные строки") + " (Ctrl+K)");
   action_comment->setIcon(QIcon(":/images/edit-comment.png"));
   action_comment->setShortcut(Qt::CTRL + Qt::Key_K);
 
-  action_uncomment->setText(QObject::tr("&Uncomment"));
-  action_uncomment->setToolTip(QObject::tr("Uncomment selected lines") + " (Ctrl+U)");
+  action_uncomment->setText(QObject::tr("&Раскомментировать"));
+  action_uncomment->setToolTip(QObject::tr("Раскомментировать выделенные строки") + " (Ctrl+U)");
   action_uncomment->setIcon(QIcon(":/images/edit-uncomment.png"));
   action_uncomment->setShortcut(Qt::CTRL + Qt::Key_U);
 
-  action_format->setText(QObject::tr("&Format document"));
-  action_format->setToolTip(QObject::tr("Format current document") + " (Ctrl+I)");
+  action_format->setText(QObject::tr("&Форматировать документ"));
+  action_format->setToolTip(QObject::tr("Форматировать текущий документ") + " (Ctrl+I)");
   action_format->setIcon(QIcon(":/images/edit-format.png"));
   action_format->setShortcut(Qt::CTRL + Qt::Key_I);
 }
 void Actions::initializeSearchActions() {
-  action_find->setText(QObject::tr("&Find/Replace"));
+  action_find->setText(QObject::tr("&Поиск/Замена"));
   action_find->setIcon(QIcon(":/images/search-find.png"));
   action_find->setShortcut(Qt::CTRL + Qt::Key_F);
   action_find->setCheckable(true);
 
-  action_find_next->setText(QObject::tr("&Find Next"));
+  action_find_next->setText(QObject::tr("&Найти следующее"));
   action_find_next->setIcon(QIcon(":/images/search-find-next.png"));
   action_find_next->setShortcut(Qt::Key_F3);
 
-  action_find_prev->setText(QObject::tr("&Find Prev"));
+  action_find_prev->setText(QObject::tr("&Найти предыдущее"));
   action_find_prev->setIcon(QIcon(":/images/search-find-prev.png"));
   action_find_prev->setShortcut(Qt::SHIFT + Qt::Key_F3);
 
-  action_find_selected_next->setText(QObject::tr("&Find Selected Next"));
+  action_find_selected_next->setText(QObject::tr("&Найти выделенное следующее"));
   action_find_selected_next->setIcon(QIcon(":/images/search-find-selected-next.png"));
   action_find_selected_next->setShortcut(Qt::CTRL + Qt::Key_F3);
 
-  action_find_selected_prev->setText(QObject::tr("&Find Selected Prev"));
+  action_find_selected_prev->setText(QObject::tr("&Найти выделенное предыдущее"));
   action_find_selected_prev->setIcon(QIcon(":/images/search-find-selected-prev.png"));
   action_find_selected_prev->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_F3);
 }
 void Actions::initializeViewActions() {
-  action_tool_bar->setText(QObject::tr("&Tool Bar"));
+  action_tool_bar->setText(QObject::tr("&Панель инструментов"));
   action_tool_bar->setCheckable(true);
 
-  action_output_bar->setText(QObject::tr("&Output Bar"));
+  action_output_bar->setText(QObject::tr("&Панель вывода"));
   action_output_bar->setShortcut(Qt::Key_F4);
   action_output_bar->setCheckable(true);
 
-  action_change_split_orientation->setText(QObject::tr("&Change Split Orientation"));
+  action_change_split_orientation->setText(QObject::tr("&Сменить ориентацию сплита"));
   action_change_split_orientation->setShortcut(Qt::CTRL + Qt::Key_F4);
 
-  action_full_screen->setText(QObject::tr("&Full Screen"));
+  action_full_screen->setText(QObject::tr("&Полный экран"));
   action_full_screen->setIcon(QIcon(":/images/view-full-screen.png"));
   action_full_screen->setShortcut(Qt::Key_F11);
   action_full_screen->setCheckable(true);
 
-  action_graphics->setText(QObject::tr("&Graphics"));
+  action_graphics->setText(QObject::tr("&Графика"));
   action_graphics->setIcon(QIcon(":/images/view-graphics.png"));
   // actionGraphics->setCheckable(true);
 }
 void Actions::initializeExecutionActions() {
-  action_execute->setText(QObject::tr("&Run"));
-  action_execute->setToolTip(QObject::tr("Execute") + " (F5)");
+  action_execute->setText(QObject::tr("&Запуск"));
+  action_execute->setToolTip(QObject::tr("Запустить интерпретатор") + " (F5)");
   action_execute->setIcon(QIcon(":/images/execution-execute.png"));
   action_execute->setShortcut(Qt::Key_F5);
 
-  action_abort->setText(QObject::tr("&Abort"));
-  action_abort->setToolTip(QObject::tr("Abort") + " (F6)");
+  action_abort->setText(QObject::tr("&Прервать"));
+  action_abort->setToolTip(QObject::tr("Прервать выполнение") + " (F6)");
   action_abort->setIcon(QIcon(":/images/execution-abort.png"));
   action_abort->setShortcut(Qt::Key_F6);
 
-  action_trace->setText(QObject::tr("&Tracing"));
-  action_trace->setToolTip(QObject::tr("Tracing") + " (F7)");
+  action_trace->setText(QObject::tr("&Трассировка"));
+  action_trace->setToolTip(QObject::tr("Трассировка") + " (F7)");
   action_trace->setIcon(QIcon(":/images/execution-tracing.png"));
   action_trace->setShortcut(Qt::Key_F7);
 
-  action_save_before_execute->setText(QObject::tr("&Save Before Execute"));
+  action_save_before_execute->setText(QObject::tr("&Сохранять перед запуском"));
   action_save_before_execute->setCheckable(true);
 
-  action_tools_settings->setText(QObject::tr("&Settings..."));
-  action_tools_settings->setToolTip(QObject::tr("Settings") + " (F9)");
+  action_tools_settings->setText(QObject::tr("&Настройки..."));
+  action_tools_settings->setToolTip(QObject::tr("Настройки") + " (F9)");
   action_tools_settings->setIcon(QIcon(":/images/tools-settings.png"));
   action_tools_settings->setShortcut(Qt::Key_F9);
 }
 void Actions::initializeHelpActions() {
-  action_help->setText(QObject::tr("&Help..."));
-  action_help->setToolTip(QObject::tr("Help") + " (F1)");
+  action_help->setText(QObject::tr("&Помощь..."));
+  action_help->setToolTip(QObject::tr("Помощь") + " (F1)");
   action_help->setIcon(QIcon(":/images/help.png"));
   action_help->setShortcut(Qt::Key_F1);
 
-  action_about_prolog->setText(QObject::tr("&About PrologD..."));
-  action_about_prolog->setToolTip(QObject::tr("About PrologD") + " (F2)");
+  action_about_prolog->setText(QObject::tr("&О Прологе-Д..."));
+  action_about_prolog->setToolTip(QObject::tr("О Прологе-Д") + " (F2)");
   action_about_prolog->setIcon(QIcon(":/images/prolog1.png"));
   action_about_prolog->setShortcut(Qt::Key_F2);
-
-  action_about_qt->setText(QObject::tr("About &Qt..."));
-  action_about_qt->setIcon(QIcon(":/images/help-about-qt.png"));
 }
 
 void Actions::setActionsFont(const QFont &font) {
@@ -344,7 +337,6 @@ void Actions::setActionsFont(const QFont &font) {
   action_trace->setFont(font);
   action_save_before_execute->setFont(font);
   action_about_prolog->setFont(font);
-  action_about_qt->setFont(font);
   menu_file->setFont(font);
   menu_edit->setFont(font);
   menu_search->setFont(font);
