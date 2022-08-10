@@ -13,6 +13,7 @@ add_library (prlib
 "pstructs.cpp" "pstructs.h"
 "scaner.cpp" "scaner.h"
 "pdefs.h"
+"helper.h"
 )
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

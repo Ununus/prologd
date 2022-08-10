@@ -15,35 +15,36 @@
 #include "prlib/functions.h"
 #include "prlib/pstructs.h"
 #include "prlib/scaner.h"
+#include "prlib/helper.h"
 
-#include <charconv>
 #include <chrono>
 #include <memory>
 #include <queue>
 #include <string>
 #include <thread>
 
-#include <QDebug>
 #include <QPainter>
+#include <QDebug>
 
-const auto PROLOG_COLOR_BLACK = QColor(0, 0, 0).rgb();
-const auto PROLOG_COLOR_BLUE = QColor(0, 0, 255).rgb();
-const auto PROLOG_COLOR_GEEN = QColor(0, 255, 0).rgb();
-const auto PROLOG_COLOR_LBLUE = QColor(0, 191, 255).rgb();
-const auto PROLOG_COLOR_BROWN = QColor(150, 75, 0).rgb();
-const auto PROLOG_COLOR_VIOLET = QColor(90, 0, 157).rgb();
-const auto PROLOG_COLOR_DYELLOW = QColor(150, 150, 0).rgb();
-const auto PROLOG_COLOR_GRAY = QColor(170, 170, 170).rgb();
-const auto PROLOG_COLOR_DGRAY = QColor(85, 85, 85).rgb();
-const auto PROLOG_COLOR_CYAN = QColor(125, 125, 255).rgb();
-const auto PROLOG_COLOR_LGREEN = QColor(125, 255, 125).rgb();
-const auto PROLOG_COLOR_LCYAN = QColor(50, 230, 255).rgb();
-const auto PROLOG_COLOR_RED = QColor(125, 125, 255).rgb();
-const auto PROLOG_COLOR_LVIOLET = QColor(159, 20, 255).rgb();
-const auto PROLOG_COLOR_YELLOW = QColor(255, 255, 0).rgb();
-const auto PROLOG_COLOR_WHITE = QColor(255, 255, 255).rgb();
 
-auto ui2rgb(unsigned int c) {
+const QRgb PROLOG_COLOR_BLACK = QColor(0, 0, 0).rgb();
+const QRgb PROLOG_COLOR_BLUE = QColor(0, 0, 255).rgb();
+const QRgb PROLOG_COLOR_GEEN = QColor(0, 255, 0).rgb();
+const QRgb PROLOG_COLOR_LBLUE = QColor(0, 191, 255).rgb();
+const QRgb PROLOG_COLOR_BROWN = QColor(150, 75, 0).rgb();
+const QRgb PROLOG_COLOR_VIOLET = QColor(90, 0, 157).rgb();
+const QRgb PROLOG_COLOR_DYELLOW = QColor(150, 150, 0).rgb();
+const QRgb PROLOG_COLOR_GRAY = QColor(170, 170, 170).rgb();
+const QRgb PROLOG_COLOR_DGRAY = QColor(85, 85, 85).rgb();
+const QRgb PROLOG_COLOR_CYAN = QColor(125, 125, 255).rgb();
+const QRgb PROLOG_COLOR_LGREEN = QColor(125, 255, 125).rgb();
+const QRgb PROLOG_COLOR_LCYAN = QColor(50, 230, 255).rgb();
+const QRgb PROLOG_COLOR_RED = QColor(125, 125, 255).rgb();
+const QRgb PROLOG_COLOR_LVIOLET = QColor(159, 20, 255).rgb();
+const QRgb PROLOG_COLOR_YELLOW = QColor(255, 255, 0).rgb();
+const QRgb PROLOG_COLOR_WHITE = QColor(255, 255, 255).rgb();
+
+QRgb ui2rgb(unsigned int c) {
   switch (c) {
   case 0: return PROLOG_COLOR_BLACK;     //черный
   case 1: return PROLOG_COLOR_BLUE;      //синий
@@ -63,7 +64,7 @@ auto ui2rgb(unsigned int c) {
   }
   return PROLOG_COLOR_WHITE;  //белый
 }
-auto rgb2ui(QRgb color) {
+unsigned int rgb2ui(QRgb color) {
   if (color == PROLOG_COLOR_BLACK)
     return 0;
   if (color == PROLOG_COLOR_BLUE)
@@ -147,7 +148,8 @@ void usrout(const char *str) {
 void errout(const char *str) {
   char number[8];
   memset(number, 0, sizeof(char) * 8);
-  std::to_chars(number, number + 8, Nstr + 1);
+  // std::to_chars(number, number + 8, Nstr + 1);
+  hlp::to_chars(number, number + 8, Nstr + 1);
   emit prd->signalErrorOut(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
 int InputStringFromDialog(char *buf, size_t size, char *caption) {
@@ -264,10 +266,10 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) tr
   std::unique_ptr<TScVar> ScVar;
   std::unique_ptr<TClVar> ClVar;
 
-  heap = std::make_unique<array>(_maxarray_);
-  ScVar = std::make_unique<TScVar>();
-  ClVar = std::make_unique<TClVar>();
-  ClVar->PrSetting = std::make_unique<TPrSetting>();
+  heap = std::unique_ptr<array>( new array(_maxarray_));
+  ScVar = std::unique_ptr<TScVar>(new TScVar);
+  ClVar = std::unique_ptr<TClVar>(new TClVar);
+  ClVar->PrSetting = std::unique_ptr<TPrSetting>(new TPrSetting);
   EnableRunning = true;
   serr = buildin(ScVar.get(), heap.get());
   if (serr)
@@ -341,7 +343,8 @@ void CanvasArea::floodFill(int x, int y, unsigned int c) {
   const int dy[] = { 0, 0, 1, -1 };
   m_image.setPixel(x, y, newcol);
   while (!q.empty()) {
-    auto [cx, cy] = q.front();
+      int cx, cy;
+    std::tie(cx, cy) = q.front();
     q.pop();
     for (int i = 0; i < 4; ++i) {
       int nx = cx + dx[i], ny = cy + dy[i];

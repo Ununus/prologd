@@ -2,7 +2,6 @@
 #include <limits.h>
 #include <string.h>
 #include <stdlib.h>
-#include <charconv>
 #include "functions.h"
 #include "pdefs.h"
 //#include "extdecl.h"
@@ -10,6 +9,7 @@
 //#include "control.h"
 //#include "..\dinputdlg.h"
 #include "extfunc.h"
+#include "helper.h"
 
 //=======Первоначальное заполнение
 const char *NamesOfPredicates[] = { "mod",     "ЛОЖЬ",      "ТРАССА",   "НЕТ_ТРАССЫ", "!",         "ВЫП",        "ВВОДСИМВ", "ВВОДЦЕЛ", "ВВОДВЕЩ",
@@ -283,10 +283,12 @@ int num(char *&p, TScVar *ScVar, array *heap)
     bufnum[i] = 0;
     if (punkt || e) {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuef); // в gcc не реализовано
-      valuef = static_cast<float>(atof(bufnum));
+      // valuef = static_cast<float>(atof(bufnum));
+      hlp::from_chars(bufnum, bufnum + sizeof(bufnum), valuef);
     } else {
-      std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
+      // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
       // valuei = atoi(bufnum);
+      hlp::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
     }
     if ((valuef == valuei) && (i > 1 || (i == 1 && (*p != '0'))))
       err = 4;  //не верный формат числа

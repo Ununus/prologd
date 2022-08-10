@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
-#include <charconv>
 #include <random>
 #include <thread>
 #include "pdefs.h"
@@ -9,6 +8,7 @@
 #include "extfunc.h"
 #include "control.h"
 #include "functions.h"
+#include "helper.h"
 
 extern void Rectangle(int x1, int y1, int x2, int y2, unsigned color);
 extern void MoveTo_LineTo(int x1, int y1, int x2, int y2, unsigned color);
@@ -882,7 +882,7 @@ unsigned prstint(unsigned sw,
                  TClVar *ClVar,
                  array *heap)  //стрцел
 {                              // int i;
-  long w{};
+  int w{};
   char lnwr[maxlinelen]{};
   switch (sw) {
   case 97:  // str int
@@ -891,7 +891,7 @@ unsigned prstint(unsigned sw,
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    hlp::from_chars(lnwr, lnwr + sizeof(lnwr), w);
     // w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
     if (sw == 95 || sw == 45)
       return zap1(w, 2, ScVar, ClVar, heap);
@@ -899,7 +899,7 @@ unsigned prstint(unsigned sw,
   }
   case 57:  // var int  возможно нужно var float
   {
-    std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
+    hlp::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
     // Заменено на to_chars, но не поверено
     //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
     // char *str=newStr(lnwr);
@@ -907,8 +907,10 @@ unsigned prstint(unsigned sw,
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
   case 56: {
-    float value = occf(1, ScVar, ClVar, heap);
-    sprintf(lnwr, "%f", value);
+    // float value = occf(1, ScVar, ClVar, heap);
+    // sprintf(lnwr, "%f", value);
+    float value = 0.f;
+    hlp::to_chars(lnwr, lnwr + maxlinelen, value);
     // std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
     //  Заменено на, но не поверено
     // int dec, sign, ndig = 5;
@@ -934,30 +936,6 @@ unsigned prstint(unsigned sw,
   }  // outerror(2);return 1;//R_T_e нет памяти
 }
 
-// TODO: заменить это на более подходящую функцию
-static float str2float(const char *beg, const char *ed) {
-  float res = 0.f;
-  const char *pt = beg;
-  while (*pt != '.' && *pt != '\0' && pt != ed) {
-    res *= 10.f;
-    res += (*pt - '0');
-    ++pt;
-  }
-  if (pt != ed) {
-    ++pt;
-  }
-  if (pt != ed) {
-    float af = 0.f;
-    float dv = 1.f;
-    while (*pt != '\0' && pt != ed) {
-      dv /= 10.f;
-      af += (*pt - '0') * dv;
-      ++pt;
-    }
-    res += af;
-  }
-  return res;
-}
 // Функция, которая выполняет предикат СТРВЕЩ
 unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   float w{};
@@ -971,7 +949,7 @@ unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     occ_line(0, lnwr, ScVar, ClVar, heap);
     // std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
     //  TODO: здесь нужна проверка правильности конвертации
-    w = str2float(lnwr, lnwr + sizeof(lnwr));
+    hlp::from_chars(lnwr, lnwr + sizeof(lnwr), w);
 
     if (sw == 95 || sw == 45) {
       return zap1f(w, 2, ScVar, ClVar, heap);

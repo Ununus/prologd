@@ -57,7 +57,8 @@ int PlainTextEditWithLineNumberArea::lineNumberAreaWidth() {
     max /= 10;
     ++digits;
   }
-  int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * (digits + 1);
+  // int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * (digits + 1);
+  int space = 3 + fontMetrics().width(QLatin1Char('9')) * (digits + 1);
   return space;
 }
 void PlainTextEditWithLineNumberArea::updateLineNumberAreaWidth(int) {
@@ -85,7 +86,8 @@ void PlainTextEditWithLineNumberArea::lineNumberAreaPaintEvent(QPaintEvent *even
     if (block.isVisible() && bottom >= event->rect().top()) {
       QString number = QString::number(blockNumber + 1);
       painter.setPen(Qt::black);
-      painter.drawText(4, top, m_line_number_area->width() - fnt_metric.horizontalAdvance('0'), fnt_metric.height(), Qt::AlignRight, number);
+      // painter.drawText(4, top, m_line_number_area->width() - fnt_metric.horizontalAdvance('0'), fnt_metric.height(), Qt::AlignRight, number);
+      painter.drawText(4, top, m_line_number_area->width() - fnt_metric.width('0'), fnt_metric.height(), Qt::AlignRight, number);
     }
 
     block = block.next();
@@ -393,7 +395,8 @@ void Editor::wheelEvent(QWheelEvent *e) {
 void Editor::dropEvent(QDropEvent *e) {
   const QMimeData *data = e->mimeData();
   if (data->hasText()) {
-    QStringList filepaths(QString(data->text()).split('\n', Qt::SplitBehaviorFlags::SkipEmptyParts));
+    // QStringList filepaths(QString(data->text()).split('\n', Qt::SplitBehaviorFlags::SkipEmptyParts));
+      QStringList filepaths(QString(data->text()).split('\n', QString::SplitBehavior::SkipEmptyParts));
     for (QString filepath : filepaths) {
       if (filepath.startsWith("file:///")) {
         filepath.remove(0, 8);

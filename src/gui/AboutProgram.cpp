@@ -76,7 +76,7 @@ AboutProgram::AboutProgram(QWidget *parent)
   programIcon->setPixmap(QPixmap(":/images/prolog1.png").scaled(42, 42, Qt::IgnoreAspectRatio, Qt::FastTransformation));
   programIcon->setFixedSize(42, 42);
   QLabel *programName = new QLabel(tr("Пролог-Д"));
-  QLabel *programVersion = new QLabel(tr("Версия: ") + " " + qApp->applicationVersion().chopped(2));
+  QLabel *programVersion = new QLabel(tr("Версия: "));
   head->addWidget(programIcon);
   head->addWidget(programName);
   head->addWidget(programVersion);

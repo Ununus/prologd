@@ -600,10 +600,13 @@ void MainWindow::prologExecute() {
 
   m_execution_thread->start();
 
-  if (m_input_spaces_as_separators->isChecked())
-    emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), Qt::SkipEmptyParts));
-  else
-    emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', Qt::SkipEmptyParts));
+  if (m_input_spaces_as_separators->isChecked()) {
+    // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), Qt::SkipEmptyParts));
+    emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), QString::SkipEmptyParts));
+  } else {
+    // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', Qt::SkipEmptyParts));
+    emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', QString::SkipEmptyParts));
+  }
 }
 void MainWindow::prologAbort() {
   if (m_prolog_worker) {
