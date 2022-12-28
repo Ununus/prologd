@@ -105,7 +105,13 @@ static PrologDWorker *prd = nullptr;
 QString decode_cp1251_to_utf8(const char *str) {
   std::string res;
   for (const char *c = str; *c; ++c) {
-    if (*c >= 'À' && *c <= 'ÿ') {
+    if (*c == '¸') {
+      res.push_back(-47);
+      res.push_back(-111);
+    } else if (*c == '¨') {
+      res.push_back(-48);
+      res.push_back(-127);
+    } else if (*c >= 'À' && *c <= 'ÿ') {
       auto v = static_cast<unsigned char>(*c - 'À') + 1040u;
       unsigned char c1 = 192u + (v >> 6u);
       unsigned char c2 = (v & 63u) + 128u;
@@ -124,7 +130,13 @@ std::string decode_utf8_to_cp1251(QString qstr) {
     return str;
   size_t si = 0;
   for (size_t i = 0; i < str.size();) {
-    if ((str[i] & 128u) == 0) {
+    if (i + 1 < str.size() && str[i] == -48 && str[i + 1] == -127) {
+      str[si++] = '¨';
+      i += 2;
+    } else if (i + 1 < str.size() && str[i] == -47 && str[i + 1] == -111) {
+      str[si++] = '¸';
+      i += 2;
+    } else if((str[i] & 128u) == 0) {
       str[si++] = str[i++];
     } else if ((str[i] & 224u) == 192u && i + 1 != str.size()) {
       str[si++] = ((str[i] ^ 192u) << 6u) + (str[i + 1] & 63u) - 1040u - 64u;
