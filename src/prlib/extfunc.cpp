@@ -1540,7 +1540,7 @@ unsigned int prepare_target_from_list(unsigned term, TScVar *ScVar, TClVar *ClVa
     case isfunction: ClVar->bpt[target_number++] = pl->head; break;
     default: return 1;
     }
-    pl = heap->GetPrecordlist(pl->head);
+    pl = heap->GetPrecordlist(pl->link);
     //(recordlist *)&heap->heaps[pl->link];
   }
   return 0;  // ok
@@ -1694,6 +1694,7 @@ unsigned GetConstTerm(unsigned Term, unsigned Frame, TClVar *ClVar, array *heap)
         return _PrevTerm;
       }
     } break;
+    case islist:
     case issymbol:
     case isinteger:
     case isfloat:
@@ -1868,6 +1869,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
       pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
       return 1;
     }
+    //TODO: И это тут считается?
     nvar += count_var;  //еще нужно подсчитать число перем в голове
                         //            out("Переменные подсчитаны");
                         //подготовка целей
