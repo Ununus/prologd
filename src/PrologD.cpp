@@ -15,7 +15,7 @@
 #include "prlib/functions.h"
 #include "prlib/pstructs.h"
 #include "prlib/scaner.h"
-#include "prlib/helper.h"
+#include <charconv>
 
 #include <chrono>
 #include <memory>
@@ -25,7 +25,6 @@
 
 #include <QPainter>
 #include <QDebug>
-
 
 const QRgb PROLOG_COLOR_BLACK = QColor(0, 0, 0).rgb();
 const QRgb PROLOG_COLOR_BLUE = QColor(0, 0, 255).rgb();
@@ -136,7 +135,7 @@ std::string decode_utf8_to_cp1251(QString qstr) {
     } else if (i + 1 < str.size() && str[i] == -47 && str[i + 1] == -111) {
       str[si++] = 'ё';
       i += 2;
-    } else if((str[i] & 128u) == 0) {
+    } else if ((str[i] & 128u) == 0) {
       str[si++] = str[i++];
     } else if ((str[i] & 224u) == 192u && i + 1 != str.size()) {
       str[si++] = ((str[i] ^ 192u) << 6u) + (str[i + 1] & 63u) - 1040u - 64u;
@@ -160,8 +159,7 @@ void usrout(const char *str) {
 void errout(const char *str) {
   char number[8];
   memset(number, 0, sizeof(char) * 8);
-  // std::to_chars(number, number + 8, Nstr + 1);
-  hlp::to_chars(number, number + 8, Nstr + 1);
+  std::to_chars(number, number + 8, Nstr + 1);
   emit prd->signalErrorOut(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
 int InputStringFromDialog(char *buf, size_t size, char *caption) {
@@ -278,7 +276,7 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) tr
   std::unique_ptr<TScVar> ScVar;
   std::unique_ptr<TClVar> ClVar;
 
-  heap = std::unique_ptr<array>( new array(_maxarray_));
+  heap = std::unique_ptr<array>(new array(_maxarray_));
   ScVar = std::unique_ptr<TScVar>(new TScVar);
   ClVar = std::unique_ptr<TClVar>(new TClVar);
   ClVar->PrSetting = std::unique_ptr<TPrSetting>(new TPrSetting);
@@ -355,7 +353,7 @@ void CanvasArea::floodFill(int x, int y, unsigned int c) {
   const int dy[] = { 0, 0, 1, -1 };
   m_image.setPixel(x, y, newcol);
   while (!q.empty()) {
-      int cx, cy;
+    int cx, cy;
     std::tie(cx, cy) = q.front();
     q.pop();
     for (int i = 0; i < 4; ++i) {

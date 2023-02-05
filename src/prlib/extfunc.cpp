@@ -892,7 +892,7 @@ unsigned prstint(unsigned sw,
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
     std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    //w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
+    // w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
     if (sw == 95 || sw == 45)
       return zap1(w, 2, ScVar, ClVar, heap);
     return (w == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
@@ -907,24 +907,22 @@ unsigned prstint(unsigned sw,
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
   case 56: {
-    // float value = occf(1, ScVar, ClVar, heap);
-    // sprintf(lnwr, "%f", value);
-    FloatType value = 0.f;
-    std::to_chars(lnwr, lnwr + maxlinelen, value);
-    // std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
-    //  Заменено на, но не поверено
-    // int dec, sign, ndig = 5;
-    // char* p = lnwr;
-    // p = _fcvt(value, ndig, &dec, &sign);
-    // int j = 0, i;
-    // if (sign)
-    //   lnwr[j++] = '-';
-    // for (i = 0; (i < dec && i + j < maxlinelen);
-    //   lnwr[j + i] = p[i], i++);
-    // lnwr[j + i] = '.';
-    // j++;
-    // for (; (i + j < maxlinelen && p[i]); lnwr[i + j] = p[i], i++);
-    // lnwr[j + i] = NULL;
+    FloatType value = occf(1, ScVar, ClVar, heap);
+    sprintf(lnwr, "%lf", value);
+    //  std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
+    //   Заменено на, но не поверено
+    //  int dec, sign, ndig = 5;
+    //  char* p = lnwr;
+    //  p = _fcvt(value, ndig, &dec, &sign);
+    //  int j = 0, i;
+    //  if (sign)
+    //    lnwr[j++] = '-';
+    //  for (i = 0; (i < dec && i + j < maxlinelen);
+    //    lnwr[j + i] = p[i], i++);
+    //  lnwr[j + i] = '.';
+    //  j++;
+    //  for (; (i + j < maxlinelen && p[i]); lnwr[i + j] = p[i], i++);
+    //  lnwr[j + i] = NULL;
 
     // str=newStr(lnwr);
     return zap3(lnwr, 1, ScVar, ClVar, heap);
@@ -936,6 +934,29 @@ unsigned prstint(unsigned sw,
   }  // outerror(2);return 1;//R_T_e нет памяти
 }
 
+static float str2float(const char *beg, const char *ed) {
+  float res = 0.f;
+  const char *pt = beg;
+  while (*pt != '.' && *pt != '\0' && pt != ed) {
+    res *= 10.f;
+    res += (*pt - '0');
+    ++pt;
+  }
+  if (pt != ed) {
+    ++pt;
+  }
+  if (pt != ed) {
+    float af = 0.f;
+    float dv = 1.f;
+    while (*pt != '\0' && pt != ed) {
+      dv /= 10.f;
+      af += (*pt - '0') * dv;
+      ++pt;
+    }
+    res += af;
+  }
+  return res;
+}
 // Функция, которая выполняет предикат СТРВЕЩ
 unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType w{};
@@ -948,7 +969,8 @@ unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
     //  TODO: здесь нужна проверка правильности конвертации
-    std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    w = str2float(lnwr, lnwr + sizeof(lnwr));
+    // std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
 
     if (sw == 95 || sw == 45) {
       return zap1f(w, 2, ScVar, ClVar, heap);
@@ -1628,7 +1650,7 @@ void PrintInteger(recordinteger *pbr, int Level) {
   char *p = pBuf + Level;
   sprintf(p, "PrintInteger: Level %d", Level);
   pldout(pBuf);
-  sprintf(p, "Value: %d", pbr->value);
+  sprintf(p, "Value: %lld", pbr->value);
   pldout(pBuf);
 }
 
@@ -1868,7 +1890,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
       pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
       return 1;
     }
-    //TODO: И это тут считается?
+    // TODO: И это тут считается?
     nvar += count_var;  //еще нужно подсчитать число перем в голове
                         //            out("Переменные подсчитаны");
                         //подготовка целей
