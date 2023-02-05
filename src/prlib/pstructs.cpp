@@ -103,12 +103,12 @@ recordvar::recordvar(unsigned PTRsymb, unsigned char LENGTH, unsigned int NUM) {
   num = NUM;
 }
 
-recordinteger::recordinteger(int VALUE) {
+recordinteger::recordinteger(IntegerType VALUE) {
   ident = isinteger;
   value = VALUE;
 }
 
-recordfloat::recordfloat(float VALUE) {
+recordfloat::recordfloat(FloatType VALUE) {
   ident = isfloat;
   value = VALUE;
 }

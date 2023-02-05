@@ -262,8 +262,8 @@ int num(char *&p, TScVar *ScVar, array *heap)
   unsigned int &bptr = ScVar->bptr;
   unsigned int *buf = ScVar->buf;
   char bufnum[1024];
-  float valuef = 0;
-  int valuei = 0;
+  FloatType valuef = 0;
+  IntegerType valuei = 0;
   int punkt = 0, e = 0;
   int i = 0;
   if (*p == '+' || *p == '-')

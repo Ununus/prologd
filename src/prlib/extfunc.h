@@ -12,17 +12,17 @@ unsigned argthree(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap);
 unsigned argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap);
 unsigned argfive(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap);
 void phon(int a, int b);
-int occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap);     //получение целого связанного с переменной
-float occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap);  //получение вещесв связанного с переменной
+IntegerType occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap);     //получение целого связанного с переменной
+FloatType occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap);  //получение вещесв связанного с переменной
 
-unsigned zap1(int num, unsigned arg, TScVar *ScVar, TClVar *ClVar,
+unsigned zap1(IntegerType num, unsigned arg, TScVar *ScVar, TClVar *ClVar,
               array *heap);  //унификация целого num с arg аргументом предиката
 
 //унификация целого num1 с arg1 аргументом предиката
 //унификация целого num2 с arg2 аргументом предиката
-unsigned zap2(int num1, int num2, unsigned arg1, unsigned arg2, TScVar *ScVar, TClVar *ClVar, array *heap);
+unsigned zap2(IntegerType num1, IntegerType num2, unsigned arg1, unsigned arg2, TScVar *ScVar, TClVar *ClVar, array *heap);
 
-unsigned zap1f(float num, unsigned arg, TScVar *ScVar, TClVar *ClVar,
+unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar,
                array *heap);  //унификация float num с arg аргументом предиката
 
 unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap);
@@ -43,8 +43,8 @@ unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap);
 //=========== функции ввода ==============
 int Inputstring(char *buf, int size, char *caption = 0);
 int InputSymbol(char *buf);
-int InputInt(int *n, const char *caption);
-int InputFloat(float *n, const char *caption);
+int InputInt(IntegerType *n, const char *caption);
+int InputFloat(FloatType *n, const char *caption);
 
 // out for debug
 void PrintTerm(baserecord *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *heap);

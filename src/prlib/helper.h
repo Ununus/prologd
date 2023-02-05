@@ -10,12 +10,12 @@
 namespace hlp {
 
 #if USE_OLD_COMPILER
-  static inline bool from_chars(const char *fst, const char *lst, int &val) {
+  static inline bool from_chars(const char *fst, const char *lst, IntegerType &val) {
     if (fst == lst || *fst == '\0') {
       return false;
     }
     val = 0;
-    int neg = 1;
+    IntegerType neg = 1;
     if (*fst == '+') {
       ++fst;
     } else if (*fst == '-') {
@@ -30,17 +30,17 @@ namespace hlp {
         return false;  // error
       }
       val *= 10;
-      val += static_cast<int>(*p - '0');
+      val += static_cast<IntegerType>(*p - '0');
     }
     val *= neg;
     return true;  // success
   }
-  static inline bool from_chars(const char *fst, const char *lst, float &val) {
+  static inline bool from_chars(const char *fst, const char *lst, FloatType &val) {
     if (fst == lst || *fst == '\0') {
       return false;
     }
     val = 0.f;
-    float neg = 1.f;
+    FloatType neg = 1.f;
     if (*fst == '+') {
       ++fst;
     } else if (*fst == '-') {
@@ -60,7 +60,7 @@ namespace hlp {
         return false;  // error
       }
       val *= 10.f;
-      val += static_cast<float>(*p - '0');
+      val += static_cast<FloatType>(*p - '0');
     }
     if (p == lst) {
       val *= neg;
@@ -68,7 +68,7 @@ namespace hlp {
     }
     if (*p == '.') {
       ++p;
-      for (float dv = 0.1f; *p != 'e' && p != lst; dv /= 10.f, ++p) {
+      for (FloatType dv = 0.1f; *p != 'e' && p != lst; dv /= 10.f, ++p) {
         if (*p == '\0') {
           val *= neg;
           return true;  // success
@@ -76,7 +76,7 @@ namespace hlp {
         if (*p < '0' || *p > '9') {
           return false;  // error
         }
-        val += static_cast<float>(*p - '0') * dv;
+        val += static_cast<FloatType>(*p - '0') * dv;
       }
     }
     if (p == lst) {
@@ -88,7 +88,7 @@ namespace hlp {
       if (*p == '\0' || p == lst) {
         return false;
       }
-      float m = 10.f;
+      FloatType m = 10.f;
       if (*p == '+') {
         ++p;
       } else if (*p == '-') {

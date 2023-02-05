@@ -160,7 +160,7 @@ unsigned zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar, array
   return 5;
 }
 
-unsigned zap1(int num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
+unsigned zap1(IntegerType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
 //унификация целого num с arg аргументом предиката
 {
   recordinteger pi(num);
@@ -181,7 +181,7 @@ unsigned zap1(int num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
   return 5;
 }
 
-unsigned zap2(int num1, int num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap)
+unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap)
 //унификация целого num1 с arg1 аргументом предиката
 //унификация целого num2 с arg2 аргументом предиката
 {
@@ -205,7 +205,7 @@ unsigned zap2(int num1, int num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClV
   return 5;
 }
 
-unsigned zap1f(float num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
+unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
 //унификация float num с arg аргументом предиката
 {
   recordfloat pf(num);
@@ -226,7 +226,7 @@ unsigned zap1f(float num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *hea
   return 5;
 }
 
-unsigned zap2f(float num1, float num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap)
+unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap)
 //унификация float num1 с arg1 аргументом предиката
 //унификация float num2 с arg2 аргументом предиката
 {
@@ -250,12 +250,12 @@ unsigned zap2f(float num1, float num2, int arg1, int arg2, TScVar *ScVar, TClVar
   return 5;
 }
 
-int prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
+IntegerType prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
 // выполнение предиката СЛУЧ
 {
-  int n, m;
+  IntegerType n, m;
   static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-  static std::uniform_int_distribution<int> dst;
+  static std::uniform_int_distribution<IntegerType> dst;
   switch (sw) {
   case 7:  // целое: инициализация генератора
     n = occ(0, ScVar, ClVar, heap);
@@ -270,7 +270,7 @@ int prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
       outerror(24);  // TODO: error
       return 1;
     }
-    dst = std::uniform_int_distribution<int>(n, m);
+    dst = std::uniform_int_distribution<IntegerType>(n, m);
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: outerror(24); return 1;  //!!!r_t_e(71);
   }
@@ -348,7 +348,7 @@ unsigned infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 1;
 }
 
-int occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
+IntegerType occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
 //получение целого связанного с переменной
 {
   recordinteger *pint = heap->GetPrecordinteger(ScVar->goal[maxarity + x]);
@@ -356,7 +356,7 @@ int occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
   return pint->value;
 }
 
-float occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
+FloatType occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
 //получение вещесв связанного с переменной
 {
   recordfloat *pf = heap->GetPrecordfloat(ScVar->goal[maxarity + x]);
@@ -399,7 +399,7 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // ВВОДЦЕЛ
 unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  int w{};
+  IntegerType w{};
   char str0[129]{};
   const char *caption = "Введите целое";
 
@@ -459,7 +459,7 @@ unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // ВВОДВЕЩ
 unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  float w{};
+  FloatType w{};
   char str0[129]{};
   const char *caption = "Введите вещественное";
 
@@ -608,7 +608,7 @@ unsigned print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //преобр
 {
   switch (sw) {
   case 7: return 3;  //уже целое
-  case 6: return zap1(static_cast<int>(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
+  case 6: return zap1(static_cast<IntegerType>(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   outerror(36);
   return 1;
@@ -617,7 +617,7 @@ unsigned print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //преобр
 unsigned prfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //преобразование в float
 {
   switch (sw) {
-  case 7: return zap1f(static_cast<float>(occ(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
+  case 7: return zap1f(static_cast<FloatType>(occ(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   case 6: return 3;
   }
   outerror(37);
@@ -630,9 +630,9 @@ unsigned prwait(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  // жди
   case 7: break;
   default: outerror(24); return 1;
   }
-  int n = occ(0, ScVar, ClVar, heap);
+  IntegerType n = occ(0, ScVar, ClVar, heap);
   if (n > 0) {
-    std::this_thread::sleep_for(std::chrono::duration<int, std::milli>(n));
+    std::this_thread::sleep_for(std::chrono::duration<IntegerType, std::milli>(n));
   }
   return 3;
 }
@@ -666,9 +666,9 @@ unsigned argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
-  int a[2];
+  IntegerType a[2];
   int ind = 0;
-  float af[2];
+  FloatType af[2];
   for (int i = 0; i < 2; i++) {
     switch (ScVar->goal[i]) {
     case 7:
@@ -684,8 +684,8 @@ unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   switch (ind) {
   case 3: return (a[0] > a[1]) ? 3 : 5;
-  case 7: af[0] = (float)a[0]; break;
-  case 5: af[1] = (float)a[1]; break;
+  case 7: af[0] = (FloatType)a[0]; break;
+  case 5: af[1] = (FloatType)a[1]; break;
   case 9: break;
   default: outerror(24); return 1;  // r_t_e(51)//в больше не число
   }
@@ -882,7 +882,7 @@ unsigned prstint(unsigned sw,
                  TClVar *ClVar,
                  array *heap)  //стрцел
 {                              // int i;
-  int w{};
+  IntegerType w{};
   char lnwr[maxlinelen]{};
   switch (sw) {
   case 97:  // str int
@@ -909,7 +909,7 @@ unsigned prstint(unsigned sw,
   case 56: {
     // float value = occf(1, ScVar, ClVar, heap);
     // sprintf(lnwr, "%f", value);
-    float value = 0.f;
+    FloatType value = 0.f;
     hlp::to_chars(lnwr, lnwr + maxlinelen, value);
     // std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
     //  Заменено на, но не поверено
@@ -937,8 +937,8 @@ unsigned prstint(unsigned sw,
 }
 
 // Функция, которая выполняет предикат СТРВЕЩ
-unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  float w{};
+unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  FloatType w{};
   char lnwr[maxlinelen]{};
   switch (sw) {
   case 96:  // str float
@@ -957,7 +957,7 @@ unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return (w == occf(1, ScVar, ClVar, heap)) ? 3 : 5;
   }
   case 56: {
-    float value = occf(1, ScVar, ClVar, heap);
+    FloatType value = occf(1, ScVar, ClVar, heap);
     sprintf(lnwr, "%f", value);
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
@@ -969,22 +969,22 @@ unsigned int prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 // Функция, которая выполняет предикат ЦЕЛВЕЩ
 unsigned int printfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  int int_val = 0;
-  float float_val = 0.f;
+  IntegerType int_val = 0;
+  FloatType float_val = 0.f;
   char lnwr[maxlinelen]{};
   switch (sw) {
   case 76:  // int float
-    return (occ(0, ScVar, ClVar, heap) == (int)occf(1, ScVar, ClVar, heap)) ? 3 : 5;
+    return (occ(0, ScVar, ClVar, heap) == (IntegerType)occf(1, ScVar, ClVar, heap)) ? 3 : 5;
   case 75:  // int var
   {
     int_val = occ(0, ScVar, ClVar, heap);
-    float_val = static_cast<float>(int_val);
+    float_val = static_cast<FloatType>(int_val);
     return zap1f(float_val, 2, ScVar, ClVar, heap);
   }
   case 56:  // var float
   {
     float_val = occf(1, ScVar, ClVar, heap);
-    int_val = static_cast<int>(float_val);
+    int_val = static_cast<IntegerType>(float_val);
     return zap1(int_val, 1, ScVar, ClVar, heap);
   }
   default: {
@@ -1010,7 +1010,7 @@ unsigned whatisit(unsigned sw,
                   array *heap)  //насчет unsigned i ???
 {
   char lnwr[maxlinelen];  //может быть unsignedi !!!
-  int w;
+  IntegerType w;
   occ_line(0, lnwr, ScVar, ClVar, heap);
   int len = strlen(lnwr);
   switch (sw) {
@@ -1252,7 +1252,7 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
 unsigned prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //точка
 {
   //	if ( !canvas) return 3;
-  int xy, x1, x2, y1, y2, color;
+  IntegerType xy, x1, x2, y1, y2, color;
   switch (sw) {
   case 777: {
     x1 = occ(0, ScVar, ClVar, heap);
@@ -1961,7 +1961,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     return 5;
   }
   //включим в цепочку предложений
-  int number = occ(2, ScVar, ClVar, heap);  //куда следует воткнуть новое
+  IntegerType number = occ(2, ScVar, ClVar, heap);  //куда следует воткнуть новое
   //поищем первое предложение
   tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
   //(baserecord *)&heap->heaps[ScVar->goal[maxarity]];
@@ -2011,8 +2011,8 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
 
 unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //СЛОЖЕНИЕ
 {
-  long l[4];
-  float f[4];
+  IntegerType l[4];
+  FloatType f[4];
   bool fl = false;  //если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++) {
@@ -2024,7 +2024,7 @@ unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //СЛОЖЕН
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
-        f[i] = (float)occ(i, ScVar, ClVar, heap);
+        f[i] = (FloatType)occ(i, ScVar, ClVar, heap);
         switch (i) {
         case 0: sw -= 100; break;
         case 1: sw -= 10; break;
@@ -2050,8 +2050,8 @@ unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //СЛОЖЕН
 
 unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умножение   в goal[0].. 1 .. идетифик параметр
 {
-  long l[3];
-  float f[3];
+  IntegerType l[3];
+  FloatType f[3];
   bool fl = false;  //если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++) {
@@ -2064,7 +2064,7 @@ unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умнож
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
-        f[i] = (float)occ(i, ScVar, ClVar, heap);
+        f[i] = (FloatType)occ(i, ScVar, ClVar, heap);
         switch (i) {
         case 0: sw -= 100; break;
         case 1: sw -= 10; break;
@@ -2084,8 +2084,8 @@ unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умнож
       return 5;
     if (l[2] % l[1] == 0)
       return zap1(l[2] / l[1], 1, ScVar, ClVar, heap);
-    f[2] = (float)l[1];
-    f[1] = (float)l[1];
+    f[2] = (FloatType)l[1];
+    f[1] = (FloatType)l[1];
   case 566:
     if (f[1] == 0)
       return 5;
@@ -2095,8 +2095,8 @@ unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умнож
       return 5;
     if (l[2] % l[0] == 0)
       return zap1(l[2] / l[0], 2, ScVar, ClVar, heap);
-    f[0] = (float)l[0];
-    f[2] = (float)l[2];
+    f[0] = (FloatType)l[0];
+    f[2] = (FloatType)l[2];
   case 656:
     if (f[0] == 0)
       return 5;
@@ -2126,8 +2126,8 @@ unsigned argthree(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умножение   в goal[0].. 1 .. идетифик параметр
 {
-  long l[4];
-  float f[4];
+  IntegerType l[4];
+  FloatType f[4];
   bool fl = false;  //если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 4; i++) {
@@ -2139,7 +2139,7 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
-        f[i] = (float)occ(i, ScVar, ClVar, heap);
+        f[i] = (FloatType)occ(i, ScVar, ClVar, heap);
         switch (i) {
         case 0: sw -= 1000; break;
         case 1: sw -= 100; break;
@@ -2176,7 +2176,7 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
   case 6666: return (f[0] * f[1] + f[2] == f[3]) ? 3 : 5;  //все веществ ffff
   case 5777:
     if (l[1]) {
-      long work;
+      IntegerType work;
       if ((work = l[3] - l[2]) % l[1] != 0)
         return 5;
       return zap1(work / l[1], 1, ScVar, ClVar, heap);
@@ -2186,7 +2186,7 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
   case 7577:
     if (l[0])  //цпцц
     {
-      long work;
+      IntegerType work;
       if ((work = l[3] - l[2]) % l[0] != 0)
         return 5;
       return zap1(work / l[0], 2, ScVar, ClVar, heap);
@@ -2225,7 +2225,7 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
 
 unsigned prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // if (!canvas) return 3;
-  int x1, x2, y1, y2, r, color;
+  IntegerType x1, x2, y1, y2, r, color;
 
   switch (sw) {
   case 7777: {
@@ -2303,7 +2303,7 @@ unsigned prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) /* закраска */
 {
-  int x, y, color;
+  IntegerType x, y, color;
   if (sw != 777) {
     outerror(24);
     return 1;
@@ -2317,7 +2317,7 @@ unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) /* закр
 
 unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str1[maxlinelen], str2[maxlinelen];
-  int i1, i2, i3, i4;
+  IntegerType i1, i2, i3, i4;
   switch (sw) {
   case 4775:
   case 9775:  // str int int var
@@ -2543,8 +2543,7 @@ unsigned argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
 unsigned prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   //	if (/*!bitmap ||*/ !canvas) return 3;
   // int xy;
-  int x1, x2, y1, y2;
-  int color;
+  IntegerType x1, x2, y1, y2, color;
   switch (sw) {
   case 77777: {
     x1 = occ(0, ScVar, ClVar, heap);
@@ -2713,7 +2712,7 @@ int InputSymbol(char *c) {
   return 1;
 }
 
-int InputInt(int *n, const char *caption) {
+int InputInt(IntegerType *n, const char *caption) {
   int err = 2;  //!!! нужна проверка на правильность ввода
                 //  char* pCaption = const_cast<char*>("Введите целое");
                 //  if (caption)
@@ -2732,7 +2731,7 @@ int InputInt(int *n, const char *caption) {
   return err;
 }
 
-int InputFloat(float *n, const char *caption) {
+int InputFloat(FloatType *n, const char *caption) {
   int err = 2;
   char Buf[255];
   while (err == 2) {

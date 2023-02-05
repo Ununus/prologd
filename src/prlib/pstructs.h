@@ -7,6 +7,9 @@
 //#include <limits.h>
 //#include "pdefs.h"
 
+using FloatType = double;
+using IntegerType = long long;
+
 // Вывод предиката
 void prdout(bool value);
 // Прологовский вывод
@@ -56,13 +59,13 @@ struct recordvar
 };
 
 struct recordinteger : public baserecord {
-  int value;
-  recordinteger(int VALUE);
+  IntegerType value;
+  recordinteger(IntegerType VALUE);
 };
 
 struct recordfloat : public baserecord {
-  float value;
-  recordfloat(float VALUE);
+  FloatType value;
+  recordfloat(FloatType VALUE);
 };
 
 struct recordunknown : public baserecord {
