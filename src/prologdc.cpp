@@ -32,6 +32,7 @@ static std::istream *input_stream{ nullptr };
 static std::ostream *output_stream{ nullptr };
 static std::ostream *error_stream{ nullptr };
 
+static bool split_space{ true };
 static bool out_questions{ false };
 static bool dialog{ false };
 static int parsed_str_number{ 0 };
@@ -193,6 +194,24 @@ int InputStringFromDialog(char *buf, size_t size, char *caption) {
       // errout("Expected input, but got end of stream");
       errout("Недостаточно входных данных");
       return 1;
+    }
+    if (split_space) {
+      std::string split_str;
+      for (size_t i = 0; i < line.size(); ++i) {
+        if (!std::isspace(line[i])) {
+          split_str.push_back(line[i]);
+        } else {
+          if (!split_str.empty()) {
+            inputed_strs.push_back(split_str);
+            split_str.clear();
+          }
+        }
+      }
+      if (!split_str.empty()) {
+        inputed_strs.push_back(split_str);
+        split_str.clear();
+      }
+      InputStringFromDialog(buf, size, caption);
     }
   }
   if (line.empty() || size == 0) {

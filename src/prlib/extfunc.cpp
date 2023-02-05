@@ -934,8 +934,8 @@ unsigned prstint(unsigned sw,
   }  // outerror(2);return 1;//R_T_e нет памяти
 }
 
-static float str2float(const char *beg, const char *ed) {
-  float res = 0.f;
+static FloatType str2float(const char *beg, const char *ed) {
+  FloatType res = 0.f;
   const char *pt = beg;
   while (*pt != '.' && *pt != '\0' && pt != ed) {
     res *= 10.f;
@@ -946,8 +946,8 @@ static float str2float(const char *beg, const char *ed) {
     ++pt;
   }
   if (pt != ed) {
-    float af = 0.f;
-    float dv = 1.f;
+    FloatType af = 0.f;
+    FloatType dv = 1.f;
     while (*pt != '\0' && pt != ed) {
       dv /= 10.f;
       af += (*pt - '0') * dv;
