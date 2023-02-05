@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <sstream>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
@@ -42,6 +43,26 @@ static std::list<std::string> inputed_strs;
 // Для контроля перевода строк
 // Работает только с одним потоком вывода
 static bool last_srv = true;
+
+void removeSignalChar(std::string &str) {
+  if (str.empty()) {
+    return;
+  }
+  if (str[0] == input_signal_char) {
+    str.erase(str.begin());
+  }
+}
+
+void doSplitInput(std::string& str) {
+  if (str.empty()) {
+    return;
+  }
+  std::stringstream ss(str);
+  std::string s;
+  while (ss >> s) {
+    inputed_strs.push_back(s);
+  }
+}
 
 void print_cp1251_decoded_to_utf8(const char *str, std::ostream &out) {
   for (const char *c = str; *c; ++c) {
@@ -145,15 +166,21 @@ int runProlog() {
     if (!std::getline(*source_stream, line)) {
       break;
     }
-    decode_utf8_to_cp1251(line);
-    if (line[0] == input_signal_char) {
-      inputed_strs.push_back(line);
-      continue;
-    }
     ++parsed_str_number;
     if (line.empty()) {
       continue;
     }
+    decode_utf8_to_cp1251(line);
+    if (line[0] == input_signal_char) {
+      removeSignalChar(line);
+      if (split_space) {
+        doSplitInput(line);
+      } else {
+        inputed_strs.push_back(line);
+      }
+      continue;
+    }
+    
     char *cur_str = const_cast<char *>(line.c_str());
     try {
       serr = scaner(cur_str, ScVar.get(), heap.get());
@@ -196,21 +223,8 @@ int InputStringFromDialog(char *buf, size_t size, char *caption) {
       return 1;
     }
     if (split_space) {
-      std::string split_str;
-      for (size_t i = 0; i < line.size(); ++i) {
-        if (!std::isspace(line[i])) {
-          split_str.push_back(line[i]);
-        } else {
-          if (!split_str.empty()) {
-            inputed_strs.push_back(split_str);
-            split_str.clear();
-          }
-        }
-      }
-      if (!split_str.empty()) {
-        inputed_strs.push_back(split_str);
-        split_str.clear();
-      }
+      removeSignalChar(line);
+      doSplitInput(line);
       InputStringFromDialog(buf, size, caption);
     }
   }
