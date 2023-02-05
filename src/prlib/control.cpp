@@ -7,7 +7,7 @@
 #include "control.h"
 #include "extfunc.h"
 #include "err.h"
-#include "helper.h"
+#include <charconv>
 
 char buff[2048];
 void outerror(int err) {
@@ -338,7 +338,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
     if (term == isnil || term == NULL)  // || !term)
     {
       buff[j++] = '_';
-      const char *ptr = hlp::to_chars(buff + j, buff + sizeof(buff), W);
+      auto[ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
       j = ptr - buff;
       // Заменено на to_chars, но не поверено
       //_itoa(W, (char*)&buff[j], 10);
@@ -366,7 +366,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       } break;  // ok
       case isinteger: {
         ClVar->precordinteger = (recordinteger *)tp;
-        const char *ptr = hlp::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
+        auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
         j = ptr - buff;
         // Заменено на to_chars, но не поверено
         //_ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
@@ -428,7 +428,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         unsigned char ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
-          const char *ptr = hlp::to_chars(buff + j, buff + sizeof(buff), ii);
+          auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
           // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
           j = ptr - buff;
           // Заменено на to_chars, но не поверено

@@ -8,7 +8,7 @@
 #include "extfunc.h"
 #include "control.h"
 #include "functions.h"
-#include "helper.h"
+#include <charconv>
 
 extern void Rectangle(int x1, int y1, int x2, int y2, unsigned color);
 extern void MoveTo_LineTo(int x1, int y1, int x2, int y2, unsigned color);
@@ -250,7 +250,7 @@ unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar
   return 5;
 }
 
-IntegerType prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
+unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
 // выполнение предиката СЛУЧ
 {
   IntegerType n, m;
@@ -891,15 +891,15 @@ unsigned prstint(unsigned sw,
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    hlp::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    // w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
+    std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    //w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
     if (sw == 95 || sw == 45)
       return zap1(w, 2, ScVar, ClVar, heap);
     return (w == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
   }
   case 57:  // var int  возможно нужно var float
   {
-    hlp::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
+    std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
     // Заменено на to_chars, но не поверено
     //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
     // char *str=newStr(lnwr);
@@ -910,7 +910,7 @@ unsigned prstint(unsigned sw,
     // float value = occf(1, ScVar, ClVar, heap);
     // sprintf(lnwr, "%f", value);
     FloatType value = 0.f;
-    hlp::to_chars(lnwr, lnwr + maxlinelen, value);
+    std::to_chars(lnwr, lnwr + maxlinelen, value);
     // std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
     //  Заменено на, но не поверено
     // int dec, sign, ndig = 5;
@@ -947,9 +947,8 @@ unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    // std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
     //  TODO: здесь нужна проверка правильности конвертации
-    hlp::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
 
     if (sw == 95 || sw == 45) {
       return zap1f(w, 2, ScVar, ClVar, heap);
@@ -2426,14 +2425,14 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
 
   //поищем заданное предложение
-  unsigned i = occ(1, ScVar, ClVar, heap);  //номер заданного предл
+  IntegerType i = occ(1, ScVar, ClVar, heap);  //номер заданного предл
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
     return 5;  //нет предложения
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
-  unsigned w;
+  IntegerType w;
   for (w = 1; pc->next != isnil && pc->next != NULL && w < i; w++) {
     pc = heap->GetPrecordclause(pc->next);
     //(recordclause *)&heap->heaps[pc->next];
@@ -2721,7 +2720,7 @@ int InputInt(IntegerType *n, const char *caption) {
   while (err == 2) {
     int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
     if (!_err) {
-      if (sscanf(Buf, "%d", n) != 1)
+      if (sscanf(Buf, "%lld", n) != 1)
         continue;
       err = 0;
       // pldout(Buf);
@@ -2737,7 +2736,7 @@ int InputFloat(FloatType *n, const char *caption) {
   while (err == 2) {
     int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
     if (!_err) {
-      if (sscanf(Buf, "%f", n) != 1)
+      if (sscanf(Buf, "%lf", n) != 1)
         continue;
       err = 0;
       // pldout(Buf);
