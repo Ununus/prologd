@@ -77,7 +77,7 @@ int expand_stack(TClVar *ClVar) {
       delete[] st_vr2N;
     if (st_trailN)
       delete[] st_trailN;
-    return 28; /*message_no_memory|=no_memory_stac;*/
+    return 28; /*message_no_memory|=no_memory_stac;*/ //переполнение стека программы
   }
 
   unsigned i;
@@ -106,8 +106,8 @@ int expand_stack(TClVar *ClVar) {
   return 0;
 }
 
-void from_control(TClVar *ClVar, array *heap)  // выборка из стека управления
-{
+// выборка из стека управления
+void from_control(TClVar *ClVar, array *heap) {
   ClVar->newclause = from_stac(ClVar->st_con, --ClVar->scptr);
   ClVar->atomp = from_stac(ClVar->st_con, --ClVar->scptr);
   ClVar->aclause = from_stac(ClVar->st_con, --ClVar->scptr);
@@ -131,7 +131,7 @@ void to_control(TClVar *ClVar, array *heap)  // запись в стек
 {
   if (ClVar->scptr + 7 > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
     outerror(ErrorCode::StackOverflow);  // 28
-    ClVar->stat = PredicateState::No;    // 5; /*message_no_memory|=no_memory_stac;*/
+    ClVar->stat = PredicateState::No;    // 5; /*message_no_memory|=no_memory_stac;*/ // переполнение стека программы
   } else {
     to_stac(ClVar->st_con, ClVar->scptr++, ClVar->frame2);
     to_stac(ClVar->st_con, ClVar->scptr++, ClVar->oldsvptr);
@@ -506,18 +506,20 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // конец вывода
 void zero(TClVar *ClVar) {
-  for (unsigned i = ClVar->oldtptr; i < ClVar->tptr; i++)
+  for (unsigned i = ClVar->oldtptr; i < ClVar->tptr; i++) {
     to_stac(ClVar->st_vr1, from_stac(ClVar->st_trail, i), isnil);
+  }
   ClVar->tptr = ClVar->oldtptr;
 }
 
-void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
+static void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->ntro) {
     ClVar->parent = ClVar->scptr;  // место записи в стеке управления о вызывающем предл
   }
   ClVar->frame2 = ClVar->frame1;
 }
-void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
+
+static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (!heap->pacltarget[++ClVar->atomp])  // все цели удовлетворены
     if (ClVar->parent == NULL)            // есть ответ на вопрос
     {
@@ -537,7 +539,8 @@ void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->stat = PredicateState::Builtin;         // 6;
   }
 }
-void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
+
+static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->newclause && ClVar->newclause != isnil) {  // pnclause=head->at(newclause);pncltarget=head->at(newclause-1);
     heap->ptclause = heap->pnclause;
     heap->ptcltarget = heap->pncltarget;
@@ -608,7 +611,8 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->stat = PredicateState::No;  // 5;
   }
 }
-void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
+
+static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (!ClVar->scptr) {
     ClVar->stat = PredicateState::Error;  // 1;
   } else {
@@ -624,7 +628,8 @@ void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->stat = PredicateState::State_4;  // 4;
   }
 }
-void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
+
+static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->PrSetting->Trace) {
     pldout("Цель ");
     buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
@@ -659,7 +664,7 @@ void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 // Очистить состояние
-void OnControl(TClVar *ClVar, array *heap) {
+static void OnControl(TClVar *ClVar, array *heap) {
   // add 2008/10/04
   heap->ptclause = NULL;
   heap->ptcltarget = NULL;

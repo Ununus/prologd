@@ -1,5 +1,4 @@
-#ifndef functionsh
-#define functionsh
+#pragma once
 
 #include "pstructs.h"
 
@@ -50,5 +49,3 @@ bool issconst(char *&p, unsigned int &len);
 //=====функции для записи ========================================
 ErrorCode variabletable(char *&p, unsigned int len, TScVar *ScVar, array *heap);
 ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap);
-
-#endif

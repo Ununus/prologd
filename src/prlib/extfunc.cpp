@@ -2023,9 +2023,9 @@ PredicateState prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // поищем первое предложение
   tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
   //(baserecord *)&heap->heaps[ScVar->goal[maxarity]];
-  if (tp->ident == issymbol)
+  if (tp->ident == issymbol) {
     ps = (recordsconst *)tp;
-  else {
+  } else {
     if (tp->ident != isfunction) {
       outerror(ErrorCode::UnknownError);  // 24
       return PredicateState::Error;       // 1;
@@ -2075,8 +2075,9 @@ PredicateState pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   bool fl = false;  // если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++) {
-    if (ScVar->goal[i] == 6)
+    if (ScVar->goal[i] == 6) {
       fl = true;
+    }
   }
   for (i = 0; i < 3; i++) {
     switch (ScVar->goal[i]) {

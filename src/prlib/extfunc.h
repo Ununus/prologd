@@ -1,5 +1,4 @@
-#ifndef extfunch
-#define extfunch
+#pragma once
 
 #include "pstructs.h"
 
@@ -97,5 +96,3 @@ int InputFloat(FloatType *n, const char *caption);
 // out for debug
 void PrintTerm(baserecord *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *heap);
 void PrintList(recordlist *pl, int Level, TScVar *ScVar, TClVar *ClVar, array *heap);
-
-#endif

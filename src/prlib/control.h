@@ -1,5 +1,4 @@
-#ifndef controlh
-#define controlh
+#pragma once
 
 #include "pstructs.h"
 
@@ -16,6 +15,4 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
 // прологовский вывод
 PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap);  
 // расширить стеки
-int expand_stack(TClVar *);                                 
-void st_4(TScVar *ScVar, TClVar *ClVar, array *heap);
-#endif
+int expand_stack(TClVar *);

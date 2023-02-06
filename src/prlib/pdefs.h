@@ -1,32 +1,21 @@
-#ifndef defsh
-#define defsh
+#pragma once
 //#include <limits.h>
 //идентификаторы структур элементов
-#define isvar 0
-#define issymbol 1
-#define isinteger 2
-#define isfloat 3
-#define isexpression 4
-#define isunknown 5
-#define isemptylist 6
-#define islist 7
-#define isfunction 8
-#define isstring 9
-#define isclause 10
-#define isclauseq 11  // gue
-#define iscut 12
-// для опций вывода
-#define tscreen 0
-#define gscreen 1
-#define printer 2
-#define outfiles 3
-#define userfiles 4
-// для опций исполнения
-#define tracce 1    //трасса
-#define outque 2    //вывод вопроса
-#define autosave 4  //эти определения для опций исполнения
-#define maxarity 5  //пока max арность встроенного предиката
-//=================================
+constexpr size_t isvar = 0;
+constexpr size_t issymbol = 1;
+constexpr size_t isinteger = 2;
+constexpr size_t isfloat = 3;
+constexpr size_t isexpression = 4;
+constexpr size_t isunknown = 5;
+constexpr size_t isemptylist = 6;
+constexpr size_t islist = 7;
+constexpr size_t isfunction = 8;
+constexpr size_t isstring = 9;
+constexpr size_t isclause = 10;
+constexpr size_t isclauseq = 11;
+constexpr size_t iscut = 12;
+
+constexpr size_t maxarity = 5;  // пока max арность встроенного предиката
 
 //константы для записи в массив buf
 #define isnil INT_MAX            //не значит ничего
@@ -47,8 +36,6 @@
 #define isplus INT_MAX - 3       // +
 #define ismod INT_MAX - 2        // mod
 #define isdiv INT_MAX - 1        // div
-#define no_memory_out 1          //нет памяти для вывода
-#define no_memory_stac 2         //переполнение стека программы
 
 #define maxlinelen 1024  //длина строки редактора,и всякие промежуточные буфера
 
@@ -58,11 +45,3 @@
 //#define maxstaccalc 100  //стек для вычисления ар выр
 #define maxgrx 1024  // max координата для скроллера графики X
 #define maxgry 768   //                                     Y
-
-//==============идернтификаторы графических функций ======
-#define pbakground 1  //фон
-#define ppixel 2      //точка
-#define pline 3       //линия
-#define pcirkle 4     //окружность
-#define ppaint 5      //закраска
-#endif

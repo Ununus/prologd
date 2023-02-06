@@ -1,5 +1,4 @@
-#ifndef pstructsh
-#define pstructsh
+#pragma once
 #include <fstream>
 #include <string>
 #include <stdio.h>
@@ -277,133 +276,132 @@ struct options {
 };
 
 // индексы в массиве heap   указатели на фреймы переменных
+
 /* место mod в куче */
-#define hpmod 0 + sizeof("mod") - 1
+constexpr size_t hpmod = 0 + sizeof("mod") - 1;
 
 /* место ЛОЖЬ в куче */
-#define hpfail hpmod + sizeof(recordsconst) + sizeof("ЛОЖЬ") - 1
+constexpr size_t hpfail = hpmod + sizeof(recordsconst) + sizeof("ЛОЖЬ") - 1;
 
 /* место ТРАССА в куче */
-#define hptrace hpfail + sizeof(recordsconst) + sizeof("ТРАССА") - 1
+constexpr size_t hptrace = hpfail + sizeof(recordsconst) + sizeof("ТРАССА") - 1;
 
 /* место НЕТ_ТРАССЫ в куче */
-#define hpnottr hptrace + sizeof(recordsconst) + sizeof("НЕТ_ТРАССЫ") - 1
+constexpr size_t hpnottr = hptrace + sizeof(recordsconst) + sizeof("НЕТ_ТРАССЫ") - 1;
 
 /* место ! в куче */
-#define hpcut hpnottr + sizeof(recordsconst) + sizeof("!") - 1
+constexpr size_t hpcut = hpnottr + sizeof(recordsconst) + sizeof("!") - 1;
 
 /* место ВЫП в куче */
-#define hpcall hpcut + sizeof(recordsconst) + sizeof("ВЫП") - 1
+constexpr size_t hpcall = hpcut + sizeof(recordsconst) + sizeof("ВЫП") - 1;
 
 /* место ВВОДСИМВ в куче */
-#define hprdsym hpcall + sizeof(recordsconst) + sizeof("ВВОДСИМВ") - 1
+constexpr size_t hprdsym = hpcall + sizeof(recordsconst) + sizeof("ВВОДСИМВ") - 1;
 
 /* место ВВОДЦЕЛ в куче */
-#define hprdint hprdsym + sizeof(recordsconst) + sizeof("ВВОДЦЕЛ") - 1
+constexpr size_t hprdint = hprdsym + sizeof(recordsconst) + sizeof("ВВОДЦЕЛ") - 1;
 
 /* место ВВОДВЕЩ в куче */
-#define hprdfloat hprdint + sizeof(recordsconst) + sizeof("ВВОДВЕЩ") - 1
+constexpr size_t hprdfloat = hprdint + sizeof(recordsconst) + sizeof("ВВОДВЕЩ") - 1;
 
 /* место ВВКОД в куче */
-#define hpiocod hprdfloat + sizeof(recordsconst) + sizeof("ВВКОД") - 1
+constexpr size_t hpiocod = hprdfloat + sizeof(recordsconst) + sizeof("ВВКОД") - 1;
 
 /* место ЧТЕНИЕ_ИЗ в куче */
-#define hpsee hpiocod + sizeof(recordsconst) + sizeof("ЧТЕНИЕ_ИЗ") - 1
+constexpr size_t hpsee = hpiocod + sizeof(recordsconst) + sizeof("ЧТЕНИЕ_ИЗ") - 1;
 
 /* место ЗАПИСЬ_В в куче */
-#define hptell hpsee + sizeof(recordsconst) + sizeof("ЗАПИСЬ_В") - 1
+constexpr size_t hptell = hpsee + sizeof(recordsconst) + sizeof("ЗАПИСЬ_В") - 1;
 
 // место ПЕР в куче
-#define hpvar hptell + sizeof(recordsconst) + sizeof("ПЕР") - 1
+constexpr size_t hpvar = hptell + sizeof(recordsconst) + sizeof("ПЕР") - 1;
 
 // место ЦЕЛ в куче
-#define hpint hpvar + sizeof(recordsconst) + sizeof("ЦЕЛ") - 1
+constexpr size_t hpint = hpvar + sizeof(recordsconst) + sizeof("ЦЕЛ") - 1;
 
 // место ВЕЩ в куче
-#define hpfloat hpint + sizeof(recordsconst) + sizeof("ВЕЩ") - 1
+constexpr size_t hpfloat = hpint + sizeof(recordsconst) + sizeof("ВЕЩ") - 1;
 
 /* место СИМВ в куче */
-#define hpsym hpfloat + sizeof(recordsconst) + sizeof("СИМВ") - 1
+constexpr size_t hpsym = hpfloat + sizeof(recordsconst) + sizeof("СИМВ") - 1;
 
 /* место СПИСОК в куче */
-#define hplst hpsym + sizeof(recordsconst) + sizeof("СПИСОК") - 1
+constexpr size_t hplst = hpsym + sizeof(recordsconst) + sizeof("СПИСОК") - 1;
 
 /* место ВЫВОД в куче */
-#define hpout hplst + sizeof(recordsconst) + sizeof("ВЫВОД") - 1
+constexpr size_t hpout = hplst + sizeof(recordsconst) + sizeof("ВЫВОД") - 1;
 
 /* место БОЛЬШЕ в куче */
-#define hpgt hpout + sizeof(recordsconst) + sizeof("БОЛЬШЕ") - 1
+constexpr size_t hpgt = hpout + sizeof(recordsconst) + sizeof("БОЛЬШЕ") - 1;
 
 /* место СТРЦЕЛ в куче */
-#define hpstint hpgt + sizeof(recordsconst) + sizeof("СТРЦЕЛ") - 1
+constexpr size_t hpstint = hpgt + sizeof(recordsconst) + sizeof("СТРЦЕЛ") - 1;
 
 /* место СТРВЕЩ в куче */
-#define hpstfloat hpstint + sizeof(recordsconst) + sizeof("СТРВЕЩ") - 1
+constexpr size_t hpstfloat = hpstint + sizeof(recordsconst) + sizeof("СТРВЕЩ") - 1;
 
 /* место СТРСПИС в куче */
-#define hpstlst hpstfloat + sizeof(recordsconst) + sizeof("СТРСПИС") - 1
+constexpr size_t hpstlst = hpstfloat + sizeof(recordsconst) + sizeof("СТРСПИС") - 1;
 
 /* место ЦЕЛВЕЩ в куче */
-#define hpintfloat hpstlst + sizeof(recordsconst) + sizeof("ЦЕЛВЕЩ") - 1
+constexpr size_t hpintfloat = hpstlst + sizeof(recordsconst) + sizeof("ЦЕЛВЕЩ") - 1;
 
 /* место БУКВА в куче */
-#define hplettr hpintfloat + sizeof(recordsconst) + sizeof("БУКВА") - 1
+constexpr size_t hplettr = hpintfloat + sizeof(recordsconst) + sizeof("БУКВА") - 1;
 
 /* место ЦИФРА в куче */
-#define hpdigit hplettr + sizeof(recordsconst) + sizeof("ЦИФРА") - 1
+constexpr size_t hpdigit = hplettr + sizeof(recordsconst) + sizeof("ЦИФРА") - 1;
 
 /* место ТЕРМ в куче */
-#define hpterm hpdigit + sizeof(recordsconst) + sizeof("ТЕРМ") - 1
+constexpr size_t hpterm = hpdigit + sizeof(recordsconst) + sizeof("ТЕРМ") - 1;
 
 /* место УДАЛЕНИЕ в куче */
-#define hpdel hpterm + sizeof(recordsconst) + sizeof("УДАЛЕНИЕ") - 1
+constexpr size_t hpdel = hpterm + sizeof(recordsconst) + sizeof("УДАЛЕНИЕ") - 1;
 
 /* место СКОЛЬКО в куче */
-#define hpskol hpdel + sizeof(recordsconst) + sizeof("СКОЛЬКО") - 1
+constexpr size_t hpskol = hpdel + sizeof(recordsconst) + sizeof("СКОЛЬКО") - 1;
 
 /* место ТОЧКА в куче */
-#define hpset hpskol + sizeof(recordsconst) + sizeof("ТОЧКА") - 1
+constexpr size_t hpset = hpskol + sizeof(recordsconst) + sizeof("ТОЧКА") - 1;
 
 /* место СЦЕП в куче */
-#define hpapp hpset + sizeof(recordsconst) + sizeof("СЦЕП") - 1
+constexpr size_t hpapp = hpset + sizeof(recordsconst) + sizeof("СЦЕП") - 1;
 
 /* место ДОБ в куче */
-#define hpassrt hpapp + sizeof(recordsconst) + sizeof("ДОБ") - 1
+constexpr size_t hpassrt = hpapp + sizeof(recordsconst) + sizeof("ДОБ") - 1;
 
 /* место УМНОЖЕНИЕ в куче */
-#define hpmul hpassrt + sizeof(recordsconst) + sizeof("УМНОЖЕНИЕ") - 1
+constexpr size_t hpmul = hpassrt + sizeof(recordsconst) + sizeof("УМНОЖЕНИЕ") - 1;
 
 /* место ОКРУЖНОСТЬ в куче */
-#define hpcircl hpmul + sizeof(recordsconst) + sizeof("ОКРУЖНОСТЬ") - 1
+constexpr size_t hpcircl = hpmul + sizeof(recordsconst) + sizeof("ОКРУЖНОСТЬ") - 1;
 
 /* место ЗАКРАСКА в куче */
-#define hppaint hpcircl + sizeof(recordsconst) + sizeof("ЗАКРАСКА") - 1
+constexpr size_t hppaint = hpcircl + sizeof(recordsconst) + sizeof("ЗАКРАСКА") - 1;
 
 /* место КОПИЯ в куче */
-#define hpcopy hppaint + sizeof(recordsconst) + sizeof("КОПИЯ") - 1
+constexpr size_t hpcopy = hppaint + sizeof(recordsconst) + sizeof("КОПИЯ") - 1;
 
 /* место ПРЕДЛ в куче */
-#define hpclaus hpcopy + sizeof(recordsconst) + sizeof("ПРЕДЛ") - 1
+constexpr size_t hpclaus = hpcopy + sizeof(recordsconst) + sizeof("ПРЕДЛ") - 1;
 
 /* место ОТРЕЗОК(ЛИНИЯ) в куче */
-#define hpline hpclaus + sizeof(recordsconst) + sizeof("ЛИНИЯ") - 1
+constexpr size_t hpline = hpclaus + sizeof(recordsconst) + sizeof("ЛИНИЯ") - 1;
 
 // место СЛУЧ в куче
-#define hprand hpline + sizeof(recordsconst) + sizeof("СЛУЧ") - 1
+constexpr size_t hprand = hpline + sizeof(recordsconst) + sizeof("СЛУЧ") - 1;
 
 // место СЛОЖЕНИЕ
-#define hpadd hprand + sizeof(recordsconst) + sizeof("СЛОЖЕНИЕ") - 1
+constexpr size_t hpadd = hprand + sizeof(recordsconst) + sizeof("СЛОЖЕНИЕ") - 1;
 
 // место ЖДИ
-#define hpwait hpadd + sizeof(recordsconst) + sizeof("ЖДИ") - 1
+constexpr size_t hpwait = hpadd + sizeof(recordsconst) + sizeof("ЖДИ") - 1;
 
 // место div
-#define hpdiv hpwait + sizeof(recordsconst) + sizeof("div") - 1
+constexpr size_t hpdiv = hpwait + sizeof(recordsconst) + sizeof("div") - 1;
 
 // место int
-#define hp_int hpdiv + sizeof(recordsconst) + sizeof("int") - 1
+constexpr size_t hp_int = hpdiv + sizeof(recordsconst) + sizeof("int") - 1;
 
 // место float
-#define hp_float hp_int + sizeof(recordsconst) + sizeof("float") - 1
-
-#endif
+constexpr size_t hp_float = hp_int + sizeof(recordsconst) + sizeof("float") - 1;
