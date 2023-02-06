@@ -14,7 +14,7 @@ void to_stac(unsigned *b, unsigned index, unsigned value);
 unsigned occur_term(unsigned *TERM, unsigned *FRAME, TClVar *ClVar, array *heap);
 unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVar *ScVar, TClVar *ClVar, array *heap);
 // прологовский вывод
-unsigned prout(TScVar *ScVar, TClVar *ClVar, array *heap);  
+PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap);  
 // расширить стеки
 int expand_stack(TClVar *);                                 
 void st_4(TScVar *ScVar, TClVar *ClVar, array *heap);

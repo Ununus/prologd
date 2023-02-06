@@ -11,6 +11,16 @@
 using FloatType = double;
 using IntegerType = long long;
 
+// используетс€ в control
+enum class PredicateState {
+  Error = 1,
+  State_2 = 2,  // Ќе знаю что за состо€ние 
+  Yes = 3,
+  State_4 = 4,  // Ќе знаю что за состо€ние
+  No = 5,
+  Builtin = 6
+};
+
 // предок всех структур
 struct baserecord {
   unsigned int ident;
@@ -40,7 +50,7 @@ struct recordstring : public baserecord {
 };
 
 // структура записи переменной
-struct recordvar : public baserecord  {
+struct recordvar : public baserecord {
   // char *ptr;         //указатель на текст представл переменной
   unsigned int ptrsymb;  // индекс в heap симв представлени€
   unsigned int length;   // длина переменной
@@ -109,7 +119,7 @@ struct recordclause : public baserecord {
 //-----------------------------------------------
 // массив дл€ трансл€ции и исполнени€ программы
 // пролога описани€ функций в main()
-struct array  {
+struct array {
 protected:
   unsigned char *heaps;  // указатель на массив
 public:
@@ -191,7 +201,7 @@ constexpr int _vmaxstack_ = bruteExpand2 * 1000;
 constexpr int _maxbf_ = bruteExpand2 * 2048;
 
 struct TClVar {
-  unsigned int stat;
+  PredicateState stat;
   unsigned int vmaxstack;
   unsigned int *st_con;
   unsigned int *st_vr1;

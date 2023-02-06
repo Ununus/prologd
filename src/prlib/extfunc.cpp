@@ -10,9 +10,9 @@
 #include "functions.h"
 #include <charconv>
 
-unsigned argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
-  case hpfail: return 5;  // ложь
+  case hpfail: return PredicateState::No;  // 5;  // ложь
   case hptrace:
     ClVar->PrSetting->Trace = true;
     //            sroptionsout.optionsrun |= tracce;//трасса
@@ -28,7 +28,7 @@ unsigned argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
       to_stac(ClVar->st_con, ClVar->parent - 1, isnil);
     }
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
 // extern unsigned *goal;
@@ -60,9 +60,9 @@ void conarg(unsigned numb, unsigned h, TScVar *ScVar, TClVar *ClVar, array *heap
 // extern unsigned newclause;
 // extern char *wr_line;
 // extern char *wptr;
-char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap)
+
 // получение строки связанной с переменной
-{
+char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char *ad;
   recordstring *ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
   //(recordstring*)&heap->heaps[ScVar->goal[maxarity + x]];
@@ -76,7 +76,7 @@ char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap)
 }
 
 // ВЫП
-int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned w;
   switch (sw) {
   case 8: {
@@ -90,17 +90,17 @@ int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e(41); // невыполнимая функция
+    return PredicateState::Error;       // 1; // r_t_e(41); // невыполнимая функция
   }
   }
   if (w < heap->freeheap) {
     if (w == hpassrt) {
       outerror(ErrorCode::UnknownError);  // 24
-      return 1;
-    }  // r_t_e(41);
+      return PredicateState::Error;       // 1; // r_t_e(41);
+    }
     ClVar->head = ScVar->goal[maxarity];
     ClVar->frame2 = ScVar->goal[2 * maxarity];
-    return 6;  // встроенный предикат
+    return PredicateState::Builtin;  // 6;  // встроенный предикат
   }
 
   // невстроенный предикат под call
@@ -114,55 +114,53 @@ int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
       //(unsigned *)&heap->heaps[heap->pnclause->ptrtarget];
     }
-    return 4;
+    return PredicateState::State_4;  // 4;
   } else {
     outerror(ErrorCode::UnknownError);  // 24
-    // outerror(24);
-    return 1;
-  }  // r_t_e(41) не выполнимый предикат ВЫП
-  return 1;
-}  // ok
+    return PredicateState::Error;       // 1; // r_t_e(41) не выполнимый предикат ВЫП
+  }
+  return PredicateState::Error;  // 1;
+}
 
 // запись строки и унификация его с arg
-unsigned zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // unsigned index=heap->apend(str,strlen(str));
   if (!str) {
     outerror(ErrorCode::UnknownError);  // 45
-    // outerror(45);
-    return 5;
+    return PredicateState::No;          // 5;
   }
   int l;
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(const_cast<char *>(str), l = strlen(str));
   if (!index) {
     outerror(ErrorCode::TooLongList);  // 44
-    return 5;
+    return PredicateState::No;         // 5;
   }
   recordstring rs(index, (unsigned char)l);
   index = heap->apend(&rs, sizeof(recordstring));
   if (!index) {
     outerror(ErrorCode::TooLongList);  // 44
-    return 5;
+    return PredicateState::No;         // 5;
   }
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction*)&heap->heaps[ClVar->head];
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
   if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   heap->last = bakindex;
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // унификация целого num с arg аргументом предиката
-unsigned zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordinteger pi(num);
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(&pi, sizeof(recordinteger));
   if (!index) {
     outerror(ErrorCode::TooLongList);  // 44
-    return 5;
+    return PredicateState::No;         // 5;
   }
   // unsigned *ptr=(unsigned*)heap->heaps[head-1];
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
@@ -170,14 +168,14 @@ unsigned zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *hea
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
   if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   heap->last = bakindex;
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // унификация целых num1 и num2 с arg1 и arg2 соотвественно аргументами предиката
-unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordinteger pi1(num1);
   recordinteger pi2(num2);
   unsigned bakindex = heap->last;
@@ -185,7 +183,7 @@ unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *Sc
   unsigned index2 = heap->apend(&pi2, sizeof(recordinteger));
   if (!index1 || !index2) {
     outerror(ErrorCode::TooLongList);  // 44
-    return 1;
+    return PredicateState::Error;      // 1;
   }
   // unsigned *ptr=(unsigned*)&heap->heaps[head-1];
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
@@ -193,20 +191,20 @@ unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *Sc
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
   if (unify(index1, ptr[arg1 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap) && unify(index2, ptr[arg2 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   heap->last = bakindex;
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // унификация float num с arg аргументом предиката
-unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordfloat pf(num);
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(&pf, sizeof(recordfloat));
   if (!index) {
     outerror(ErrorCode::TooLongList);  // 44
-    return 5;
+    return PredicateState::No;         // 5;
   }
   // unsigned *ptr=(unsigned*)&heap->heaps[head-1];
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
@@ -214,14 +212,14 @@ unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array 
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
   if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   heap->last = bakindex;
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // унификация float num1 с arg1 аргументом предиката
-unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordfloat pf1(num1);
   recordfloat pf2(num2);
   unsigned bakindex = heap->last;
@@ -229,7 +227,7 @@ unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar
   unsigned index2 = heap->apend(&pf2, sizeof(recordfloat));
   if (!index1 || !index2) {
     outerror(ErrorCode::TooLongList);  // 44
-    return 1;
+    return PredicateState::Error;      // 1;
   }
   //  unsigned *ptr=(unsigned*)&heap->heaps[head-1];
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
@@ -237,14 +235,14 @@ unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
   if (unify(index1, ptr[arg1 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap) && unify(index2, ptr[arg2 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   heap->last = bakindex;
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // СЛУЧ
-unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType n, m;
   static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
   static std::uniform_int_distribution<IntegerType> dst;
@@ -252,8 +250,8 @@ unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 7:  // целое: инициализация генератора
     n = occ(0, ScVar, ClVar, heap);
     rng = std::mt19937(n);
-    return 3;
-  case 5:  // переменная: получить новое значение
+    return PredicateState::Yes;  // 3;
+  case 5:                        // переменная: получить новое значение
     return zap1(rng(), 1, ScVar, ClVar, heap);
   case 577:  // переменная: получить новое значение
     n = occ(1, ScVar, ClVar, heap);
@@ -261,13 +259,13 @@ unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (n > m) {
       // TODO: it is known error
       outerror(ErrorCode::UnknownError);  // 24
-      return 1;
+      return PredicateState::Error;       // 1;
     }
     dst = std::uniform_int_distribution<IntegerType>(n, m);
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           //!!!r_t_e(71);
+    return PredicateState::Error;       // 1; //!!!r_t_e(71);
   }
   }
 }
@@ -279,7 +277,7 @@ bool mytell( void ){ return false; };
 //=========================конец содранного
 
 // ЗАПИСЬ_В
-unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str[129];
 
   switch (sw) {
@@ -289,32 +287,32 @@ unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->PrSetting->out.close();
     ClVar->PrSetting->name_out_file.clear();
     if (str[0] == 0) {
-      return 3;
+      return PredicateState::Yes;  // 3;
     }
 
     // если con:
     if (strcmp(str, "con:") == 0) {
-      return 3;
+      return PredicateState::Yes;  // 3;
     }
 
     // пытаемся открыть файл для записи.
     ClVar->PrSetting->out.open(str);
     if (!ClVar->PrSetting->out.is_open()) {
       outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
-      return 5;                                                 // r_t_e_(не могу открыть файл)
+      return PredicateState::No;                                // 5; // r_t_e_(не могу открыть файл)
     }
     ClVar->PrSetting->name_out_file = std::string(str);
-    return 3;
-  case 5:  // char* ps=newStr(namefileout);
+    return PredicateState::Yes;  // 3;
+  case 5:                        // char* ps=newStr(namefileout);
     return zap3(ClVar->PrSetting->name_out_file.c_str(), 1, ScVar, ClVar, heap);
 
-  default: return 1;  // r_t_e(45); ошибка при открытии файла
+  default: return PredicateState::Error;  // 1  // r_t_e(45); ошибка при открытии файла
   }
-  return 1;
+  return PredicateState::Error;  // 1
 }
 
 // ЧТЕНИЕ_ИЗ
-unsigned infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str[129];
 
   switch (sw) {
@@ -328,23 +326,23 @@ unsigned infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
 
     if (strcmp(str, "con:") == 0) {
-      return 3;
+      return PredicateState::Yes;  // 3;
     }
 
     ClVar->PrSetting->in.open(str);
     if (!ClVar->PrSetting->in.is_open()) {
       outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
-      return 5;                                                 // r_t_e_(не могу открыть файл)
+      return PredicateState::No;                                // 5; // r_t_e_(не могу открыть файл)
     }
     ClVar->PrSetting->name_in_file = std::string(str);
-    return 3;
+    return PredicateState::Yes;  // 3;
 
   case 5:  // char* ps=newStr(namefilein);
     return zap3(ClVar->PrSetting->name_in_file.c_str(), 1, ScVar, ClVar, heap);
 
-  default: return 1;  // r_t_e(45); ошибка при открытии файла
+  default: return PredicateState::Error;  // 1;  // r_t_e(45); ошибка при открытии файла
   }
-  return 1;
+  return PredicateState::Error;  // 1;
 }
 
 // получение целого связанного с переменной
@@ -362,7 +360,7 @@ FloatType occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 // ВВКОД
-unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   static char str0[2]{};
   switch (sw) {
   case 7:  // целое !!!посмотреть на ввод вещественных этого делать нельзя
@@ -373,14 +371,14 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       str0[0] = char(occ(0, ScVar, ClVar, heap));
       usrout(str0);
     }
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   case 5:  // переменная
   {
     char w;
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
-        return 5;
+        return PredicateState::No;  // 5;
       }
     }
     InputSymbol(&w);
@@ -392,14 +390,14 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     //    return 3;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e(44);
+    return PredicateState::Error;       // 1; // r_t_e(44);
   }
   }
-  return 1;
+  return PredicateState::Error;  // 1;
 }
 
 // ВВОДЦЕЛ
-unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType w{};
   char str0[129]{};
   const char *caption = "Введите целое";
@@ -411,21 +409,21 @@ unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
-        return 5;
+        return PredicateState::No;  // 5;
       }
     } else {
       if (sw == 74 || sw == 79) {
         occ_line(1, str0, ScVar, ClVar, heap);
         if (InputInt(&w, str0)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       } else {
         if (InputInt(&w, caption)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       }
     }
-    return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
+    return (occ(0, ScVar, ClVar, heap) == w) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 5:   // Переменная
   case 54:  // Переменная, "caption"
@@ -436,17 +434,17 @@ unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 19: {
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
-        return 5;
+        return PredicateState::No;  // 5;
       }
     } else {
       if (sw == 54 || sw == 59 || sw == 14 || sw == 19) {
         occ_line(1, str0, ScVar, ClVar, heap);
         if (InputInt(&w, str0)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       } else {
         if (InputInt(&w, caption)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       }
     }
@@ -455,11 +453,11 @@ unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   default: break;
   }
   outerror(ErrorCode::UnknownError);  // 24
-  return 1;                           // rte
+  return PredicateState::Error;       // 1; // rte
 }
 
 // ВВОДВЕЩ
-unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType w{};
   char str0[129]{};
   const char *caption = "Введите вещественное";
@@ -471,21 +469,21 @@ unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
-        return 5;
+        return PredicateState::No;  // 5;
       }
     } else {
       if (sw == 74 || sw == 79) {
         occ_line(1, str0, ScVar, ClVar, heap);
         if (InputFloat(&w, str0)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       } else {
         if (InputFloat(&w, caption)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       }
     }
-    return (occ(0, ScVar, ClVar, heap) == w) ? 3 : 5;
+    return (occ(0, ScVar, ClVar, heap) == w) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 5:   // Переменная
   case 54:  // Переменная, "caption"
@@ -496,17 +494,17 @@ unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 19: {
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
-        return 5;
+        return PredicateState::No;  // 5;
       }
     } else {
       if (sw == 54 || sw == 59 || sw == 14 || sw == 19) {
         occ_line(1, str0, ScVar, ClVar, heap);
         if (InputFloat(&w, str0)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       } else {
         if (InputFloat(&w, caption)) {
-          return 5;
+          return PredicateState::No;  // 5;
         }
       }
     }
@@ -515,11 +513,11 @@ unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   default: break;
   }
   outerror(ErrorCode::UnknownError);  // 24
-  return 1;                           // rte
+  return PredicateState::Error;       // 1; // rte
 }
 
 // ВВОДСИМВ
-unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str0[255]{}, str1[255]{}, str2[255]{};
   switch (sw) {
   case 9:
@@ -548,7 +546,7 @@ unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         }
       }
     }
-    return (strcmp(occ_line(0, str1, ScVar, ClVar, heap), str2)) ? 5 : 3;
+    return (strcmp(occ_line(0, str1, ScVar, ClVar, heap), str2)) ? PredicateState::No : PredicateState::Yes;  // 5 : 3;
   }
   case 5:
   case 59:
@@ -598,82 +596,80 @@ unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         }
       }
     }
-    return 3;
+    return PredicateState::Yes;  // 3;
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e
+    return PredicateState::Error;       // 1; // r_t_e
   }
   }
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // преобразование в целое
-unsigned print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
-  case 7: return 3;  // уже целое
+  case 7: return PredicateState::Yes;  // 3;  // уже целое
   case 6: return zap1(static_cast<IntegerType>(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::ErrorInBuiltinPredicateInt);  // 36
-  return 1;
+  return PredicateState::Error;                     // 1
 }
 
 // преобразование в float
-unsigned prfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: return zap1f(static_cast<FloatType>(occ(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
-  case 6: return 3;
+  case 6: return PredicateState::Yes;  // 3;
   }
   outerror(ErrorCode::ErrorInBuiltinPredicateFloat);  // 37
-  return 1;
+  return PredicateState::Error;                       // 1
 }
 
 // ЖДИ
-unsigned prwait(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prwait(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: break;
   default: {
+    // TODO: It is known error
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
+    return PredicateState::Error;       // 1;
   }
   }
   IntegerType n = occ(0, ScVar, ClVar, heap);
   if (n > 0) {
     std::this_thread::sleep_for(std::chrono::duration<IntegerType, std::milli>(n));
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
-unsigned argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned sw;
   conarg(1, ClVar->head, ScVar, ClVar, heap);
   sw = ScVar->goal[0];
   switch (name) {
-  case hpcall: return prcall(sw, ScVar, ClVar, heap);        // ВЫП
-  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);      // ВВОДСИМВ
-  case hprdint: return prrdint(sw, ScVar, ClVar, heap);      // ВВОДЦЕЛ
-  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);  // ВВОДВЕЩ
-  case hpiocod: return priocod(sw, ScVar, ClVar, heap);      // ВВКОД
-  case hpsee: return infile(sw, ScVar, ClVar, heap);         // ЧТЕНИЕ_ИЗ
-
-  case hptell: return outfile(sw, ScVar, ClVar, heap);  // ЗАПИСЬ_В
-  case hpvar: return (sw == 5) ? 3 : 5;                 // ПЕР
-  case hpint: return (sw == 7) ? 3 : 5;                 // ЦЕЛ
-  case hpfloat: return (sw == 6) ? 3 : 5;               // ВЕЩ
-  case hpsym: return (sw == 4) ? 3 : 5;                 // СИМВ
-  case hplst: return (sw == 2 || sw == 3) ? 3 : 5;      // СПИСОК (пустой или с чем-то)
-
-  case hpwait: return prwait(sw, ScVar, ClVar, heap);  // ЖДИ
-
-  case hprand: return prrandom(sw, ScVar, ClVar, heap);   // СЛУЧ
-  case hp_int: return print(sw, ScVar, ClVar, heap);      // преобразование int
-  case hp_float: return prfloat(sw, ScVar, ClVar, heap);  // преобразование float
+  case hpcall: return prcall(sw, ScVar, ClVar, heap);                                  // ВЫП
+  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);                                // ВВОДСИМВ
+  case hprdint: return prrdint(sw, ScVar, ClVar, heap);                                // ВВОДЦЕЛ
+  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);                            // ВВОДВЕЩ
+  case hpiocod: return priocod(sw, ScVar, ClVar, heap);                                // ВВКОД
+  case hpsee: return infile(sw, ScVar, ClVar, heap);                                   // ЧТЕНИЕ_ИЗ
+  case hptell: return outfile(sw, ScVar, ClVar, heap);                                 // ЗАПИСЬ_В
+  case hpvar: return (sw == 5) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // ПЕР
+  case hpint: return (sw == 7) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // ЦЕЛ
+  case hpfloat: return (sw == 6) ? PredicateState::Yes : PredicateState::No;           // 3 : 5; // ВЕЩ
+  case hpsym: return (sw == 4) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // СИМВ
+  case hplst: return (sw == 2 || sw == 3) ? PredicateState::Yes : PredicateState::No;  // 3 : 5; // СПИСОК (пустой или с чем-то)
+  case hpwait: return prwait(sw, ScVar, ClVar, heap);                                  // ЖДИ
+  case hprand: return prrandom(sw, ScVar, ClVar, heap);                                // СЛУЧ
+  case hp_int: return print(sw, ScVar, ClVar, heap);                                   // преобразование int
+  case hp_float: return prfloat(sw, ScVar, ClVar, heap);                               // преобразование float
   }
-  return 1;
+  return PredicateState::Error;  // 1;
 }
 
 // БОЛЬШЕ
-unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType a[2];
   int ind = 0;
   FloatType af[2];
@@ -691,16 +687,16 @@ unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (ind) {
-  case 3: return (a[0] > a[1]) ? 3 : 5;
+  case 3: return (a[0] > a[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   case 7: af[0] = (FloatType)a[0]; break;
   case 5: af[1] = (FloatType)a[1]; break;
   case 9: break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e(51)//в больше не число
+    return PredicateState::Error;       // 1; // r_t_e(51)//в больше не число
   }
   }
-  return (af[0] > af[1]) ? 3 : 5;
+  return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
 }
 // составить строку символов из элементов tp - tp должен быть list
 int GetStrFromList(char *Buf, size_t BufSize, baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *heap) {
@@ -769,7 +765,8 @@ int GetStrFromList(char *Buf, size_t BufSize, baserecord *tp, TScVar *ScVar, TCl
   return len;
 }
 
-unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+// СТРСПИС
+PredicateState prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned k, i = 0;
   char lnwr[maxlinelen];
   baserecord *tp = 0;
@@ -819,8 +816,9 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       return 1;
     }//R_t_e последний не []
     */
-    if (len < 0)
-      return 1;
+    if (len < 0) {
+      return PredicateState::Error;  // 1;
+    }
     lnwr[len] = 0;
     // char *str=newStr(lnwr);
     // char * str = lnwr;
@@ -834,7 +832,7 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       char str[maxlinelen]{};
       occ_line(0, lnwr, ScVar, ClVar, heap);
       k = strncmp(str, lnwr, strlen(str));
-      return (k == NULL) ? 3 : 5;
+      return (k == NULL) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
     }
   }
   case 95:  //   str/sym var
@@ -851,10 +849,10 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       unsigned index = heap->apend(&pempty, sizeof(recordemptylist));
       if (!index) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 1;
+        return PredicateState::Error;      // 1;
       }
       unify(index, ptr[1], ClVar->frame2, ClVar->frame2, ClVar, heap);
-      return 3;
+      return PredicateState::Yes;  // 3;
     } else {
       // строка не пустая
       unsigned j = heap->last, index1, index2;
@@ -866,31 +864,31 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
       if (!index1 || !index2) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 1;
-      }  // r_t_e нет памяти
+        return PredicateState::Error;      // 1;
+      }                                    // r_t_e нет памяти
       recordemptylist pempty;
       unsigned index = heap->apend(&pempty, sizeof(recordemptylist));
       if (!index) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 1;
-      }  // r_t_e нет памяти
+        return PredicateState::Error;      // 1;
+      }                                    // r_t_e нет памяти
       recordlist *plst = heap->GetPrecordlist(index2);
       //(recordlist*)&heap->heaps[index2];
       plst->link = index;
       unify(j + sizeof(recordinteger), ptr[1], ClVar->frame2, ClVar->frame2, ClVar, heap);
-      return 3;
+      return PredicateState::Yes;  // 3;
     }
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // R_t_e
+    return PredicateState::Error;       // 1; // R_t_e
   }
   }
-  return 5;  //!!! посмотреть на код возврата
+  return PredicateState::No;  // 5;  //!!! посмотреть на код возврата
 }
 
 // СТРЦЕЛ
-unsigned prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType w{};
   char lnwr[maxlinelen]{};
   switch (sw) {
@@ -904,7 +902,7 @@ unsigned prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     // w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
     if (sw == 95 || sw == 45)
       return zap1(w, 2, ScVar, ClVar, heap);
-    return (w == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
+    return (w == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 57:  // var int  возможно нужно var float
   {
@@ -938,9 +936,10 @@ unsigned prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
-  }  // R_t_e
-  }  // outerror(2);return 1;//R_T_e нет памяти
+    return PredicateState::Error;       // 1; // R_t_e
+  }
+  }                              // outerror(2);
+  return PredicateState::Error;  // 1; //R_T_e нет памяти
 }
 
 static FloatType str2float(const char *beg, const char *ed) {
@@ -966,8 +965,8 @@ static FloatType str2float(const char *beg, const char *ed) {
   }
   return res;
 }
-// Функция, которая выполняет предикат СТРВЕЩ
-unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+// СТРВЕЩ
+PredicateState prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType w{};
   char lnwr[maxlinelen]{};
   switch (sw) {
@@ -984,7 +983,7 @@ unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (sw == 95 || sw == 45) {
       return zap1f(w, 2, ScVar, ClVar, heap);
     }
-    return (w == occf(1, ScVar, ClVar, heap)) ? 3 : 5;
+    return (w == occf(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 56: {
     FloatType value = occf(1, ScVar, ClVar, heap);
@@ -993,19 +992,20 @@ unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
-  }  // R_t_e
+    return PredicateState::Error;       // 1;
   }
+  }
+  return PredicateState::Error;
 }
-// Функция, которая выполняет предикат ЦЕЛВЕЩ
-unsigned int printfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+// ЦЕЛВЕЩ
+PredicateState printfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType int_val = 0;
   FloatType float_val = 0.f;
   char lnwr[maxlinelen]{};
   switch (sw) {
-  case 76:  // int float
-    return (occ(0, ScVar, ClVar, heap) == (IntegerType)occf(1, ScVar, ClVar, heap)) ? 3 : 5;
-  case 75:  // int var
+  case 76:                                                                                                                       // int float
+    return (occ(0, ScVar, ClVar, heap) == (IntegerType)occf(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+  case 75:                                                                                                                       // int var
   {
     int_val = occ(0, ScVar, ClVar, heap);
     float_val = static_cast<FloatType>(int_val);
@@ -1019,9 +1019,10 @@ unsigned int printfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
-  }  // R_t_e
+    return PredicateState::Error;       // 1;
   }
+  }
+  return PredicateState::Error;
 }
 
 bool digit(char a) {
@@ -1032,14 +1033,10 @@ bool letter(char a) {
   return (isalpharus(a) || isalphaang(a)) ? true : false;
 }
 
-unsigned whatisit(unsigned sw,
-                  bool (*f)(char),
-                  unsigned i,
-                  TScVar *ScVar,
-                  TClVar *ClVar,
-                  array *heap)  // насчет unsigned i ???
-{
-  char lnwr[maxlinelen];  // может быть unsignedi !!!
+// насчет unsigned i ??? // может быть unsignedi !!!
+// БУКВА; ЦИФРА
+PredicateState whatisit(unsigned sw, bool (*f)(char), unsigned i, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  char lnwr[maxlinelen];
   IntegerType w;
   occ_line(0, lnwr, ScVar, ClVar, heap);
   int len = strlen(lnwr);
@@ -1047,8 +1044,9 @@ unsigned whatisit(unsigned sw,
   case 97:  // str int
   case 47:
     w = occ(1, ScVar, ClVar, heap);
-    if (w && len >= w)
-      return (*f)(lnwr[--w]) ? 3 : 5;
+    if (w && len >= w) {
+      return (*f)(lnwr[--w]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+    }
     break;
   case 95:  // str var
   case 45:
@@ -1057,13 +1055,13 @@ unsigned whatisit(unsigned sw,
     if (w < len)
       return zap1(w + 1, 2, ScVar, ClVar, heap);
     break;
-  default: return (i == i) ? 1 : 1;  // r_t_e w код ошибки (обработка цифры или буквы)
-  }                                  // i использовать для r_t_e
-  return 5;
+  default: return PredicateState::Error;  // (i == i) ? 1 : 1;  // r_t_e w код ошибки (обработка цифры или буквы)
+  }                                       // i использовать для r_t_e
+  return PredicateState::No;              // 5;
 }
 
 // СКОЛЬКО
-unsigned prskol(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prskol(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   int i = 0;
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
@@ -1080,15 +1078,15 @@ unsigned prskol(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 45:  // str var
     return zap1(i, 2, ScVar, ClVar, heap);
-  case 47:  // str int
-    return (i == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
+  case 47:                                                                                // str int
+    return (i == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   outerror(ErrorCode::UnknownError);  // 24
-  return 1;                           // r_t_e
+  return PredicateState::Error;       // 1; // r_t_e
 }
 
 // ТЕРМ
-unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
   recordlist *plist;
   int i = 0;
@@ -1103,8 +1101,9 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       plist = (recordlist *)tp;
       baserecord *test = heap->GetPbaserecord(plist->head);
       //(baserecord *)&heap->heaps[plist->head];
-      if (test->ident != issymbol)
-        return 5;
+      if (test->ident != issymbol) {
+        return PredicateState::No;  // 5;
+      }
     }
     plist = (recordlist *)tp;
     while (tp->ident == islist) {
@@ -1115,25 +1114,27 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     if (tp->ident != isemptylist) {
       outerror(ErrorCode::UnknownError);  // 24
-      return 1;
-    }  // R_t_e последний не []
+      return PredicateState::Error;       // 1; // R_t_e последний не []
+    }
     if (i == 1) {
       recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
       //(recordfunction*)&heap->heaps[ClVar->head];
       unsigned *ptr = heap->GetPunsigned(pf->ptrarg);
       //(unsigned *)&heap->heaps[pf->ptrarg];
-      if (unify(ptr[0], plist->head, ClVar->frame2, ClVar->frame2, ClVar, heap))
-        return 3;
+      if (unify(ptr[0], plist->head, ClVar->frame2, ClVar->frame2, ClVar, heap)) {
+        return PredicateState::Yes;  // 3;
+      }
       //				heap->last=bakindex; //??????
-      return 5;
+      return PredicateState::No;  // 5;
     }
     // сделать запись функции с аргументами из списка
     unsigned n = i - 1;  // число целей в новой функции
     unsigned int *ptrargs = new unsigned[n];
     //!!! нужно другой код возврата
     // сообщение о том что нет памяти
-    if (!ptrargs)
-      return 5;
+    if (!ptrargs) {
+      return PredicateState::No;  // 5;
+    }
     plist = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
     //(recordlist *)&heap->heaps[ScVar->goal[maxarity + 1]];
     unsigned funcsymb = plist->head;
@@ -1150,23 +1151,24 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     delete[] ptrargs;
     if (!index) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     recordfunction ptrf((unsigned char)n, funcsymb, index);
     index = heap->apend(&ptrf, sizeof(recordfunction));
     if (!index) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
     //(recordfunction*)&heap->heaps[ClVar->head];
     unsigned *ptr = heap->GetPunsigned(pf->ptrarg);
     //(unsigned *)&heap->heaps[pf->ptrarg];
 
-    if (unify(ptr[0], index, ClVar->frame2, ClVar->frame2, ClVar, heap))
-      return 3;
+    if (unify(ptr[0], index, ClVar->frame2, ClVar->frame2, ClVar, heap)) {
+      return PredicateState::Yes;  // 3;
+    }
     //          heap->last=bakindex; //????????
-    return 5;
+    return PredicateState::No;  // 5;
   }
   case 85:  // func var
   {         // func -> list
@@ -1180,27 +1182,27 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     unsigned tlist = heap->apend(&pl, sizeof(recordlist));
     if (!tlist) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     while (narg < (unsigned)rf->narg) {
       pl.head = ptrarg[narg];
       pl.link = heap->last + sizeof(recordlist);
       if (!heap->apend(&pl, sizeof(recordlist))) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 5;
+        return PredicateState::No;         // 5;
       }
       narg++;
     }
     recordemptylist ptre;
     if (!heap->apend(&ptre, sizeof(recordemptylist))) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     rf = heap->GetPrecordfunction(ClVar->head);
     //(recordfunction*)&heap->heaps[ClVar->head];
     ptrarg = heap->GetPunsigned(rf->ptrarg);
     //(unsigned *)&heap->heaps[rf->ptrarg];
-    return (unify(ptrarg[1], tlist, ClVar->frame2, ClVar->frame2, ClVar, heap)) ? 3 : 5;
+    return (unify(ptrarg[1], tlist, ClVar->frame2, ClVar->frame2, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 95:  // symb var
   case 45:  // str var -над этим надо подумать ??
@@ -1210,33 +1212,34 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     unsigned tlist = heap->apend(&pl, sizeof(recordlist));
     if (!tlist) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     recordemptylist ptre;
     if (!heap->apend(&ptre, sizeof(recordemptylist))) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     recordfunction *rf = heap->GetPrecordfunction(ClVar->head);
     //(recordfunction*)&heap->heaps[ClVar->head];
     unsigned *ptrarg = heap->GetPunsigned(rf->ptrarg);
     //(unsigned *)&heap->heaps[rf->ptrarg];
-    return (unify(ptrarg[1], tlist, ClVar->frame2, ClVar->frame2, ClVar, heap)) ? 3 : 5;
+    return (unify(ptrarg[1], tlist, ClVar->frame2, ClVar->frame2, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   }
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
-unsigned prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+// УДАЛ
+PredicateState prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw != 47) {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
-  }  // r_t_e
+    return PredicateState::Error;       // 1; // r_t_e
+  }
   unsigned i = occ(1, ScVar, ClVar, heap);
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
-    return 5;  // нет предложения
+    return PredicateState::No;  // 5;  // нет предложения
   recordclause *pcpred = 0;
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
@@ -1255,10 +1258,10 @@ unsigned prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     pcpred->next = pc->next;
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
-unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned sw;
   conarg(2, ClVar->head, ScVar, ClVar, heap);
   sw = ScVar->goal[0] * 10 + ScVar->goal[1];
@@ -1277,11 +1280,11 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hprdint: return prrdint(sw, ScVar, ClVar, heap);               // ВВОДЦЕЛ
   case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);           // ВВОДВЕЩ
   }
-  return 1;
+  return PredicateState::Error;  // 1;
 }
 
 // ТОЧКА
-unsigned prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   //	if ( !canvas) return 3;
   IntegerType xy, x1, x2, y1, y2, color;
   switch (sw) {
@@ -1362,14 +1365,14 @@ unsigned prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
-  }  // r_t_e(не вып предик точка
+    return PredicateState::Error;       // 1;
+  }                                     // r_t_e(не вып предик точка
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
 // СЦЕП
-unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char wrln1[maxlinelen], wrln2[maxlinelen];
   unsigned w, i;
   switch (sw) {
@@ -1390,14 +1393,14 @@ unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     strcat(wrln1, wrln2);
     if ((w = strlen(wrln1)) >= maxlinelen) {
       outerror(ErrorCode::UnknownError);  // 24
-      return 1;
+      return PredicateState::Error;       // 1;
     }
     if (sw == 445 || sw == 495 || sw == 945 || sw == 995)  // если переменная
     {
       return zap3(wrln1, 3, ScVar, ClVar, heap);
     }
     occ_line(2, wrln2, ScVar, ClVar, heap);
-    return (!strncmp(wrln1, wrln2, strlen(wrln1))) ? 3 : 5;
+    return (!strncmp(wrln1, wrln2, strlen(wrln1))) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   case 454:
   case 459:
   case 954:  // str var str
@@ -1428,10 +1431,10 @@ unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e
+    return PredicateState::Error;       // 1; // r_t_e
   }
   }
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // две функции работают в паре. они используют общую
@@ -1444,8 +1447,9 @@ int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap);
 
 // подсчет переменных в функции вернет 1 если ошибка
 int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (pb->ident != isfunction)
+  if (pb->ident != isfunction) {
     return 1;  // ошибка
+  }
   recordfunction *pf = (recordfunction *)pb;
   unsigned *ptrarg = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
@@ -1454,12 +1458,14 @@ int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
     //(baserecord *)&heap->heaps[ptrarg[i]];
     switch (tp->ident) {
     case isfunction:
-      if (VarOnFunc((baserecord *)tp, ScVar, ClVar, heap))
+      if (VarOnFunc((baserecord *)tp, ScVar, ClVar, heap)) {
         return 1;  // ошибка
+      }
       break;
     case islist:
-      if (VarOnList((baserecord *)tp, ScVar, ClVar, heap))
+      if (VarOnList((baserecord *)tp, ScVar, ClVar, heap)) {
         return 1;  // ошибка
+      }
       break;
     case isvar: count_var++; break;
     }
@@ -1469,16 +1475,18 @@ int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // подсчет переменных в списке вернет 1 если ошибка
 int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (pb->ident != islist)
+  if (pb->ident != islist) {
     return 1;
+  }
   recordlist *pl = (recordlist *)pb;
   do {
     recordvar *pv = heap->GetPrecordvar(pl->head);
     //(recordvar *)&heap->heaps[pl->head];
     switch (pv->ident) {
     case isfunction:
-      if (VarOnFunc((baserecord *)pv, ScVar, ClVar, heap))
+      if (VarOnFunc((baserecord *)pv, ScVar, ClVar, heap)) {
         return 1;  // ошибка
+      }
       break;
     case isvar: count_var++; break;
     }
@@ -1832,7 +1840,7 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
 }
 
 // ДОБ
-unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned old_index = heap->last;
   unsigned error = 0;
   baserecord *tp;
@@ -1859,13 +1867,13 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
                                   // нужно поискать функцию
     {
       pldout(const_cast<char *>("предикт 'ДОБ': АРГ1 не функция"));
-      return 1;
+      return PredicateState::Error;  // 1;
     }
     recordfunction *prf = (recordfunction *)tp;
     unsigned int *parg = new unsigned[prf->narg];
     if (!parg) {
       outerror(ErrorCode::NotEnoughFreeMemory);  // 2
-      return 5;
+      return PredicateState::No;                 // 5;
     }
     unsigned *prf_arg = heap->GetPunsigned(prf->ptrarg);
     //(unsigned *)&heap->heaps[prf->ptrarg];
@@ -1878,7 +1886,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     delete[] parg;
     if (!ArgIndex) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     recordfunction NewFunction(prf->narg, prf->func, ArgIndex);
     unsigned findex = heap->apend(&NewFunction, sizeof(recordfunction));
@@ -1886,7 +1894,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ptarget = new unsigned[2];  // последний будет 0
     if (!ptarget) {
       outerror(ErrorCode::NotEnoughFreeMemory);  // 2
-      return 5;
+      return PredicateState::No;                 // 5;
     }
     ptarget[0] = findex;
     ptarget[1] = NULL;
@@ -1894,13 +1902,13 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     delete[] ptarget;
     if (!index) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
     recordclause rc((unsigned)isclause, (unsigned)NULL, 0, findex, index);
     index = heap->apend(&rc, sizeof(recordclause));
     if (!index) {
       outerror(ErrorCode::TooLongList);  // 44
-      return 5;
+      return PredicateState::No;         // 5;
     }
   } break;
   case 437:
@@ -1914,7 +1922,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (VarOnList(tp, ScVar, ClVar, heap) != 0)  // подсчет числа переменных в новом предложении
     {
       pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
-      return 1;
+      return PredicateState::Error;  // 1;
     }
     // TODO: И это тут считается?
     nvar += count_var;  // еще нужно подсчитать число перем в голове
@@ -1924,14 +1932,14 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     error = prepare_target(ScVar->goal[maxarity + 1], ScVar, ClVar, heap);
     if (error) {
       pldout(const_cast<char *>("Ошибка при поиске целей для ДОБ"));
-      return 1;
+      return PredicateState::Error;  // 1;
     }
 
     ntarget = target_number + 1;
     ptarget = new unsigned[ntarget + 1];
     if (!ptarget) {
       outerror(ErrorCode::NotEnoughFreeMemory);  // 2
-      return 1;
+      return PredicateState::Error;              // 1;
     }
 
     pl = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
@@ -1973,7 +1981,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       unsigned ArgIndex = heap->apend(arg, sizeof(unsigned) * prf->narg);
       if (!ArgIndex) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 5;
+        return PredicateState::No;         // 5;
       }
       recordfunction NewFunction(prf->narg, prf->func, ArgIndex);
       unsigned findex = heap->apend(&NewFunction, sizeof(recordfunction));
@@ -1993,19 +2001,22 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       int Count = GetVarCountFromClause(&rc, ScVar, ClVar, heap);
       if (Count < 0) {
         pldout(const_cast<char *>("Var count calculation in new clause failure"));
-        return 5;
+        return PredicateState::No;  // 5;
       }
       rc.nvars = Count;
       index = heap->apend(&rc, sizeof(recordclause));
     }
     break;
   }
-  default: pldout(const_cast<char *>("Недопустимый тип аргументов в 'ДОБ'")); return 1;
+  default: {
+    pldout(const_cast<char *>("Недопустимый тип аргументов в 'ДОБ'"));
+    return PredicateState::Error;  // 1;
+  }
   }
   if (!index) {
     heap->last = old_index;
     outerror(ErrorCode::TooLongList);  // 44
-    return 5;
+    return PredicateState::No;         // 5;
   }
   // включим в цепочку предложений
   IntegerType number = occ(2, ScVar, ClVar, heap);  // куда следует воткнуть новое
@@ -2017,7 +2028,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   else {
     if (tp->ident != isfunction) {
       outerror(ErrorCode::UnknownError);  // 24
-      return 1;
+      return PredicateState::Error;       // 1;
     }
     pf = (recordfunction *)tp;
     recordfunction *_pf = pf;
@@ -2054,11 +2065,11 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     pclause->next = index;
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
 // СЛОЖЕНИЕ
-unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
   bool fl = false;  // если будет true то обработка вещ иначе целых
@@ -2083,8 +2094,8 @@ unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  case 777: return (l[0] + l[1] == l[2]) ? 3 : 5;  // все целые  ццц
-  case 666: return (f[0] + f[1] == f[2]) ? 3 : 5;  // все веществ ffff
+  case 777: return (l[0] + l[1] == l[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все целые  ццц
+  case 666: return (f[0] + f[1] == f[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все веществ ffff
   case 775: return zap1(l[0] + l[1], 3, ScVar, ClVar, heap);
   case 665: return zap1f(f[0] + f[1], 3, ScVar, ClVar, heap);
   case 577: return zap1(l[2] - l[1], 1, ScVar, ClVar, heap);
@@ -2093,11 +2104,11 @@ unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 656: return zap1f(f[2] / f[0], 2, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::FailedAddition);  // 31
-  return 1;
+  return PredicateState::Error;         // 1;
 }
 
 // УМНОЖЕНИЕ   в goal[0].. 1 .. идетифик параметр
-unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[3];
   FloatType f[3];
   bool fl = false;  // если будет true то обработка вещ иначе целых
@@ -2123,38 +2134,43 @@ unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  case 777: return (l[0] * l[1] == l[2]) ? 3 : 5;  // все целые  ццц
-  case 666: return (f[0] * f[1] == f[2]) ? 3 : 5;  // все веществ ffff
+  case 777: return (l[0] * l[1] == l[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все целые  ццц
+  case 666: return (f[0] * f[1] == f[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все веществ ffff
   case 775: return zap1(l[0] * l[1], 3, ScVar, ClVar, heap);
   case 665: return zap1f(f[0] * f[1], 3, ScVar, ClVar, heap);
   case 577:
-    if (l[1] == 0)
-      return 5;
-    if (l[2] % l[1] == 0)
+    if (l[1] == 0) {
+      return PredicateState::No;  // 5;
+    }
+    if (l[2] % l[1] == 0) {
       return zap1(l[2] / l[1], 1, ScVar, ClVar, heap);
+    }
     f[2] = (FloatType)l[1];
     f[1] = (FloatType)l[1];
   case 566:
-    if (f[1] == 0)
-      return 5;
+    if (f[1] == 0) {
+      return PredicateState::No;  // 5;
+    }
     return zap1f(f[2] / f[1], 1, ScVar, ClVar, heap);
   case 757:
-    if (l[0] == 0)
-      return 5;
+    if (l[0] == 0) {
+      return PredicateState::No;  // 5;
+    }
     if (l[2] % l[0] == 0)
       return zap1(l[2] / l[0], 2, ScVar, ClVar, heap);
     f[0] = (FloatType)l[0];
     f[2] = (FloatType)l[2];
   case 656:
-    if (f[0] == 0)
-      return 5;
+    if (f[0] == 0) {
+      return PredicateState::No;  // 5;
+    }
     return zap1f(f[2] / f[0], 2, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::FailedMultiplicationInvalidArguments);  // 30
-  return 1;                                                   // r_t_e не вып пред умножение
+  return PredicateState::Error;                               // 1; // r_t_e не вып пред умножение
 }
 
-unsigned argthree(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState argthree(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned sw;
   conarg(3, ClVar->head, ScVar, ClVar, heap);
   sw = 100 * ScVar->goal[0] + 10 * ScVar->goal[1] + ScVar->goal[2];
@@ -2167,11 +2183,12 @@ unsigned argthree(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hppaint: return prpaint(sw, ScVar, ClVar, heap);  // ЗАКРАСКА
   case hprand: return prrandom(sw, ScVar, ClVar, heap);  // СЛУЧ
   }
-  return 0;
+  // return 0;
+  return PredicateState::Error;
 }
 
 // УМНОЖЕНИЕ   в goal[0].. 1 .. идетифик параметр
-unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
   bool fl = false;  // если будет true то обработка вещ иначе целых
@@ -2218,13 +2235,14 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
    }*/
 
   switch (sw) {
-  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? 3 : 5;  // все целые  цццц
-  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? 3 : 5;  // все веществ ffff
+  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все целые  цццц
+  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все веществ ffff
   case 5777:
     if (l[1]) {
       IntegerType work;
-      if ((work = l[3] - l[2]) % l[1] != 0)
-        return 5;
+      if ((work = l[3] - l[2]) % l[1] != 0) {
+        return PredicateState::No;  // 5;
+      }
       return zap1(work / l[1], 1, ScVar, ClVar, heap);
     }
     break;
@@ -2233,8 +2251,9 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (l[0])  // цпцц
     {
       IntegerType work;
-      if ((work = l[3] - l[2]) % l[0] != 0)
-        return 5;
+      if ((work = l[3] - l[2]) % l[0] != 0) {
+        return PredicateState::No;  // 5;
+      }
       return zap1(work / l[0], 2, ScVar, ClVar, heap);
     }
     break;
@@ -2265,14 +2284,14 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
                                                                                           if ((work=f[3]-f[2]) % f[0]!=0) return 5;
                                                                                           return zap1f(work/f[0],2);}break;*/
     outerror(ErrorCode::FailedMultiplicationIntegerDivisionOfSubstancesOfNumbers);  // 29
-    return 1;
+    return PredicateState::Error;                                                   // 1;
   }
   outerror(ErrorCode::FailedMultiplicationInvalidArguments);  // 30
-  return 1;                                                   // r_t_e не вып пред умножение
+  return PredicateState::Error;                               // 1; // r_t_e не вып пред умножение
 }
 
 // ОКРУЖНОСТЬ
-unsigned prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // if (!canvas) return 3;
   IntegerType x1, x2, y1, y2, r, color;
 
@@ -2347,28 +2366,28 @@ unsigned prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e
+    return PredicateState::Error;       // 1; // r_t_e
   }
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
 // ЗАКРАСКА
-unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType x, y, color;
   if (sw != 777) {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;
+    return PredicateState::Error;       // 1;
   }
   x = occ(0, ScVar, ClVar, heap);
   y = occ(1, ScVar, ClVar, heap);
   color = occ(2, ScVar, ClVar, heap);
   FloodFill(x, y, color);
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
 // КОПИЯ
-unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str1[maxlinelen], str2[maxlinelen];
   IntegerType i1, i2, i3, i4;
   switch (sw) {
@@ -2394,7 +2413,7 @@ unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i2 = occ(2, ScVar, ClVar, heap);
     i3 = strlen(str1);
     i4 = strlen(str2);
-    return (i1 > 0 && i2 > 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[i1 - 1], str2, i2)) ? 3 : 5;
+    return (i1 > 0 && i2 > 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[i1 - 1], str2, i2)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
 
   case 4574:
   case 4579:
@@ -2443,14 +2462,14 @@ unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // r_t_e
+    return PredicateState::Error;       // 1;                           // r_t_e
   }
   }
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
 // ПРЕДЛ
-unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
   unsigned err = 0;
   unsigned index = 0;
@@ -2480,7 +2499,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     err = 4;  // var/list/emptylist
   if (err != 0) {
     pldout(const_cast<char *>("Неверный тип аргументов в 'ПРЕДЛ'."));  // как нибудь раскрою номер параметра
-    return 5;
+    return PredicateState::No;                                         // 5;
   }
 
   // поищем заданное предложение
@@ -2488,7 +2507,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
-    return 5;  // нет предложения
+    return PredicateState::No;  // 5;  // нет предложения
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
   IntegerType w;
@@ -2496,8 +2515,9 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     pc = heap->GetPrecordclause(pc->next);
     //(recordclause *)&heap->heaps[pc->next];
   }
-  if (w != i)
-    return 5;  // предл с данным номером отсутствует
+  if (w != i) {
+    return PredicateState::No;  // 5;  // предл с данным номером отсутствует
+  }
 
   // нашли нужное предложение
   recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
@@ -2516,14 +2536,14 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   ClVar->svptr = ClVar->frame1 + pc->nvars;  // это число переменных в предл
   if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
     pldout(const_cast<char *>("Не достаточно памяти в стеке переменных"));
-    return 5;
+    return PredicateState::No;  // 5;
   }
   // унификация головы предлож с переменной или ...
   if (!unify(p[0], ptr[2], ClVar->frame1, ClVar->frame2, ClVar, heap)) {
     ClVar->svptr = ClVar->oldsvptr;
     heap->last = oldindex;  //??????
     zero(ClVar);
-    return 5;
+    return PredicateState::No;  // 5;
   }
 
   // получим список из целей найденного предложения
@@ -2542,7 +2562,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       index = heap->apend(&pl, sizeof(recordlist));
       if (!index) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 5;
+        return PredicateState::No;         // 5;
       }
 
       //           if (!(index=heap->apend(&pl,sizeof(recordlist)))) err=44;
@@ -2557,7 +2577,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       index = heap->apend(&ptre, sizeof(recordemptylist));
       if (!index) {
         outerror(ErrorCode::TooLongList);  // 44
-        return 5;
+        return PredicateState::No;         // 5;
       }
 
       //				if (!(index=heap->apend(&ptre,sizeof(recordemptylist)))) err=2;
@@ -2569,7 +2589,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         ClVar->svptr = ClVar->oldsvptr;
         heap->last = oldindex;  //?????
         zero(ClVar);
-        return 5;
+        return PredicateState::No;  // 5;
       }
       if (sw4 == 2 || sw4 == 3) {
         ClVar->svptr = ClVar->oldsvptr;
@@ -2577,15 +2597,15 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         zero(ClVar);
       }
 
-      return 3;  // удачная унификация
+      return PredicateState::Yes;  // 3;  // удачная унификация
     }
     break;
   }
   }
-  return 5;
+  return PredicateState::No;  // 5;
 }
 
-unsigned argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned sw;
   conarg(4, ClVar->head, ScVar, ClVar, heap);
   sw = ScVar->goal[0] * 1000 + ScVar->goal[1] * 100 + ScVar->goal[2] * 10 + ScVar->goal[3];
@@ -2595,11 +2615,12 @@ unsigned argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hpcopy: return prcopy(sw, ScVar, ClVar, heap);    // КОПИЯ
   case hpclaus: return prclaus(sw, ScVar, ClVar, heap);  // ПРЕДЛ
   }
-  return 0;
+  // return 0;
+  return PredicateState::Error;  // 1;
 }
 
 // ЛИНИЯ
-unsigned prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   //	if (/*!bitmap ||*/ !canvas) return 3;
   // int xy;
   IntegerType x1, x2, y1, y2, color;
@@ -2672,13 +2693,13 @@ unsigned prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
-    return 1;                           // R_T_E
+    return PredicateState::Error;       // 1; // R_T_E
   }
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
-unsigned argfive(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState argfive(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned long sw;
   conarg(5, ClVar->head, ScVar, ClVar, heap);
   sw = (unsigned long)(10000l * ScVar->goal[0]);
@@ -2689,7 +2710,7 @@ unsigned argfive(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
   case hpline: return prger(sw, ScVar, ClVar, heap);  // ЛИНИЯ
   }
-  return 1;
+  return PredicateState::Error;  // 1;
 }
 
 bool bpred(unsigned name, unsigned narg) {
@@ -2754,8 +2775,9 @@ int Inputstring(char *buf, int size, char *caption) {
   int _err = InputStringFromDialog(buf, size, pCaption);
   if (!_err) {
     // pldout(buf);
-  } else
-    err = 1;  //
+  } else {
+    err = 1;
+  }
   return err;
 }
 
@@ -2782,12 +2804,14 @@ int InputInt(IntegerType *n, const char *caption) {
   while (err == 2) {
     int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
     if (!_err) {
-      if (sscanf(Buf, "%lld", n) != 1)
+      if (sscanf(Buf, "%lld", n) != 1) {
         continue;
+      }
       err = 0;
       // pldout(Buf);
-    } else
-      err = 1;  //
+    } else {
+      err = 1;
+    }
   }
   return err;
 }
@@ -2798,12 +2822,14 @@ int InputFloat(FloatType *n, const char *caption) {
   while (err == 2) {
     int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
     if (!_err) {
-      if (sscanf(Buf, "%lf", n) != 1)
+      if (sscanf(Buf, "%lf", n) != 1) {
         continue;
+      }
       err = 0;
       // pldout(Buf);
-    } else
-      err = 1;  //
+    } else {
+      err = 1;
+    }
   }
   return err;
 }

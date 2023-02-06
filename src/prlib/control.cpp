@@ -14,7 +14,7 @@ void outerror(ErrorCode err) {
   errout(GetPrErrText(err));
 }
 
-unsigned menegerbp(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState menegerbp(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (name == ClVar->head || name == hpcut) {
     return argnull(name, ScVar, ClVar, heap);
   }
@@ -23,11 +23,12 @@ unsigned menegerbp(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   recordfunction *pfunc = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction*)&heap->heaps[ClVar->head];
-  if (pfunc->ident == isfunction)
+  if (pfunc->ident == isfunction) {
     if (bpred(name, pfunc->narg) == false) {
       outerror(ErrorCode::WrongNumberOfArgumentsInBuiltinPredicate);  // 26
-      return 1;
+      return PredicateState::Error;                                   // 1;
     }
+  }
   switch (pfunc->narg) {
   case 1: return argone(name, ScVar, ClVar, heap);
   case 2: return argtwo(name, ScVar, ClVar, heap);
@@ -35,7 +36,7 @@ unsigned menegerbp(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 4: return argfour(name, ScVar, ClVar, heap);
   case 5: return argfive(name, ScVar, ClVar, heap);
   }
-  return 1;
+  return PredicateState::Error;  // 1;
 }
 
 // inline void to_stac(unsigned *b,unsigned index,unsigned value)
@@ -130,7 +131,7 @@ void to_control(TClVar *ClVar, array *heap)  // запись в стек
 {
   if (ClVar->scptr + 7 > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
     outerror(ErrorCode::StackOverflow);  // 28
-    ClVar->stat = 5;                     /*message_no_memory|=no_memory_stac;*/
+    ClVar->stat = PredicateState::No;    // 5; /*message_no_memory|=no_memory_stac;*/
   } else {
     to_stac(ClVar->st_con, ClVar->scptr++, ClVar->frame2);
     to_stac(ClVar->st_con, ClVar->scptr++, ClVar->oldsvptr);
@@ -296,7 +297,7 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // extern unsigned write_term(unsigned TERM,unsigned FRAME,unsigned w,unsigned j);//,FILE *d=NULL);
 // прологовский вывод
-unsigned prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned k = 0;
   recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction *)&heap->heaps[ClVar->head];
@@ -316,7 +317,7 @@ unsigned prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
   } else {
     usrout(buff);
   }
-  return 3;
+  return PredicateState::Yes;  // 3;
 }
 
 unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVar *ScVar, TClVar *ClVar, array *heap) {
@@ -476,7 +477,7 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (!ClVar->varqu) {
     prdout(true);
     ClVar->flag = false;
-    ClVar->stat = 1;
+    ClVar->stat = PredicateState::Error;  // 1;
   } else {
     ClVar->flag = false;
     // bpt=buf;//указатель на внешний buf
@@ -510,6 +511,32 @@ void zero(TClVar *ClVar) {
   ClVar->tptr = ClVar->oldtptr;
 }
 
+void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  if (ClVar->ntro) {
+    ClVar->parent = ClVar->scptr;  // место записи в стеке управлени€ о вызывающем предл
+  }
+  ClVar->frame2 = ClVar->frame1;
+}
+void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  if (!heap->pacltarget[++ClVar->atomp])  // все цели удовлетворены
+    if (ClVar->parent == NULL)            // есть ответ на вопрос
+    {
+      prvars(ScVar, ClVar, heap);  // печать переменных
+      if (ClVar->stat != PredicateState::Error) {
+        ClVar->stat = PredicateState::No;  // 5;  // неудача - не найдено решение
+      }
+    } else {
+      unsigned work = ClVar->scptr;
+      ClVar->scptr = ClVar->parent;  // зачем ?
+      from_control(ClVar, heap);     // выборка родительской среды
+      ClVar->scptr = work;
+      ClVar->stat = PredicateState::Yes;  // 3;
+    }
+  else {
+    ClVar->head = heap->pacltarget[ClVar->atomp];  // индекс новой цели
+    ClVar->stat = PredicateState::Builtin;         // 6;
+  }
+}
 void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->newclause && ClVar->newclause != isnil) {  // pnclause=head->at(newclause);pncltarget=head->at(newclause-1);
     heap->ptclause = heap->pnclause;
@@ -533,7 +560,7 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
       ClVar->err = ErrorCode::StackOverflow;  // 28;
-      ClVar->stat = 1;
+      ClVar->stat = PredicateState::Error;    // 1;
     } else {
       if (ClVar->PrSetting->Trace) {
         pldout("—огласуетс€ с ");
@@ -545,11 +572,13 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
         if (ClVar->newclause || heap->pacltarget[ClVar->atomp + 1]) {
           to_control(ClVar, heap);
           ClVar->ntro = true;
-        } else
+        } else {
           ClVar->ntro = false;
-        if (ClVar->stat != 5) {
-          if (ClVar->PrSetting->Trace)
+        }
+        if (ClVar->stat != PredicateState::No) {
+          if (ClVar->PrSetting->Trace) {
             pldout("”спех");
+          }
           ClVar->oldtptr = ClVar->tptr;
           ClVar->oldsvptr = ClVar->svptr;
           ClVar->atomp = ClVar->tryclause;
@@ -557,14 +586,15 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
           ClVar->aclause = ClVar->tclause;
           heap->paclause = heap->ptclause;
           heap->pacltarget = heap->ptcltarget;
-          ClVar->stat = 2;
+          ClVar->stat = PredicateState::State_2;  // 2;
         }
-      } else if (ClVar->stat != 1) {
-        if (ClVar->PrSetting->Trace)
+      } else if (ClVar->stat != PredicateState::Error) {
+        if (ClVar->PrSetting->Trace) {
           pldout("Ќеудача");
+        }
         ClVar->svptr = ClVar->oldsvptr;
         zero(ClVar);
-        ClVar->stat = 4;
+        ClVar->stat = PredicateState::State_4;  // 4;
       }
     }
   } else {
@@ -575,10 +605,60 @@ void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
       pldout("Ќеудачна ");
     }
-    ClVar->stat = 5;
+    ClVar->stat = PredicateState::No;  // 5;
+  }
+}
+void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  if (!ClVar->scptr) {
+    ClVar->stat = PredicateState::Error;  // 1;
+  } else {
+    from_control(ClVar, heap);
+    zero(ClVar);
+    ClVar->head = heap->pacltarget[ClVar->atomp];
+    ClVar->svptr = ClVar->oldsvptr;
+    if (ClVar->PrSetting->Trace) {
+      pldout("ѕеределка. ÷ель ");
+      buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
+      pldout(buff);
+    }
+    ClVar->stat = PredicateState::State_4;  // 4;
+  }
+}
+void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  if (ClVar->PrSetting->Trace) {
+    pldout("÷ель ");
+    buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
+    pldout(buff);
+  }
+  ClVar->precordfunction = heap->GetPrecordfunction(ClVar->head);
+  //(recordfunction *)&heap->heaps[ClVar->head];
+  switch (ClVar->precordfunction->ident) {
+  case isfunction: ClVar->bipr = ClVar->precordfunction->func; break;
+  case iscut: {
+    recordcut *pcut = (recordcut *)ClVar->precordfunction;
+    ClVar->bipr = pcut->func;
+  } break;
+
+  default: ClVar->bipr = ClVar->head;
+  }
+
+  if (ClVar->bipr < heap->freeheap) {
+    ClVar->stat = menegerbp(ClVar->bipr, ScVar, ClVar, heap);
+  } else {
+    ClVar->precordsconst = heap->GetPrecordsconst(ClVar->bipr);
+    //(recordsconst *)&heap->heaps[ClVar->bipr];
+    ClVar->newclause = ClVar->precordsconst->begin;
+    if (ClVar->newclause && ClVar->newclause != isnil) {
+      heap->pnclause = heap->GetPrecordclause(ClVar->newclause);
+      //(recordclause *)&heap->heaps[ClVar->newclause];
+      heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
+      //(unsigned *)&heap->heaps[heap->pnclause->ptrtarget];
+    }
+    ClVar->stat = PredicateState::State_4;  // 4;
   }
 }
 
+// ќчистить состо€ние
 void OnControl(TClVar *ClVar, array *heap) {
   // add 2008/10/04
   heap->ptclause = NULL;
@@ -586,7 +666,7 @@ void OnControl(TClVar *ClVar, array *heap) {
 
   unsigned int &vmaxstack = ClVar->vmaxstack;
 
-  ClVar->err = ErrorCode::NoErrors; // 0
+  ClVar->err = ErrorCode::NoErrors;  // 0
   unsigned i;
   for (i = 0; i < ClVar->vmaxstack; i++) {
     ClVar->st_con[i] = isnil;
@@ -597,7 +677,7 @@ void OnControl(TClVar *ClVar, array *heap) {
   for (i = 0; i < _maxbf_; i++) {
     ClVar->bf[i] = 0;
   }
-  ClVar->stat = 2;
+  ClVar->stat = PredicateState::State_2;  // 2;
   ClVar->newclause = NULL;
   ClVar->ntro = false;  // нет оптимизации хвостовой рекурсии не знаю пока что это
   ClVar->flag = true;
@@ -618,83 +698,23 @@ void OnControl(TClVar *ClVar, array *heap) {
 
 ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
   OnControl(ClVar, heap);
-  while (ClVar->stat != 1 && ClVar->err == ErrorCode::NoErrors) {
+  while (ClVar->stat != PredicateState::Error && ClVar->err == ErrorCode::NoErrors) {
     switch (ClVar->stat) {
-    case 2:
-      if (ClVar->ntro) {
-        ClVar->parent = ClVar->scptr;  // место записи в стеке управлени€ о вызывающем предл
-      }
-      ClVar->frame2 = ClVar->frame1;   // если stat = 2 то выполнение сразу же и 3
-      [[fallthrough]];
-    case 3:
-      if (!heap->pacltarget[++ClVar->atomp])  // все цели удовлетворены
-        if (ClVar->parent == NULL)            // есть ответ на вопрос
-        {
-          prvars(ScVar, ClVar, heap);  // печать переменных
-          if (ClVar->stat != 1) {
-            ClVar->stat = 5;  // неудача - не найдено решение
-          }
-        } else {
-          unsigned work = ClVar->scptr;
-          ClVar->scptr = ClVar->parent;  // зачем ?
-          from_control(ClVar, heap);     // выборка родительской среды
-          ClVar->scptr = work;
-          ClVar->stat = 3;
-        }
-      else {
-        ClVar->head = heap->pacltarget[ClVar->atomp];  // индекс новой цели
-        ClVar->stat = 6;
-      }
+    case PredicateState::State_2:  // 2
+      st_2(ScVar, ClVar, heap);
+      [[fallthrough]];         // если stat = 2 то выполнение сразу же и 3
+    case PredicateState::Yes:  // 3
+      st_3(ScVar, ClVar, heap);
       break;
-    case 6:
-      if (ClVar->PrSetting->Trace) {
-        pldout("÷ель ");
-        buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-        pldout(buff);
-      }
-      ClVar->precordfunction = heap->GetPrecordfunction(ClVar->head);
-      //(recordfunction *)&heap->heaps[ClVar->head];
-      switch (ClVar->precordfunction->ident) {
-      case isfunction: ClVar->bipr = ClVar->precordfunction->func; break;
-      case iscut: {
-        recordcut *pcut = (recordcut *)ClVar->precordfunction;
-        ClVar->bipr = pcut->func;
-      } break;
-
-      default: ClVar->bipr = ClVar->head;
-      }
-
-      if (ClVar->bipr < heap->freeheap) {
-        ClVar->stat = menegerbp(ClVar->bipr, ScVar, ClVar, heap);
-      } else {
-        ClVar->precordsconst = heap->GetPrecordsconst(ClVar->bipr);
-        //(recordsconst *)&heap->heaps[ClVar->bipr];
-        ClVar->newclause = ClVar->precordsconst->begin;
-        if (ClVar->newclause && ClVar->newclause != isnil) {
-          heap->pnclause = heap->GetPrecordclause(ClVar->newclause);
-          //(recordclause *)&heap->heaps[ClVar->newclause];
-          heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
-          //(unsigned *)&heap->heaps[heap->pnclause->ptrtarget];
-        }
-        ClVar->stat = 4;
-      }
+    case PredicateState::State_4:  // 4
+      st_4(ScVar, ClVar, heap);
       break;
-    case 4: st_4(ScVar, ClVar, heap); break;
-    case 5:
-      if (!ClVar->scptr) {
-        ClVar->stat = 1;
-      } else {
-        from_control(ClVar, heap);
-        zero(ClVar);
-        ClVar->head = heap->pacltarget[ClVar->atomp];
-        ClVar->svptr = ClVar->oldsvptr;
-        if (ClVar->PrSetting->Trace) {
-          pldout("ѕеределка. ÷ель ");
-          buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-          pldout(buff);
-        }
-        ClVar->stat = 4;
-      }
+    case PredicateState::No:  // 5
+      st_5(ScVar, ClVar, heap);
+      break;
+    case PredicateState::Builtin:  // 6
+      st_6(ScVar, ClVar, heap);
+      break;
     }
     if (!*EnableRunning) {
       ClVar->err = ErrorCode::ExecutionInterrupted;  // 27;  // abort
@@ -719,16 +739,16 @@ unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClV
   unsigned char n = (unsigned char)ClVar->precordexpression->length;
   ErrorCode err = ErrorCode::NoErrors;
   baserecord *tp;
-  long oi1 = 0, oi2 = 0;                 // операнды дл€ вычислени€ целых
-  float of1 = 0, of2 = 0;                // операнды дл€  вычислени€ вещественных
+  long oi1 = 0, oi2 = 0;                                       // операнды дл€ вычислени€ целых
+  float of1 = 0, of2 = 0;                                      // операнды дл€  вычислени€ вещественных
   for (int j = 0; j < n && err == ErrorCode::NoErrors; j++) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
     unsigned *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
     //(unsigned *)&heap->heaps[ClVar->precordexpression->precord];
     if (index == maxstaccalc) {
       err = ErrorCode::StackOverflowWhileCalculatingArithmeticsExpressions;  // 40;
       continue;
-    }  // это переход на начало цикла
-       // и немедленное его завершение(переполнилс€ стек)
+    }                     // это переход на начало цикла
+                          // и немедленное его завершение(переполнилс€ стек)
     if (ptr[j] < isbase)  // операнд
     {
       tp = heap->GetPbaserecord(ptr[j]);
@@ -789,7 +809,7 @@ unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClV
         err = ErrorCode::ErrorInArithmeticExpression;  // 32;  // других типов не должно быть
       }
       }
-    } else { // знак ариафм операции
+    } else {  // знак ариафм операции
       for (int k = 0; k < 2; k++) {
         tp = (baserecord *)st[index - 1];
         switch (tp->ident)  // может быть только integer или float
@@ -852,7 +872,7 @@ unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClV
       case isslash:
         if (ind == isinteger) {
           if (oi1 == 0) {
-            err = ErrorCode::DivisionByZeroWhileCalculatingArithmeticsExpressions; // 41
+            err = ErrorCode::DivisionByZeroWhileCalculatingArithmeticsExpressions;  // 41
           } else {
             oi2 /= oi1;
           }
@@ -1113,7 +1133,7 @@ bool unvar(TClVar *ClVar, array *heap) {
             ocrn(bd1, ClVar->term2, ClVar);
             nextun(ClVar, heap);
           }
-        } else { // св€занна€ переменна€
+        } else {  // св€занна€ переменна€
           ClVar->term2 = work;
           work = from_stac(ClVar->st_vr2, bd2);
           if (work != isnil)
