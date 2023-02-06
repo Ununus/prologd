@@ -139,7 +139,7 @@ void errout(const char *str) {
 }
 
 int runProlog() {
-  int serr = 0, cerr = 0;
+  ErrorCode err = ErrorCode::NoErrors;
   std::unique_ptr<array> heap;
   std::unique_ptr<TScVar> ScVar;
   std::unique_ptr<TClVar> ClVar;
@@ -159,9 +159,9 @@ int runProlog() {
     return 3;
   }
   bool EnableRunning = true;
-  serr = buildin(ScVar.get(), heap.get());
+  err = buildin(ScVar.get(), heap.get());
   parsed_str_number = 0;
-  while (!serr && !cerr && EnableRunning) {  // трансляция построчно
+  while (err == ErrorCode::NoErrors && EnableRunning) {  // трансляция построчно
     std::string line;
     if (!std::getline(*source_stream, line)) {
       break;
@@ -183,9 +183,8 @@ int runProlog() {
     
     char *cur_str = const_cast<char *>(line.c_str());
     try {
-      serr = scaner(cur_str, ScVar.get(), heap.get());
-
-      if (!serr && ScVar->Query && ScVar->EndOfClause)  //если конец предложения и вопрос то
+      err = scaner(cur_str, ScVar.get(), heap.get());
+      if (err == ErrorCode::NoErrors && ScVar->Query && ScVar->EndOfClause)  // если конец предложения и вопрос то
       {
         if (out_questions) {
           if (!last_srv) {
@@ -195,13 +194,16 @@ int runProlog() {
           *output_stream << '\n';
           last_srv = true;
         }
-        cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
+        err = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
         ScVar->Query = ScVar->EndOfClause = false;  //на выполнение
       }
     } catch (...) {
       errout("Runtime error");
       return 1;
     }
+  }
+  if (err != ErrorCode::NoErrors) {
+    outerror(err);
   }
   return 0;
 }
@@ -245,29 +247,17 @@ int InputStringFromDialog(char *buf, size_t size, char *caption) {
   return 0;
 }
 
-unsigned int GetPixel(int, int) {
+void Rectangle(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color) {}
+void MoveTo_LineTo(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color) {}
+void FloodFill(IntegerType x, IntegerType y, unsigned color) {}
+void vertical(IntegerType x1, IntegerType y, IntegerType x2, IntegerType color) {}
+void horisontal(IntegerType x, IntegerType y1, IntegerType y2, IntegerType color) {}
+void ClearView(unsigned color) {}
+void Ellipse(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color) {}
+void SetPixel(IntegerType x, IntegerType y, unsigned color) {}
+unsigned GetPixel(IntegerType x, IntegerType y) {
   return 0;
 }
-
-void ClearView(unsigned int) {}
-
-void Ellipse(int, int, int, int, unsigned int) {}
-
-void FloodFill(int, int, unsigned int) {}
-
-void HideGWindow(void) {}
-
-void horisontal(int, int, int, int) {}
-
-void MoveTo_LineTo(int, int, int, int, unsigned int) {}
-
-void Rectangle(int, int, int, int, unsigned int) {}
-
-void SetPixel(int, int, unsigned int) {}
-
-void ShowGWindow(bool) {}
-
-void vertical(int, int, int, int) {}
 
 void printHelp() {
   std::cout << "-s, --source=FILE\tinterpret a file.\n";

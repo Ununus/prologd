@@ -4,57 +4,47 @@
 #include <string>
 #include <stdio.h>
 #include <memory>
-//#include <limits.h>
-//#include "pdefs.h"
+#include "err.h"
+// #include <limits.h>
+// #include "pdefs.h"
 
 using FloatType = double;
 using IntegerType = long long;
 
-// Вывод предиката
-void prdout(bool value);
-// Прологовский вывод
-void pldout(const char *str);
-// Пользовательский вывод (предикатом ВЫВОД)
-void usrout(const char *str);
-// Вывод ошибок
-void errout(const char *str);
-
-struct baserecord  //предок всех структур
-{
+// предок всех структур
+struct baserecord {
   unsigned int ident;
 };
 
-struct recordsconst
-  : public baserecord  //строковая константа
-{
-  // char *ptr;                 //указатель в текст на символьное представление
-  unsigned int ptrsymb;  //индекс в heap симв представления
-  unsigned int length;   //длина
-  unsigned int begin;    //индекс в heap на первое предл. где она стоит предикатом
+// строковая константа
+struct recordsconst : public baserecord {
+  // char *ptr;          //указатель в текст на символьное представление
+  unsigned int ptrsymb;  // индекс в heap симв представления
+  unsigned int length;   // длина
+  unsigned int begin;    // индекс в heap на первое предл. где она стоит предикатом
   recordsconst(unsigned PTRsymb, unsigned char LENGTH, unsigned int BEGIN = 0);
 };
 
 struct recordstring : public baserecord {
-  // char *ptr; //указатель на строку в тексте
-  unsigned int ptrsymb;  //индекс в heap симв представления
-  unsigned int length;   //длина строки не считая " и '\0'
-  unsigned int begin;    //введен для совместимости с recordsconst всегда =0;
+  // char *ptr;           //указатель на строку в тексте
+  unsigned int ptrsymb;  // индекс в heap симв представления
+  unsigned int length;   // длина строки не считая " и '\0'
+  unsigned int begin;    // введен для совместимости с recordsconst всегда =0;
   recordstring(unsigned PTRsymb, unsigned char LENGTH, unsigned int BEGIN = 0);
-  //если begin!=0 то это значит что строка создана при исполнении программы
-  //функцией zap3();
-  //пролога и она находится не в тексте редактора а динам памяти
-  //следовательно ее нужно уничточить при выходи из исполнения программы
-  // иначе это в тексте редактора и уничтожится при закрытии окна с текстом
+  // если begin!=0 то это значит что строка создана при исполнении программы
+  // функцией zap3();
+  // пролога и она находится не в тексте редактора а динам памяти
+  // следовательно ее нужно уничточить при выходи из исполнения программы
+  //  иначе это в тексте редактора и уничтожится при закрытии окна с текстом
   //~recordstring();
 };
 
-struct recordvar
-  : public baserecord  //структура записи переменной
-{
+// структура записи переменной
+struct recordvar : public baserecord  {
   // char *ptr;         //указатель на текст представл переменной
-  unsigned int ptrsymb;  //индекс в heap симв представления
-  unsigned int length;   //длина переменной
-  unsigned int num;      //номер переменный в предложении начиная с 0
+  unsigned int ptrsymb;  // индекс в heap симв представления
+  unsigned int length;   // длина переменной
+  unsigned int num;      // номер переменный в предложении начиная с 0
   recordvar(unsigned PTRsymb, unsigned char LENGTH, unsigned int NUM = 0);
 };
 
@@ -83,51 +73,51 @@ struct recordemptylist : public baserecord {
 
 struct recordexpression : public baserecord {
   // unsigned int *ptr;//указатель на обратную польскую запись
-  //запись в эл-те указатель которой на 1 меньше чем эл-та структуры
-  unsigned int length;   //длина записи
-  unsigned int precord;  //индекс польской записи
+  // запись в эл-те указатель которой на 1 меньше чем эл-та структуры
+  unsigned int length;   // длина записи
+  unsigned int precord;  // индекс польской записи
   recordexpression(unsigned int LENGTH, unsigned int PRECORD);
 };
 
 struct recordfunction : public baserecord {
-  unsigned int narg;    //число аргументов в функции
-  unsigned int func;    //указатель на функц символ
-  unsigned int ptrarg;  //индекс массива с аргументами
+  unsigned int narg;    // число аргументов в функции
+  unsigned int func;    // указатель на функц символ
+  unsigned int ptrarg;  // индекс массива с аргументами
   // unsigned int *ptrarg; //указатель на массив индексов в массиве heap
-  //при использовании указатели из массива нужно приводить
-  //к нужному типу  число указателей в narg
-  //индекс массива в на 1 меньше чем индекс функции
+  // при использовании указатели из массива нужно приводить
+  // к нужному типу  число указателей в narg
+  // индекс массива в на 1 меньше чем индекс функции
   recordfunction(unsigned char NARG, unsigned int FUNC, unsigned int PTRARG);
 };
 
 struct recordlist : public baserecord {
-  unsigned int head;  //указатель на голову
-  unsigned int link;  //указатель на хвост
+  unsigned int head;  // указатель на голову
+  unsigned int link;  // указатель на хвост
   recordlist(unsigned int HEAD, unsigned int LINK = 0);
 };
 
 struct recordclause : public baserecord {
-  unsigned int next;       //инекс в массиве heap следующего одноименного предложения
-  unsigned int nvars;      //число переменных в предложении
-  unsigned int head;       //индекс в heap (на issymbol???) голову предложения
-  unsigned int ptrtarget;  //индекс начала целей
+  unsigned int next;       // инекс в массиве heap следующего одноименного предложения
+  unsigned int nvars;      // число переменных в предложении
+  unsigned int head;       // индекс в heap (на issymbol???) голову предложения
+  unsigned int ptrtarget;  // индекс начала целей
   // unsigned int *ptrtarget;   //указатель на массив индексов в массиве heap
-  //аргументы можно найти череы указатель инекс которого на 1 меньше индекса
-  //предложения
+  // аргументы можно найти череы указатель инекс которого на 1 меньше индекса
+  // предложения
   recordclause(unsigned char IDENT, unsigned int NEXT, unsigned int NVARS, unsigned int HEAD, unsigned int PTRTARGET);
 };
 //-----------------------------------------------
-struct array  //массив для трансляции и исполнения программы
-              //пролога описания функций в main()
-{
+// массив для трансляции и исполнения программы
+// пролога описания функций в main()
+struct array  {
 protected:
-  unsigned char *heaps;  //указатель на массив
+  unsigned char *heaps;  // указатель на массив
 public:
-  unsigned int freeheap;                           //кол-во эл-тов до разбора программы
-  unsigned int size;                               //кол-во эл-тов всего /типа unsigned int/
-  unsigned int last;                               //индекс массива указывающий на первый свободный эл
-  unsigned int query;                              //индекс предложения - вопроса.
-  unsigned int apend(void *, unsigned int count);  //добавление в конец
+  unsigned int freeheap;                           // кол-во эл-тов до разбора программы
+  unsigned int size;                               // кол-во эл-тов всего /типа unsigned int/
+  unsigned int last;                               // индекс массива указывающий на первый свободный эл
+  unsigned int query;                              // индекс предложения - вопроса.
+  unsigned int apend(void *, unsigned int count);  // добавление в конец
   array(unsigned int SIZE);
   void clear();
   int expand();
@@ -148,11 +138,11 @@ public:
   unsigned *GetPunsigned(unsigned index);
   char *GetPchar(unsigned index);
 
-  recordclause *pnclause;    //для newclause
-  recordclause *ptclause;    //для trylause
-  recordclause *phclause;    //для head
-  recordclause *paclause;    //ук на структ для atomp
-  unsigned int *pacltarget,  //указатель на цели предложения aclause
+  recordclause *pnclause;    // для newclause
+  recordclause *ptclause;    // для trylause
+  recordclause *phclause;    // для head
+  recordclause *paclause;    // ук на структ для atomp
+  unsigned int *pacltarget,  // указатель на цели предложения aclause
                              //(aclause-1)
     *ptcltarget, *pncltarget;
 };
@@ -177,9 +167,9 @@ struct TScVar {
   bool right;
   bool EndOfClause;
   bool Query;
-  unsigned int exprip;   //нужна ли здесь ? !!!
-  unsigned int hpunkn;   //положенме анонимки в buf
-  unsigned int hpempty;  //положение пустого списка
+  unsigned int exprip;   // нужна ли здесь ? !!!
+  unsigned int hpunkn;   // положенме анонимки в buf
+  unsigned int hpempty;  // положение пустого списка
 
   TScVar();
   ~TScVar();
@@ -196,7 +186,7 @@ struct TPrSetting {
 };
 
 constexpr int bruteExpand2 = 32;
-//структуры для хранения данных - программы
+// структуры для хранения данных - программы
 constexpr int _vmaxstack_ = bruteExpand2 * 1000;
 constexpr int _maxbf_ = bruteExpand2 * 2048;
 
@@ -208,26 +198,26 @@ struct TClVar {
   unsigned int *st_vr2;
   unsigned int *st_trail;
   unsigned int *bf;    // массив стека унификации
-  unsigned int varqu;  //кол-во вопросов
+  unsigned int varqu;  // кол-во вопросов
 
-  unsigned int newclause,  //индекс в массиве указывающий на предложения
-    nclause,               //индекс для newclause
-    aclause,               //           atomp
-    hclause,               //           head
-    tclause,               //           tryclause
-    svptr,                 //
-    oldsvptr,              //
-    scptr,                 //вершина стека управления
-    frame2,                //указатель к кадру с стеке переменных
-    frame1,                //
-    parent,                //указатель на родительскую среду в стеке управления
-    bipr,                  //указатель на функтор предиката
-    head,                  //место записи в куче об исполняемой цели
-    oldtptr,               //вершина стека следа до исполнения
-    tptr,                  //вершина стека следа
-    err;                   //ошибка
+  unsigned int newclause,                // индекс в массиве указывающий на предложения
+    nclause,                             // индекс для newclause
+    aclause,                             //           atomp
+    hclause,                             //           head
+    tclause,                             //           tryclause
+    svptr,                               //
+    oldsvptr,                            //
+    scptr,                               // вершина стека управления
+    frame2,                              // указатель к кадру с стеке переменных
+    frame1,                              //
+    parent,                              // указатель на родительскую среду в стеке управления
+    bipr,                                // указатель на функтор предиката
+    head,                                // место записи в куче об исполняемой цели
+    oldtptr,                             // вершина стека следа до исполнения
+    tptr;                                // вершина стека следа
+  ErrorCode err{ ErrorCode::NoErrors };  // ошибка
   bool ntro;
-  int atomp;  //указатель на цель
+  int atomp;  // указатель на цель
   int tryclause;
   bool ex, flag;
 
@@ -276,18 +266,9 @@ struct options {
   unsigned optionsrun;
 };
 
-//индексы в массиве heap   указатели на фреймы переменных
+// индексы в массиве heap   указатели на фреймы переменных
 /* место mod в куче */
 #define hpmod 0 + sizeof("mod") - 1
-
-/* место con: в куче */
-//#define hpcon    hpmod + sizeof(recordsconst) + sizeof("con:") - 1
-
-/* место grp: в куче */
-//#define hpgrp    hpcon + sizeof(recordsconst) + sizeof("grp:") - 1
-
-/* место prn: в куче */
-//#define hpprn    hpgrp+sizeof(recordsconst) + sizeof("prn:") - 1
 
 /* место ЛОЖЬ в куче */
 #define hpfail hpmod + sizeof(recordsconst) + sizeof("ЛОЖЬ") - 1
@@ -400,19 +381,19 @@ struct options {
 // место СЛУЧ в куче
 #define hprand hpline + sizeof(recordsconst) + sizeof("СЛУЧ") - 1
 
-//место СЛОЖЕНИЕ
+// место СЛОЖЕНИЕ
 #define hpadd hprand + sizeof(recordsconst) + sizeof("СЛОЖЕНИЕ") - 1
 
-//место ЖДИ
+// место ЖДИ
 #define hpwait hpadd + sizeof(recordsconst) + sizeof("ЖДИ") - 1
 
-//место div
+// место div
 #define hpdiv hpwait + sizeof(recordsconst) + sizeof("div") - 1
 
-//место int
+// место int
 #define hp_int hpdiv + sizeof(recordsconst) + sizeof("int") - 1
 
-//место float
+// место float
 #define hp_float hp_int + sizeof(recordsconst) + sizeof("float") - 1
 
 #endif

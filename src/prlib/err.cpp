@@ -1,7 +1,8 @@
 #include "err.h"
 #include <stdio.h>
+#include <type_traits>
 
-const char *errors[] = {
+static const char *kErrorStrs[] = {
   "Ошибок не обнаружено",                                // 0
   "Недопустимый символ",                                 // 1
   "Недостаточно свободной памяти",                       // 2
@@ -16,9 +17,9 @@ const char *errors[] = {
   "Неверное использование \"_\"",                        // 11
   "Неверное использование \"!\"",                        // 12
   "Очень сложное предложение(переполнение)",             // 13
-  "Не парные скобки при обработке списка",               // 14
+  "Непарные скобки при обработке списка",                // 14
   "Неправильный список",                                 // 15
-  "Не парные скобки при обработке функции",              // 16
+  "Непарные скобки при обработке функции",               // 16
   "Перед \"(\" должен быть функтор",                     // 17 должен быть issymbol
   "Знак не в арифметическом выражении",                  // 18
   "Ошибка в написании арифметического выражения",        // 19
@@ -30,10 +31,10 @@ const char *errors[] = {
   "Не реализованный предикат",                           // 25
   "Не верное число аргументов во встроенном предикате",  // 26
   "Исполнение прервано",                                 // 27
-  "Переполение стека",                                   // 28
+  "Переполнение стека",                                  // 28
   "В 'УМНОЖЕНИЕ' целочисленное деление веществ чисел",   // 29
   "Невыполнимое 'УМНОЖЕНИЕ'(неверные аргументы)",        // 30
-  "Не выполнимый предикат 'СЛОЖЕНИЕ'",                   // 31
+  "Невыполнимый предикат 'СЛОЖЕНИЕ'",                    // 31
   "Ошибка в арифметическом выражении",                   // 32
   "Ошибка ввода/вывода",                                 // 33
   "Операция 'mod' применена к вещественному операнду",   // 34
@@ -49,13 +50,21 @@ const char *errors[] = {
   "Слишком длинный список"                               // 44
 };
 
-char *GetPrErrText(int err) {
+const int kErrorStrCount = sizeof(kErrorStrs) / sizeof(char *);
+
+template<typename E>
+constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
+  return static_cast<typename std::underlying_type<E>::type>(e);
+}
+
+char *GetPrErrText(ErrorCode err) {
   static char ErrBuf[255];
-  char *p = const_cast<char *>("");
-  if (err < 0 || err > 43)
-    sprintf(ErrBuf, "Unknown error (code = %d)", err);
-  else
-    sprintf(ErrBuf, "%s (%d)", errors[err], err);
-  p = ErrBuf;
+  auto errIndex = to_underlying(err);
+  if (errIndex < 0 || errIndex > kErrorStrCount) {
+    sprintf(ErrBuf, "Unknown error (code = %d)", errIndex);
+  } else {
+    sprintf(ErrBuf, "%s (%d)", kErrorStrs[errIndex], errIndex);
+  }
+  char *p = ErrBuf;
   return p;
 }

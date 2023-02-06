@@ -165,8 +165,9 @@ void errout(const char *str) {
 int InputStringFromDialog(char *buf, size_t size, char *caption) {
   // emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
   std::string line;
-  while (Ninp < prd->inputList.size() && prd->inputList[Ninp].isEmpty())
+  while (Ninp < prd->inputList.size() && prd->inputList[Ninp].isEmpty()) {
     ++Ninp;
+  }
   if (Ninp < prd->inputList.size()) {
     line = decode_utf8_to_cp1251(prd->inputList[Ninp]);
     ++Ninp;
@@ -196,7 +197,7 @@ int InputStringFromDialog(char *buf, size_t size, char *caption) {
   buf[to] = 0;
   return 0;
 }
-unsigned int GetPixel(int x, int y) {
+unsigned int GetPixel(IntegerType x, IntegerType y) {
   // qDebug() << "GetPixel" << x << y;
   int iw = prd->canvas().image().width();
   int ih = prd->canvas().image().height();
@@ -214,19 +215,19 @@ void ClearView(unsigned int c) {
   // update(x-w, y-h, x+w, y+h);
   emit prd->signalCanvasUpdated();
 }
-void Ellipse(int x, int y, int w, int h, unsigned int c) {
+void Ellipse(IntegerType x, IntegerType y, IntegerType w, IntegerType h, unsigned int c) {
   // qDebug() << "Ellipse" << x << y << w*2<<h*2 << c;
   // emit prd->signalEllipse(x-w, y-h, w*2, h*2, c);
   prd->canvas().ellipse(x - w, y - h, w * 2, h * 2, c);
   emit prd->signalCanvasUpdated();
 }
-void Rectangle(int x1, int y1, int x2, int y2, unsigned int c) {
+void Rectangle(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
   // qDebug() << "Rectangle" << x1 << y1 << x2 << y2 << c;
   // emit prd->signalRectangle(x1, y1, x2, y2, c);
   prd->canvas().rectangle(x1, y1, x2, y2, c);
   emit prd->signalCanvasUpdated();
 }
-void FloodFill(int x, int y, unsigned int c) {
+void FloodFill(IntegerType x, IntegerType y, unsigned int c) {
   // qDebug() << "FloodFill" << x << y << c;
   // emit prd->signalFloodFill(x, y, c);
   int iw = prd->canvas().image().width();
@@ -238,13 +239,13 @@ void FloodFill(int x, int y, unsigned int c) {
   prd->canvas().floodFill(x, y, c);
   emit prd->signalCanvasUpdated();
 }
-void MoveTo_LineTo(int x1, int y1, int x2, int y2, unsigned int c) {
+void MoveTo_LineTo(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
   // qDebug() << "MoveTo_LineTo" << x1 << y1 << x2 << y2 << c;
   // emit prd->signalMoveTo_LineTo(x1, y1, x2, y2, c);
   prd->canvas().line(x1, y1, x2, y2, c);
   emit prd->signalCanvasUpdated();
 }
-void SetPixel(int x, int y, unsigned int c) {
+void SetPixel(IntegerType x, IntegerType y, unsigned int c) {
   // qDebug() << "SetPixel" << x << y << c;
   // emit prd->signalSetPixel(x, y, c);
   int iw = prd->canvas().image().width();
@@ -256,11 +257,11 @@ void SetPixel(int x, int y, unsigned int c) {
   prd->canvas().setPixel(x, y, c);
   emit prd->signalCanvasUpdated();
 }
-void horisontal(int x1, int y1, int x2, int y2) {
+void horisontal(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2) {
   errout("Функционал не реализован");
   // qDebug() << "horisontal" << x1 << y1 << x2 << y2;
 }
-void vertical(int x1, int y1, int x2, int y2) {
+void vertical(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2) {
   errout("Функционал не реализован");
   // qDebug() << "vertical" << x1 << y1 << x2 << y2;
 }
@@ -334,12 +335,12 @@ void CanvasArea::resize(int w, int h) {
     }
   }
 }
-void CanvasArea::ellipse(int x, int y, int w, int h, unsigned int c) {
+void CanvasArea::ellipse(IntegerType x, IntegerType y, IntegerType w, IntegerType h, unsigned int c) {
   QPainter painter(&m_image);
   painter.setPen(ui2rgb(c));
   painter.drawEllipse(x, y, w, h);
 }
-void CanvasArea::floodFill(int x, int y, unsigned int c) {
+void CanvasArea::floodFill(IntegerType x, IntegerType y, unsigned int c) {
   if (x < 0 || y < 0 || x >= m_image.width() || y >= m_image.height()) {
     return;
   }
@@ -367,13 +368,13 @@ void CanvasArea::floodFill(int x, int y, unsigned int c) {
     }
   }
 }
-void CanvasArea::setPixel(int x, int y, unsigned int c) {
+void CanvasArea::setPixel(IntegerType x, IntegerType y, unsigned int c) {
   m_image.setPixel(x, y, ui2rgb(c));
 }
 void CanvasArea::clearView(unsigned int c) {
   m_image.fill(ui2rgb(c));
 }
-void CanvasArea::rectangle(int x1, int y1, int x2, int y2, unsigned int c) {
+void CanvasArea::rectangle(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
   QPainter painter(&m_image);
   painter.setPen(ui2rgb(c));
   if (x1 > x2)
@@ -382,7 +383,7 @@ void CanvasArea::rectangle(int x1, int y1, int x2, int y2, unsigned int c) {
     std::swap(y2, y1);
   painter.drawRect(x1, y1, x2 - x1, y2 - y1);
 }
-void CanvasArea::line(int x1, int y1, int x2, int y2, unsigned int c) {
+void CanvasArea::line(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
   QPainter painter(&m_image);
   painter.setPen(ui2rgb(c));
   painter.drawLine(x1, y1, x2, y2);

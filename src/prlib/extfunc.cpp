@@ -10,20 +10,9 @@
 #include "functions.h"
 #include <charconv>
 
-extern void Rectangle(int x1, int y1, int x2, int y2, unsigned color);
-extern void MoveTo_LineTo(int x1, int y1, int x2, int y2, unsigned color);
-extern void FloodFill(int x, int y, unsigned color);
-extern void vertical(int x1, int y, int x2, int color);
-extern void horisontal(int x, int y1, int y2, int color);
-extern void ClearView(unsigned color = 15);
-extern void SetPixel(int x, int y, unsigned color);
-extern unsigned GetPixel(int x, int y);
-extern void Ellipse(int x1, int y1, int x2, int y2, unsigned color);
-extern int InputStringFromDialog(char *Buf, size_t BufSize, char *pCaption);
-
 unsigned argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
-  case hpfail: return 5;  //ложь
+  case hpfail: return 5;  // ложь
   case hptrace:
     ClVar->PrSetting->Trace = true;
     //            sroptionsout.optionsrun |= tracce;//трасса
@@ -35,8 +24,9 @@ unsigned argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hpcut:
     ClVar->scptr = ClVar->parent;  //"!"
     //   zero();
-    if (ClVar->parent)
+    if (ClVar->parent) {
       to_stac(ClVar->st_con, ClVar->parent - 1, isnil);
+    }
   }
   return 3;
 }
@@ -71,7 +61,7 @@ void conarg(unsigned numb, unsigned h, TScVar *ScVar, TClVar *ClVar, array *heap
 // extern char *wr_line;
 // extern char *wptr;
 char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap)
-//получение строки связанной с переменной
+// получение строки связанной с переменной
 {
   char *ad;
   recordstring *ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
@@ -85,9 +75,8 @@ char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap)
   return lnwr;
 }
 
-int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
-// выполнение предиката ВЫП
-{
+// ВЫП
+int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned w;
   switch (sw) {
   case 8: {
@@ -99,11 +88,14 @@ int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
     w = ScVar->goal[maxarity];  // symbol
     break;
 
-  default: outerror(24); return 1;  // r_t_e(41);                // невыполнимая функция
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e(41); // невыполнимая функция
+  }
   }
   if (w < heap->freeheap) {
     if (w == hpassrt) {
-      outerror(24);
+      outerror(ErrorCode::UnknownError);  // 24
       return 1;
     }  // r_t_e(41);
     ClVar->head = ScVar->goal[maxarity];
@@ -124,50 +116,52 @@ int prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
     }
     return 4;
   } else {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
+    // outerror(24);
     return 1;
   }  // r_t_e(41) не выполнимый предикат ВЫП
   return 1;
 }  // ok
 
-unsigned zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
-//запись строки и унификация его с arg
-{  // unsigned index=heap->apend(str,strlen(str));
+// запись строки и унификация его с arg
+unsigned zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  // unsigned index=heap->apend(str,strlen(str));
   if (!str) {
-    outerror(45);
+    outerror(ErrorCode::UnknownError);  // 45
+    // outerror(45);
     return 5;
   }
   int l;
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(const_cast<char *>(str), l = strlen(str));
   if (!index) {
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 5;
   }
   recordstring rs(index, (unsigned char)l);
   index = heap->apend(&rs, sizeof(recordstring));
   if (!index) {
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 5;
   }
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction*)&heap->heaps[ClVar->head];
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
-  if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap))
+  if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
     return 3;
+  }
   heap->last = bakindex;
   return 5;
 }
 
-unsigned zap1(IntegerType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
-//унификация целого num с arg аргументом предиката
-{
+// унификация целого num с arg аргументом предиката
+unsigned zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordinteger pi(num);
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(&pi, sizeof(recordinteger));
   if (!index) {
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 5;
   }
   // unsigned *ptr=(unsigned*)heap->heaps[head-1];
@@ -175,23 +169,22 @@ unsigned zap1(IntegerType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array
   //(recordfunction*)&heap->heaps[ClVar->head];
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
-  if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap))
+  if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
     return 3;
+  }
   heap->last = bakindex;
   return 5;
 }
 
-unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap)
-//унификация целого num1 с arg1 аргументом предиката
-//унификация целого num2 с arg2 аргументом предиката
-{
+// унификация целых num1 и num2 с arg1 и arg2 соотвественно аргументами предиката
+unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordinteger pi1(num1);
   recordinteger pi2(num2);
   unsigned bakindex = heap->last;
   unsigned index1 = heap->apend(&pi1, sizeof(recordinteger));
   unsigned index2 = heap->apend(&pi2, sizeof(recordinteger));
   if (!index1 || !index2) {
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 1;
   }
   // unsigned *ptr=(unsigned*)&heap->heaps[head-1];
@@ -199,20 +192,20 @@ unsigned zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *Sc
   //(recordfunction*)&heap->heaps[ClVar->head];
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
-  if (unify(index1, ptr[arg1 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap) && unify(index2, ptr[arg2 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap))
+  if (unify(index1, ptr[arg1 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap) && unify(index2, ptr[arg2 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
     return 3;
+  }
   heap->last = bakindex;
   return 5;
 }
 
-unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap)
-//унификация float num с arg аргументом предиката
-{
+// унификация float num с arg аргументом предиката
+unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordfloat pf(num);
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(&pf, sizeof(recordfloat));
   if (!index) {
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 5;
   }
   // unsigned *ptr=(unsigned*)&heap->heaps[head-1];
@@ -220,23 +213,22 @@ unsigned zap1f(FloatType num, unsigned arg, TScVar *ScVar, TClVar *ClVar, array 
   //(recordfunction*)&heap->heaps[ClVar->head];
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
-  if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap))
+  if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
     return 3;
+  }
   heap->last = bakindex;
   return 5;
 }
 
-unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap)
-//унификация float num1 с arg1 аргументом предиката
-//унификация float num2 с arg2 аргументом предиката
-{
+// унификация float num1 с arg1 аргументом предиката
+unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordfloat pf1(num1);
   recordfloat pf2(num2);
   unsigned bakindex = heap->last;
   unsigned index1 = heap->apend(&pf1, sizeof(recordfloat));
   unsigned index2 = heap->apend(&pf2, sizeof(recordfloat));
   if (!index1 || !index2) {
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 1;
   }
   //  unsigned *ptr=(unsigned*)&heap->heaps[head-1];
@@ -244,15 +236,15 @@ unsigned zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar
   //(recordfunction*)&heap->heaps[ClVar->head];
   unsigned *ptr = heap->GetPunsigned(pfunction->ptrarg);
   //(unsigned*)&heap->heaps[pfunction->ptrarg];
-  if (unify(index1, ptr[arg1 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap) && unify(index2, ptr[arg2 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap))
+  if (unify(index1, ptr[arg1 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap) && unify(index2, ptr[arg2 - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
     return 3;
+  }
   heap->last = bakindex;
   return 5;
 }
 
-unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
-// выполнение предиката СЛУЧ
-{
+// СЛУЧ
+unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType n, m;
   static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
   static std::uniform_int_distribution<IntegerType> dst;
@@ -267,12 +259,16 @@ unsigned prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
     n = occ(1, ScVar, ClVar, heap);
     m = occ(2, ScVar, ClVar, heap);
     if (n > m) {
-      outerror(24);  // TODO: error
+      // TODO: it is known error
+      outerror(ErrorCode::UnknownError);  // 24
       return 1;
     }
     dst = std::uniform_int_distribution<IntegerType>(n, m);
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
-  default: outerror(24); return 1;  //!!!r_t_e(71);
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           //!!!r_t_e(71);
+  }
   }
 }
 
@@ -281,6 +277,8 @@ bool see( void ) { return false; };
 bool mytell( void ){ return false; };
 */
 //=========================конец содранного
+
+// ЗАПИСЬ_В
 unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str[129];
 
@@ -294,7 +292,7 @@ unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       return 3;
     }
 
-    //если con:
+    // если con:
     if (strcmp(str, "con:") == 0) {
       return 3;
     }
@@ -302,8 +300,8 @@ unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     // пытаемся открыть файл для записи.
     ClVar->PrSetting->out.open(str);
     if (!ClVar->PrSetting->out.is_open()) {
-      outerror(43);
-      return 5;  // r_t_e_(не могу открыть файл)
+      outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
+      return 5;                                                 // r_t_e_(не могу открыть файл)
     }
     ClVar->PrSetting->name_out_file = std::string(str);
     return 3;
@@ -315,6 +313,7 @@ unsigned outfile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 1;
 }
 
+// ЧТЕНИЕ_ИЗ
 unsigned infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str[129];
 
@@ -334,8 +333,8 @@ unsigned infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
     ClVar->PrSetting->in.open(str);
     if (!ClVar->PrSetting->in.is_open()) {
-      outerror(43);
-      return 5;  // r_t_e_(не могу открыть файл)
+      outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
+      return 5;                                                 // r_t_e_(не могу открыть файл)
     }
     ClVar->PrSetting->name_in_file = std::string(str);
     return 3;
@@ -348,26 +347,25 @@ unsigned infile(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 1;
 }
 
-IntegerType occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
-//получение целого связанного с переменной
-{
+// получение целого связанного с переменной
+IntegerType occ(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordinteger *pint = heap->GetPrecordinteger(ScVar->goal[maxarity + x]);
   //(recordinteger *)&heap->heaps[ScVar->goal[maxarity + x]];
   return pint->value;
 }
 
-FloatType occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap)
-//получение вещесв связанного с переменной
-{
+// получение вещесв связанного с переменной
+FloatType occf(unsigned x, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordfloat *pf = heap->GetPrecordfloat(ScVar->goal[maxarity + x]);
   //	(recordfloat *)&heap->heaps[ScVar->goal[maxarity + x]];
   return pf->value;
 }
 
+// ВВКОД
 unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   static char str0[2]{};
   switch (sw) {
-  case 7:  //целое !!!посмотреть на ввод вещественных этого делать нельзя
+  case 7:  // целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
     if (ClVar->PrSetting->out.is_open()) {
       ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
@@ -377,7 +375,7 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return 3;
   }
-  case 5:  //переменная
+  case 5:  // переменная
   {
     char w;
     if (ClVar->PrSetting->in.is_open()) {
@@ -392,7 +390,10 @@ unsigned priocod(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     //    if (ClVar->PrSetting->fin)
     //      fgetc(ClVar->PrSetting->fin);//сдвинуть указатель файла ???
     //    return 3;
-  default: outerror(24); return 1;  // r_t_e(44);
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e(44);
+  }
   }
   return 1;
 }
@@ -453,8 +454,8 @@ unsigned prrdint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   default: break;
   }
-  outerror(24);
-  return 1;  // rte
+  outerror(ErrorCode::UnknownError);  // 24
+  return 1;                           // rte
 }
 
 // ВВОДВЕЩ
@@ -513,12 +514,12 @@ unsigned prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   default: break;
   }
-  outerror(24);
-  return 1;  // rte
+  outerror(ErrorCode::UnknownError);  // 24
+  return 1;                           // rte
 }
 
-unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //вводсимв
-{
+// ВВОДСИМВ
+unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str0[255]{}, str1[255]{}, str2[255]{};
   switch (sw) {
   case 9:
@@ -538,11 +539,11 @@ unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //ввод
     } else {
       if (sw == 99 || sw == 94 || sw == 49 || sw == 44) {
         occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) {  //по cancel вернет 1;
+        if (Inputstring(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
           break;
         }
       } else {
-        if (Inputstring(str2, sizeof(str2))) {  //по cancel вернет 1;
+        if (Inputstring(str2, sizeof(str2))) {  // по cancel вернет 1;
           break;
         }
       }
@@ -563,18 +564,18 @@ unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //ввод
     } else {
       if (sw == 59 || sw == 54) {
         occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) {  //по cancel вернет 1;
+        if (Inputstring(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
           break;
         }
       } else {
-        if (Inputstring(str2, sizeof(str2))) {  //по cancel вернет 1;
+        if (Inputstring(str2, sizeof(str2))) {  // по cancel вернет 1;
           break;
         }
       }
     }
     return zap3(str2, 1, ScVar, ClVar, heap);
   }
-  case 1:  //анонимка
+  case 1:  // анонимка
   case 19:
   case 14: {
     if (ClVar->PrSetting->in.is_open()) {
@@ -588,47 +589,53 @@ unsigned prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //ввод
     } else {
       if (sw == 19 || sw == 14) {
         occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) {  //по cancel вернет 1;
+        if (Inputstring(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
           break;
         }
       } else {
-        if (Inputstring(str2, sizeof(str2))) {  //по cancel вернет 1;
+        if (Inputstring(str2, sizeof(str2))) {  // по cancel вернет 1;
           break;
         }
       }
     }
     return 3;
   }
-  default: outerror(24); return 1;  // r_t_e
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e
+  }
   }
   return 5;
 }
 
-unsigned print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //преобразование в целое
-{
+// преобразование в целое
+unsigned print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
-  case 7: return 3;  //уже целое
+  case 7: return 3;  // уже целое
   case 6: return zap1(static_cast<IntegerType>(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
-  outerror(36);
+  outerror(ErrorCode::ErrorInBuiltinPredicateInt);  // 36
   return 1;
 }
 
-unsigned prfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //преобразование в float
-{
+// преобразование в float
+unsigned prfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: return zap1f(static_cast<FloatType>(occ(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   case 6: return 3;
   }
-  outerror(37);
+  outerror(ErrorCode::ErrorInBuiltinPredicateFloat);  // 37
   return 1;
 }
 
-unsigned prwait(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  // жди
-{
+// ЖДИ
+unsigned prwait(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: break;
-  default: outerror(24); return 1;
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;
+  }
   }
   IntegerType n = occ(0, ScVar, ClVar, heap);
   if (n > 0) {
@@ -659,12 +666,13 @@ unsigned argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hpwait: return prwait(sw, ScVar, ClVar, heap);  // ЖДИ
 
   case hprand: return prrandom(sw, ScVar, ClVar, heap);   // СЛУЧ
-  case hp_int: return print(sw, ScVar, ClVar, heap);      //преобразование int
-  case hp_float: return prfloat(sw, ScVar, ClVar, heap);  //преобразование float
+  case hp_int: return print(sw, ScVar, ClVar, heap);      // преобразование int
+  case hp_float: return prfloat(sw, ScVar, ClVar, heap);  // преобразование float
   }
   return 1;
 }
 
+// БОЛЬШЕ
 unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType a[2];
   int ind = 0;
@@ -687,14 +695,15 @@ unsigned prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 7: af[0] = (FloatType)a[0]; break;
   case 5: af[1] = (FloatType)a[1]; break;
   case 9: break;
-  default: outerror(24); return 1;  // r_t_e(51)//в больше не число
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e(51)//в больше не число
+  }
   }
   return (af[0] > af[1]) ? 3 : 5;
 }
-
-int GetStrFromList(
-  char *Buf, size_t BufSize, baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *heap) {  //составить строку символов из элементов tp - tp должен быть list
-
+// составить строку символов из элементов tp - tp должен быть list
+int GetStrFromList(char *Buf, size_t BufSize, baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char *p = Buf;
   int len = 0;
   baserecord *pb;
@@ -717,7 +726,7 @@ int GetStrFromList(
       }
       if (pb->ident == isinteger) {
         if (BufSize - len - 1 < 0) {
-          outerror(44);
+          outerror(ErrorCode::TooLongList);  // 44
           return -1;
         }
         recordinteger *pint = (recordinteger *)pb;
@@ -735,7 +744,7 @@ int GetStrFromList(
     } break;
     case isinteger: {
       if (BufSize - len - 1 < 0) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return -1;
       }
       recordinteger *pint = (recordinteger *)pb;
@@ -743,7 +752,7 @@ int GetStrFromList(
       len++;
     } break;
     default: {
-      outerror(15);
+      outerror(ErrorCode::WrongList);  // 15
       return -1;
     }  // R_t_e последний не []
     }
@@ -841,13 +850,13 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       recordemptylist pempty;
       unsigned index = heap->apend(&pempty, sizeof(recordemptylist));
       if (!index) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 1;
       }
       unify(index, ptr[1], ClVar->frame2, ClVar->frame2, ClVar, heap);
       return 3;
-    } else  //строка не пустая
-    {
+    } else {
+      // строка не пустая
       unsigned j = heap->last, index1, index2;
       for (i = 0; i < k; i++) {
         recordinteger pi((unsigned char)lnwr[i]);  // 2006/10/17
@@ -856,13 +865,13 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         index2 = heap->apend(&pl, sizeof(recordlist));
       }
       if (!index1 || !index2) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 1;
       }  // r_t_e нет памяти
       recordemptylist pempty;
       unsigned index = heap->apend(&pempty, sizeof(recordemptylist));
       if (!index) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 1;
       }  // r_t_e нет памяти
       recordlist *plst = heap->GetPrecordlist(index2);
@@ -872,16 +881,16 @@ unsigned prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       return 3;
     }
   }
-  default: outerror(24); return 1;  // R_t_e
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // R_t_e
+  }
   }
   return 5;  //!!! посмотреть на код возврата
 }
 
-unsigned prstint(unsigned sw,
-                 TScVar *ScVar,
-                 TClVar *ClVar,
-                 array *heap)  //стрцел
-{                              // int i;
+// СТРЦЕЛ
+unsigned prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType w{};
   char lnwr[maxlinelen]{};
   switch (sw) {
@@ -928,7 +937,7 @@ unsigned prstint(unsigned sw,
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
   default: {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
     return 1;
   }  // R_t_e
   }  // outerror(2);return 1;//R_T_e нет памяти
@@ -983,7 +992,7 @@ unsigned prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
   default: {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
     return 1;
   }  // R_t_e
   }
@@ -1009,7 +1018,7 @@ unsigned int printfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
     return zap1(int_val, 1, ScVar, ClVar, heap);
   }
   default: {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
     return 1;
   }  // R_t_e
   }
@@ -1028,9 +1037,9 @@ unsigned whatisit(unsigned sw,
                   unsigned i,
                   TScVar *ScVar,
                   TClVar *ClVar,
-                  array *heap)  //насчет unsigned i ???
+                  array *heap)  // насчет unsigned i ???
 {
-  char lnwr[maxlinelen];  //может быть unsignedi !!!
+  char lnwr[maxlinelen];  // может быть unsignedi !!!
   IntegerType w;
   occ_line(0, lnwr, ScVar, ClVar, heap);
   int len = strlen(lnwr);
@@ -1053,6 +1062,7 @@ unsigned whatisit(unsigned sw,
   return 5;
 }
 
+// СКОЛЬКО
 unsigned prskol(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   int i = 0;
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
@@ -1073,12 +1083,12 @@ unsigned prskol(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 47:  // str int
     return (i == occ(1, ScVar, ClVar, heap)) ? 3 : 5;
   }
-  outerror(24);
-  return 1;  // r_t_e
+  outerror(ErrorCode::UnknownError);  // 24
+  return 1;                           // r_t_e
 }
 
-unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
-{
+// ТЕРМ
+unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
   recordlist *plist;
   int i = 0;
@@ -1101,10 +1111,10 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
       plist = (recordlist *)tp;
       tp = heap->GetPbaserecord(plist->link);
       //(baserecord *)&heap->heaps[plist->link];
-      i++;  //число элементов в списке
+      i++;  // число элементов в списке
     }
     if (tp->ident != isemptylist) {
-      outerror(24);
+      outerror(ErrorCode::UnknownError);  // 24
       return 1;
     }  // R_t_e последний не []
     if (i == 1) {
@@ -1117,11 +1127,11 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
       //				heap->last=bakindex; //??????
       return 5;
     }
-    //сделать запись функции с аргументами из списка
-    unsigned n = i - 1;  //число целей в новой функции
+    // сделать запись функции с аргументами из списка
+    unsigned n = i - 1;  // число целей в новой функции
     unsigned int *ptrargs = new unsigned[n];
     //!!! нужно другой код возврата
-    //сообщение о том что нет памяти
+    // сообщение о том что нет памяти
     if (!ptrargs)
       return 5;
     plist = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
@@ -1134,18 +1144,18 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
       ptrargs[i] = plist->head;
       plist = heap->GetPrecordlist(plist->link);
       //(recordlist *)&heap->heaps[plist->link];
-      i++;  //число элементов в списке
+      i++;  // число элементов в списке
     }
     unsigned int index = heap->apend(ptrargs, sizeof(unsigned int) * n);
     delete[] ptrargs;
     if (!index) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     recordfunction ptrf((unsigned char)n, funcsymb, index);
     index = heap->apend(&ptrf, sizeof(recordfunction));
     if (!index) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
@@ -1169,21 +1179,21 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
     //(unsigned *)&heap->heaps[rf->ptrarg];
     unsigned tlist = heap->apend(&pl, sizeof(recordlist));
     if (!tlist) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     while (narg < (unsigned)rf->narg) {
       pl.head = ptrarg[narg];
       pl.link = heap->last + sizeof(recordlist);
       if (!heap->apend(&pl, sizeof(recordlist))) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 5;
       }
       narg++;
     }
     recordemptylist ptre;
     if (!heap->apend(&ptre, sizeof(recordemptylist))) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     rf = heap->GetPrecordfunction(ClVar->head);
@@ -1199,12 +1209,12 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
     recordlist pl(ScVar->goal[maxarity], oldindex + sizeof(recordlist));
     unsigned tlist = heap->apend(&pl, sizeof(recordlist));
     if (!tlist) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     recordemptylist ptre;
     if (!heap->apend(&ptre, sizeof(recordemptylist))) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     recordfunction *rf = heap->GetPrecordfunction(ClVar->head);
@@ -1219,14 +1229,14 @@ unsigned prterm(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //терм
 
 unsigned prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw != 47) {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
     return 1;
   }  // r_t_e
   unsigned i = occ(1, ScVar, ClVar, heap);
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
-    return 5;  //нет предложения
+    return 5;  // нет предложения
   recordclause *pcpred = 0;
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
@@ -1237,7 +1247,7 @@ unsigned prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     //(recordclause *)&heap->heaps[pc->next];
   }
 
-  if (w == 1)  //первое предложение  даже если последнее
+  if (w == 1)  // первое предложение  даже если последнее
     ps->begin = pc->next;
   else {
     if (!pcpred) {
@@ -1260,7 +1270,7 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hpintfloat: return printfloat(sw, ScVar, ClVar, heap);         // ЦЕЛВЕЩ
   case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);  // БУКВА
   case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);   // ЦИФРА
-  case hpterm: return prterm(sw, ScVar, ClVar, heap);                 // ТЕРМ    return 5;
+  case hpterm: return prterm(sw, ScVar, ClVar, heap);                 // ТЕРМ
   case hpdel: return prdel(sw, ScVar, ClVar, heap);                   // УДАЛ
   case hpskol: return prskol(sw, ScVar, ClVar, heap);                 // СКОЛЬКО
   case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);               // ВВОДСИМВ (с заголовком)
@@ -1270,8 +1280,8 @@ unsigned argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 1;
 }
 
-unsigned prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //точка
-{
+// ТОЧКА
+unsigned prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   //	if ( !canvas) return 3;
   IntegerType xy, x1, x2, y1, y2, color;
   switch (sw) {
@@ -1351,15 +1361,15 @@ unsigned prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //точка
     ClearView(color);
   } break;
   default: {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
     return 1;
   }  // r_t_e(не вып предик точка
   }
   return 3;
 }
 
-unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //сцеп
-{
+// СЦЕП
+unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char wrln1[maxlinelen], wrln2[maxlinelen];
   unsigned w, i;
   switch (sw) {
@@ -1370,7 +1380,7 @@ unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //сцеп
   case 944:
   case 949:
   case 994:
-  case 999:  //все str str str
+  case 999:  // все str str str
   case 445:
   case 495:
   case 945:
@@ -1379,10 +1389,10 @@ unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //сцеп
     occ_line(1, wrln2, ScVar, ClVar, heap);
     strcat(wrln1, wrln2);
     if ((w = strlen(wrln1)) >= maxlinelen) {
-      outerror(24);
+      outerror(ErrorCode::UnknownError);  // 24
       return 1;
     }
-    if (sw == 445 || sw == 495 || sw == 945 || sw == 995)  //если переменная
+    if (sw == 445 || sw == 495 || sw == 945 || sw == 995)  // если переменная
     {
       return zap3(wrln1, 3, ScVar, ClVar, heap);
     }
@@ -1396,7 +1406,7 @@ unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //сцеп
     occ_line(2, wrln2, ScVar, ClVar, heap);
     w = strlen(wrln1);
     i = strlen(wrln2);
-    //если lnwr1 входит в lnwr2 и причем спереди
+    // если lnwr1 входит в lnwr2 и причем спереди
 
     if (w <= i && !strncmp(wrln1, wrln2, w))  // 2006/10/17
     {
@@ -1416,25 +1426,26 @@ unsigned prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //сцеп
       return zap3((char *)wrln2, 1, ScVar, ClVar, heap);
     }
     break;
-  default: outerror(24); return 1;  // r_t_e
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e
+  }
   }
   return 5;
 }
 
 // две функции работают в паре. они используют общую
-//глобальную переменную count_var и общий массив tvar
-//первой стартует VarOnList
-int count_var;  //
-int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar,
-              array *heap);  //подсчет переменных в списке вернет 1 если ошибка
+// глобальную переменную count_var и общий массив tvar
+// первой стартует VarOnList
+int count_var;
 
-int VarOnFunc(baserecord *pb,
-              TScVar *ScVar,
-              TClVar *ClVar,
-              array *heap)  //подсчет переменных в функции вернет 1 если ошибка
-{
+// подсчет переменных в списке вернет 1 если ошибка
+int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap);
+
+// подсчет переменных в функции вернет 1 если ошибка
+int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (pb->ident != isfunction)
-    return 1;  //ошибка
+    return 1;  // ошибка
   recordfunction *pf = (recordfunction *)pb;
   unsigned *ptrarg = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
@@ -1444,11 +1455,11 @@ int VarOnFunc(baserecord *pb,
     switch (tp->ident) {
     case isfunction:
       if (VarOnFunc((baserecord *)tp, ScVar, ClVar, heap))
-        return 1;  //ошибка
+        return 1;  // ошибка
       break;
     case islist:
       if (VarOnList((baserecord *)tp, ScVar, ClVar, heap))
-        return 1;  //ошибка
+        return 1;  // ошибка
       break;
     case isvar: count_var++; break;
     }
@@ -1456,11 +1467,8 @@ int VarOnFunc(baserecord *pb,
   return 0;
 };
 
-int VarOnList(baserecord *pb,
-              TScVar *ScVar,
-              TClVar *ClVar,
-              array *heap)  //подсчет переменных в списке вернет 1 если ошибка
-{
+// подсчет переменных в списке вернет 1 если ошибка
+int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (pb->ident != islist)
     return 1;
   recordlist *pl = (recordlist *)pb;
@@ -1470,7 +1478,7 @@ int VarOnList(baserecord *pb,
     switch (pv->ident) {
     case isfunction:
       if (VarOnFunc((baserecord *)pv, ScVar, ClVar, heap))
-        return 1;  //ошибка
+        return 1;  // ошибка
       break;
     case isvar: count_var++; break;
     }
@@ -1488,77 +1496,92 @@ int VarFromFunc(baserecord *pbr) {
   return 0;
 }
 
-//подготовка целей для предиката доб
-// поместит цели в массив bpt
+// подготовка целей для предиката доб
+//  поместит цели в массив bpt
 
 unsigned target_number;
 
 unsigned int prepare_target_from_list(unsigned term, TScVar *ScVar, TClVar *ClVar, array *heap);
 
 unsigned int prepare_target_from_var(unsigned term, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (!term || term == isnil)
+  if (!term || term == isnil) {
     return 1;
+  }
   unsigned error = 0;
   recordvar *pv = heap->GetPrecordvar(term);
   //(recordvar *)&heap->heaps[term];
-  if (pv->ident != isvar)
+  if (pv->ident != isvar) {
     return 1;
+  }
   unsigned frame = ClVar->frame2;
-  if (!occur_term(&term, &frame, ClVar, heap))
+  if (!occur_term(&term, &frame, ClVar, heap)) {
     return 1;
-  if (term == isnil || !term)
+  }
+  if (term == isnil || !term) {
     return 1;
+  }
   pv = heap->GetPrecordvar(term);
   //(recordvar *)&heap->heaps[term];
   switch (pv->ident) {
   case islist: {
     error = prepare_target_from_list(term, ScVar, ClVar, heap);
-    if (error != 0)
+    if (error != 0) {
       return 1;
+    }
     break;
   }
   case isvar: {
     error = prepare_target_from_var(term, ScVar, ClVar, heap);
-    if (error != 0)
+    if (error != 0) {
       return 1;
+    }
     break;
   }
   case issymbol:
   case isfunction: {
     ClVar->bpt[target_number++] = term;
   } break;
-  default: return 1;
+  default: {
+    return 1;
+  }
   }
   return 0;
 }
 
 unsigned int prepare_target_from_list(unsigned term, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (!term || term == isnil)
+  if (!term || term == isnil) {
     return 1;
+  }
   unsigned error = 0;
   recordlist *pl = heap->GetPrecordlist(term);
   //(recordlist *)&heap->heaps[term];
-  if (pl->ident != islist)
+  if (pl->ident != islist) {
     return 1;
-  while (pl->ident == islist)  //выбирають цели из списка
-  {
+  }
+  while (pl->ident == islist) {
+    // выбирають цели из списка
     baserecord *tp = heap->GetPbaserecord(pl->head);
     //(baserecord *)&heap->heaps[pl->head];
     switch (tp->ident) {
     case islist: {
       error = prepare_target_from_list(pl->head, ScVar, ClVar, heap);
-      if (error != 0)
+      if (error != 0) {
         return 1;
+      }
       break;
     }
     case isvar: {
       error = prepare_target_from_var(pl->head, ScVar, ClVar, heap);
-      if (error != 0)
+      if (error != 0) {
         return 1;
+      }
       break;
     }
     case issymbol:
-    case isfunction: ClVar->bpt[target_number++] = pl->head; break;
+    case isfunction: {
+      ClVar->bpt[target_number++] = pl->head;
+      break;
+    }
     default: return 1;
     }
     pl = heap->GetPrecordlist(pl->link);
@@ -1568,13 +1591,15 @@ unsigned int prepare_target_from_list(unsigned term, TScVar *ScVar, TClVar *ClVa
 }
 
 unsigned int prepare_target(unsigned term, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (!term || term == isnil)
+  if (!term || term == isnil) {
     return 1;
+  }
   baserecord *pt = heap->GetPbaserecord(term);
   //(baserecord *)&heap->heaps[term];
   //    recordlist * pl=(recordlist *)&heap->heaps[term];
-  if (!ClVar->bpt)
+  if (!ClVar->bpt) {
     return 1;
+  }
   target_number = 0;
   switch (pt->ident) {
   case islist: return prepare_target_from_list(term, ScVar, ClVar, heap);
@@ -1726,8 +1751,9 @@ unsigned GetConstTerm(unsigned Term, unsigned Frame, TClVar *ClVar, array *heap)
 }
 
 int GetVarsFromFunction(recordvar *Vars[], int VarCount, recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (pf->ident != isfunction)
-    return -1;  //ошибка
+  if (pf->ident != isfunction) {
+    return -1;  // ошибка
+  }
   int Count = 0;
   unsigned *ptrarg = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
@@ -1805,21 +1831,21 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
   return VarCount;
 }
 
-unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
-{
+// ДОБ
+unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned old_index = heap->last;
   unsigned error = 0;
   baserecord *tp;
   recordsconst *ps;
   recordlist *pl;
   recordfunction *pf;
-  recordclause *pfirstclause;  //первое предложение данного типа
-  recordclause *pclause;       //предложение на место которого вставиться требуемое
+  recordclause *pfirstclause;  // первое предложение данного типа
+  recordclause *pclause;       // предложение на место которого вставиться требуемое
   unsigned int index;
-  unsigned int *ptarget;  //указатель на массив с целями
-  unsigned nvar = 0;      //число переменных в предложении(глоб перем)
+  unsigned int *ptarget;  // указатель на массив с целями
+  unsigned nvar = 0;      // число переменных в предложении(глоб перем)
 
-  unsigned ntarget = 1;  //число целей в новом предложении
+  unsigned ntarget = 1;  // число целей в новом предложении
   switch (sw) {
   case 427:
   case 927:
@@ -1838,28 +1864,28 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     recordfunction *prf = (recordfunction *)tp;
     unsigned int *parg = new unsigned[prf->narg];
     if (!parg) {
-      outerror(2);
+      outerror(ErrorCode::NotEnoughFreeMemory);  // 2
       return 5;
     }
     unsigned *prf_arg = heap->GetPunsigned(prf->ptrarg);
     //(unsigned *)&heap->heaps[prf->ptrarg];
     for (int i = 0; i < static_cast<int>(prf->narg); i++) {
-      //достать константы из агрументов функции.
+      // достать константы из агрументов функции.
       unsigned Arg = GetConstTerm(*(prf_arg + i), ClVar->frame2, ClVar, heap);
       *(parg + i) = Arg;
     }
     unsigned ArgIndex = heap->apend(parg, sizeof(unsigned) * prf->narg);
     delete[] parg;
     if (!ArgIndex) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     recordfunction NewFunction(prf->narg, prf->func, ArgIndex);
     unsigned findex = heap->apend(&NewFunction, sizeof(recordfunction));
     int id = tp->ident;
-    ptarget = new unsigned[2];  //последний будет 0
+    ptarget = new unsigned[2];  // последний будет 0
     if (!ptarget) {
-      outerror(2);
+      outerror(ErrorCode::NotEnoughFreeMemory);  // 2
       return 5;
     }
     ptarget[0] = findex;
@@ -1867,13 +1893,13 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     index = heap->apend(ptarget, sizeof(unsigned int) * 2);
     delete[] ptarget;
     if (!index) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
     recordclause rc((unsigned)isclause, (unsigned)NULL, 0, findex, index);
     index = heap->apend(&rc, sizeof(recordclause));
     if (!index) {
-      outerror(44);
+      outerror(ErrorCode::TooLongList);  // 44
       return 5;
     }
   } break;
@@ -1885,15 +1911,15 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     //(baserecord *)&heap->heaps[ScVar->goal[maxarity + 1]];
     // нужно подсчитать число переменных
     count_var = 0;
-    if (VarOnList(tp, ScVar, ClVar, heap) != 0)  //подсчет числа переменных в новом предложении
+    if (VarOnList(tp, ScVar, ClVar, heap) != 0)  // подсчет числа переменных в новом предложении
     {
       pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
       return 1;
     }
     // TODO: И это тут считается?
-    nvar += count_var;  //еще нужно подсчитать число перем в голове
-                        //            out("Переменные подсчитаны");
-                        //подготовка целей
+    nvar += count_var;  // еще нужно подсчитать число перем в голове
+                        //             out("Переменные подсчитаны");
+                        // подготовка целей
     unsigned _maxarity = maxarity;
     error = prepare_target(ScVar->goal[maxarity + 1], ScVar, ClVar, heap);
     if (error) {
@@ -1904,7 +1930,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     ntarget = target_number + 1;
     ptarget = new unsigned[ntarget + 1];
     if (!ptarget) {
-      outerror(2);
+      outerror(ErrorCode::NotEnoughFreeMemory);  // 2
       return 1;
     }
 
@@ -1926,7 +1952,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
       unsigned *prf_arg = heap->GetPunsigned(prf->ptrarg);
       //(unsigned *)&heap->heaps[prf->ptrarg];
       for (int j = 0; j < static_cast<int>(prf->narg); j++) {
-        //достать константы из агрументов функции.
+        // достать константы из агрументов функции.
         unsigned Arg = GetConstTerm(*(prf_arg + j), ClVar->frame2, ClVar, heap);
         Arg = 0;
         if (Arg) { /*
@@ -1946,7 +1972,7 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
       }
       unsigned ArgIndex = heap->apend(arg, sizeof(unsigned) * prf->narg);
       if (!ArgIndex) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 5;
       }
       recordfunction NewFunction(prf->narg, prf->func, ArgIndex);
@@ -1978,19 +2004,19 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
   }
   if (!index) {
     heap->last = old_index;
-    outerror(44);
+    outerror(ErrorCode::TooLongList);  // 44
     return 5;
   }
-  //включим в цепочку предложений
-  IntegerType number = occ(2, ScVar, ClVar, heap);  //куда следует воткнуть новое
-  //поищем первое предложение
+  // включим в цепочку предложений
+  IntegerType number = occ(2, ScVar, ClVar, heap);  // куда следует воткнуть новое
+  // поищем первое предложение
   tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
   //(baserecord *)&heap->heaps[ScVar->goal[maxarity]];
   if (tp->ident == issymbol)
     ps = (recordsconst *)tp;
   else {
     if (tp->ident != isfunction) {
-      outerror(24);
+      outerror(ErrorCode::UnknownError);  // 24
       return 1;
     }
     pf = (recordfunction *)tp;
@@ -1999,22 +2025,22 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
     //(recordsconst *)&heap->heaps[pf->func];
     recordsconst *_ps = ps;
 
-    //теперь поискать сколько переменных в предложении
+    // теперь поискать сколько переменных в предложении
   }
-  if (ps->begin != NULL && ps->begin != isnil)
+  if (ps->begin != NULL && ps->begin != isnil) {
     pfirstclause = heap->GetPrecordclause(ps->begin);
-  //(recordclause *)&heap->heaps[ps->begin];
-  else
-    pfirstclause = NULL;  //нет таких предложения
-                          //===========
+    //(recordclause *)&heap->heaps[ps->begin];
+  } else {
+    pfirstclause = NULL;  // нет таких предложения
+  }
   recordclause *newcl = heap->GetPrecordclause(index);
   //(recordclause *)&heap->heaps[index];
-  if (number < 2 || !pfirstclause)  //поставим новое предложение первым в списке
-  {
+  if (number < 2 || !pfirstclause) {
+    // поставим новое предложение первым в списке
     newcl->next = ps->begin;
-    ps->begin = index;  //стало первым
-  } else                //придется втыкать в средину или конец
-  {
+    ps->begin = index;  // стало первым
+  } else {
+    // придется втыкать в средину или конец
     int i = 1;
     pclause = pfirstclause;
     while (i < number - 1 && pclause->next && pclause->next != isnil)
@@ -2023,18 +2049,19 @@ unsigned prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //доб
         //(recordclause *)&heap->heaps[pclause->next];
         i++;
       }
-    if (i == number - 1)
+    if (i == number - 1) {
       newcl->next = pclause->next;
+    }
     pclause->next = index;
   }
   return 3;
 }
 
-unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //СЛОЖЕНИЕ
-{
+// СЛОЖЕНИЕ
+unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
-  bool fl = false;  //если будет true то обработка вещ иначе целых
+  bool fl = false;  // если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++) {
     if (ScVar->goal[i] == 6)
@@ -2056,8 +2083,8 @@ unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //СЛОЖЕН
     }
   }
   switch (sw) {
-  case 777: return (l[0] + l[1] == l[2]) ? 3 : 5;  //все целые  ццц
-  case 666: return (f[0] + f[1] == f[2]) ? 3 : 5;  //все веществ ffff
+  case 777: return (l[0] + l[1] == l[2]) ? 3 : 5;  // все целые  ццц
+  case 666: return (f[0] + f[1] == f[2]) ? 3 : 5;  // все веществ ffff
   case 775: return zap1(l[0] + l[1], 3, ScVar, ClVar, heap);
   case 665: return zap1f(f[0] + f[1], 3, ScVar, ClVar, heap);
   case 577: return zap1(l[2] - l[1], 1, ScVar, ClVar, heap);
@@ -2065,15 +2092,15 @@ unsigned pradd(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //СЛОЖЕН
   case 757: return zap1(l[2] - l[0], 2, ScVar, ClVar, heap);
   case 656: return zap1f(f[2] / f[0], 2, ScVar, ClVar, heap);
   }
-  outerror(31);
+  outerror(ErrorCode::FailedAddition);  // 31
   return 1;
 }
 
-unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умножение   в goal[0].. 1 .. идетифик параметр
-{
+// УМНОЖЕНИЕ   в goal[0].. 1 .. идетифик параметр
+unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[3];
   FloatType f[3];
-  bool fl = false;  //если будет true то обработка вещ иначе целых
+  bool fl = false;  // если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 3; i++) {
     if (ScVar->goal[i] == 6)
@@ -2096,8 +2123,8 @@ unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умнож
     }
   }
   switch (sw) {
-  case 777: return (l[0] * l[1] == l[2]) ? 3 : 5;  //все целые  ццц
-  case 666: return (f[0] * f[1] == f[2]) ? 3 : 5;  //все веществ ffff
+  case 777: return (l[0] * l[1] == l[2]) ? 3 : 5;  // все целые  ццц
+  case 666: return (f[0] * f[1] == f[2]) ? 3 : 5;  // все веществ ffff
   case 775: return zap1(l[0] * l[1], 3, ScVar, ClVar, heap);
   case 665: return zap1f(f[0] * f[1], 3, ScVar, ClVar, heap);
   case 577:
@@ -2123,33 +2150,31 @@ unsigned prmul3(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умнож
       return 5;
     return zap1f(f[2] / f[0], 2, ScVar, ClVar, heap);
   }
-  outerror(30);
-  return 1;  // r_t_e не вып пред умножение
+  outerror(ErrorCode::FailedMultiplicationInvalidArguments);  // 30
+  return 1;                                                   // r_t_e не вып пред умножение
 }
-
-unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap); /* закраска */
 
 unsigned argthree(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned sw;
   conarg(3, ClVar->head, ScVar, ClVar, heap);
   sw = 100 * ScVar->goal[0] + 10 * ScVar->goal[1] + ScVar->goal[2];
   switch (name) {
-  case hpmul: return prmul3(sw, ScVar, ClVar, heap);     //умножение
-  case hpset: return prset(sw, ScVar, ClVar, heap);      //точка
-  case hpapp: return prapp(sw, ScVar, ClVar, heap);      //сцеп
-  case hpassrt: return prassrt(sw, ScVar, ClVar, heap);  //доб
-  case hpadd: return pradd(sw, ScVar, ClVar, heap);      //сложение
-  case hppaint: return prpaint(sw, ScVar, ClVar, heap);  //закраска
+  case hpmul: return prmul3(sw, ScVar, ClVar, heap);     // УМНОЖЕНИЕ
+  case hpset: return prset(sw, ScVar, ClVar, heap);      // ТОЧКА
+  case hpapp: return prapp(sw, ScVar, ClVar, heap);      // СЦЕП
+  case hpassrt: return prassrt(sw, ScVar, ClVar, heap);  // ДОБ
+  case hpadd: return pradd(sw, ScVar, ClVar, heap);      // СЛОЖЕНИЕ
+  case hppaint: return prpaint(sw, ScVar, ClVar, heap);  // ЗАКРАСКА
   case hprand: return prrandom(sw, ScVar, ClVar, heap);  // СЛУЧ
   }
   return 0;
 }
 
-unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умножение   в goal[0].. 1 .. идетифик параметр
-{
+// УМНОЖЕНИЕ   в goal[0].. 1 .. идетифик параметр
+unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
-  bool fl = false;  //если будет true то обработка вещ иначе целых
+  bool fl = false;  // если будет true то обработка вещ иначе целых
   int i;
   for (i = 0; i < 4; i++) {
     if (ScVar->goal[i] == 6)
@@ -2193,8 +2218,8 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
    }*/
 
   switch (sw) {
-  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? 3 : 5;  //все целые  цццц
-  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? 3 : 5;  //все веществ ffff
+  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? 3 : 5;  // все целые  цццц
+  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? 3 : 5;  // все веществ ffff
   case 5777:
     if (l[1]) {
       IntegerType work;
@@ -2205,7 +2230,7 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
     break;
 
   case 7577:
-    if (l[0])  //цпцц
+    if (l[0])  // цпцц
     {
       IntegerType work;
       if ((work = l[3] - l[2]) % l[0] != 0)
@@ -2214,36 +2239,39 @@ unsigned prmul(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)  //умноже
     }
     break;
 
-  case 7757: return zap1(l[3] - l[0] * l[1], 3, ScVar, ClVar, heap);   //цпцц
-  case 6656: return zap1f(f[3] - f[0] * f[1], 3, ScVar, ClVar, heap);  //цпцц
+  case 7757: return zap1(l[3] - l[0] * l[1], 3, ScVar, ClVar, heap);   // цпцц
+  case 6656: return zap1f(f[3] - f[0] * f[1], 3, ScVar, ClVar, heap);  // цпцц
   case 7775: return zap1(l[0] * l[1] + l[2], 4, ScVar, ClVar, heap);
   case 6665: return zap1f(f[0] * f[1] + f[2], 4, ScVar, ClVar, heap);
   case 7557:
-    if (l[0])
+    if (l[0]) {
       return zap2(l[3] % l[0], l[3] / l[0], 3, 2, ScVar, ClVar, heap);
+    }
     break;
   case 5757:
-    if (l[1])
+    if (l[1]) {
       return zap2(l[3] % l[1], l[3] / l[1], 3, 1, ScVar, ClVar, heap);
+    }
     break;
-  case 6767:  // if (f[1]) return zap2f(f[3]%f[1],f[3]/f[1],3,1);break;
-  case 6556:  // if (f[0]) return zap2(f[3]%f[0],f[3]/f[0],3,2);break;
-  case 5666:  /*if (f[1])
-                    {float work;
-                     if ((work=f[3]-f[2])%f[1]!=0) return 5;
-                      return zap1f(work/f[1],1);
-                    }break; */
-  case 6566:  /*if (f[0])                     //цпцц
-                    {float work;
-                    if ((work=f[3]-f[2]) % f[0]!=0) return 5;
-                    return zap1f(work/f[0],2);}break;*/
-    outerror(29);
+  case 6767:                                                                        // if (f[1]) return zap2f(f[3]%f[1],f[3]/f[1],3,1);break;
+  case 6556:                                                                        // if (f[0]) return zap2(f[3]%f[0],f[3]/f[0],3,2);break;
+  case 5666:                                                                        /*if (f[1])
+                                                                                          {float work;
+                                                                                           if ((work=f[3]-f[2])%f[1]!=0) return 5;
+                                                                                            return zap1f(work/f[1],1);
+                                                                                          }break; */
+  case 6566:                                                                        /*if (f[0])                     //цпцц
+                                                                                          {float work;
+                                                                                          if ((work=f[3]-f[2]) % f[0]!=0) return 5;
+                                                                                          return zap1f(work/f[0],2);}break;*/
+    outerror(ErrorCode::FailedMultiplicationIntegerDivisionOfSubstancesOfNumbers);  // 29
     return 1;
   }
-  outerror(30);
-  return 1;  // r_t_e не вып пред умножение
+  outerror(ErrorCode::FailedMultiplicationInvalidArguments);  // 30
+  return 1;                                                   // r_t_e не вып пред умножение
 }
 
+// ОКРУЖНОСТЬ
 unsigned prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // if (!canvas) return 3;
   IntegerType x1, x2, y1, y2, r, color;
@@ -2317,16 +2345,19 @@ unsigned prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     */
     ClearView(color);
   } break;
-  default: outerror(24); return 1;  // r_t_e
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e
+  }
   }
   return 3;
 }
 
-unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) /* закраска */
-{
+// ЗАКРАСКА
+unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType x, y, color;
   if (sw != 777) {
-    outerror(24);
+    outerror(ErrorCode::UnknownError);  // 24
     return 1;
   }
   x = occ(0, ScVar, ClVar, heap);
@@ -2336,6 +2367,7 @@ unsigned prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) /* закр
   return 3;
 }
 
+// КОПИЯ
 unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char str1[maxlinelen], str2[maxlinelen];
   IntegerType i1, i2, i3, i4;
@@ -2392,8 +2424,9 @@ unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       int result = 1;
       for (i3 = i1 - i2; i3 >= 0 && result != 0; i3--)
         result = strncmp(&str1[i3], str2, i2);
-      if (!result)
+      if (!result) {
         return zap2(i3 + 2, i2, 2, 3, ScVar, ClVar, heap);
+      }
     }
     break;
   case 4754:
@@ -2408,22 +2441,26 @@ unsigned prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if ((i3 > 0) && (i1 >= i2 + i3 - 1) && (!strncmp(&str1[i3 - 1], str2, i2)))
       return zap1(i2, 3, ScVar, ClVar, heap);
     break;
-  default: outerror(24); return 1;  // r_t_e
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // r_t_e
+  }
   }
   return 5;
 }
 
+// ПРЕДЛ
 unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
   unsigned err = 0;
   unsigned index = 0;
-  //типы аргументов каждого по отдельности
-  unsigned sw1;  //первый
-  unsigned sw2;  //второй
-  unsigned sw3;  //третий
+  // типы аргументов каждого по отдельности
+  unsigned sw1;  // первый
+  unsigned sw2;  // второй
+  unsigned sw3;  // третий
   unsigned sw4 = sw;
 
-  //разбор типов аргументов
+  // разбор типов аргументов
 
   sw1 = sw4 / 1000;
   sw4 = sw4 - sw1 * 1000;
@@ -2432,7 +2469,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   sw3 = sw4 / 10;
   sw4 = sw4 - sw3 * 10;
 
-  //проверка типов
+  // проверка типов
   if (sw1 != 4 && sw1 != 9)
     err = 1;  // symb/str
   if (sw2 != 7)
@@ -2442,16 +2479,16 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw4 != 5 && sw4 != 2 && sw4 != 3)
     err = 4;  // var/list/emptylist
   if (err != 0) {
-    pldout(const_cast<char *>("Неверный тип аргументов в 'ПРЕДЛ'."));  //как нибудь раскрою номер параметра
+    pldout(const_cast<char *>("Неверный тип аргументов в 'ПРЕДЛ'."));  // как нибудь раскрою номер параметра
     return 5;
   }
 
-  //поищем заданное предложение
-  IntegerType i = occ(1, ScVar, ClVar, heap);  //номер заданного предл
+  // поищем заданное предложение
+  IntegerType i = occ(1, ScVar, ClVar, heap);  // номер заданного предл
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
-    return 5;  //нет предложения
+    return 5;  // нет предложения
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   //(recordclause *)&heap->heaps[ps->begin];
   IntegerType w;
@@ -2460,15 +2497,15 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     //(recordclause *)&heap->heaps[pc->next];
   }
   if (w != i)
-    return 5;  //предл с данным номером отсутствует
+    return 5;  // предл с данным номером отсутствует
 
-  //нашли нужное предложение
+  // нашли нужное предложение
   recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction*)&heap->heaps[ClVar->head];
-  //аргументы функции предл
+  // аргументы функции предл
   unsigned *ptr = heap->GetPunsigned(pf->ptrarg);
   //(unsigned *)&heap->heaps[pf->ptrarg];
-  //цели найденного предложения
+  // цели найденного предложения
   unsigned *p = heap->GetPunsigned(pc->ptrtarget);
   //(unsigned *)&heap->heaps[pc->ptrtarget];
 
@@ -2476,12 +2513,12 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned oldindex = heap->last;
   ClVar->oldtptr = ClVar->tptr;
   ClVar->frame1 = ClVar->oldsvptr = ClVar->svptr;
-  ClVar->svptr = ClVar->frame1 + pc->nvars;  //это число переменных в предл
+  ClVar->svptr = ClVar->frame1 + pc->nvars;  // это число переменных в предл
   if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
     pldout(const_cast<char *>("Не достаточно памяти в стеке переменных"));
     return 5;
   }
-  //унификация головы предлож с переменной или ...
+  // унификация головы предлож с переменной или ...
   if (!unify(p[0], ptr[2], ClVar->frame1, ClVar->frame2, ClVar, heap)) {
     ClVar->svptr = ClVar->oldsvptr;
     heap->last = oldindex;  //??????
@@ -2504,7 +2541,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       pl.link = heap->last + sizeof(recordlist);
       index = heap->apend(&pl, sizeof(recordlist));
       if (!index) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 5;
       }
 
@@ -2519,7 +2556,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       recordemptylist ptre;
       index = heap->apend(&ptre, sizeof(recordemptylist));
       if (!index) {
-        outerror(44);
+        outerror(ErrorCode::TooLongList);  // 44
         return 5;
       }
 
@@ -2540,7 +2577,7 @@ unsigned prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         zero(ClVar);
       }
 
-      return 3;  //удачная унификация
+      return 3;  // удачная унификация
     }
     break;
   }
@@ -2553,14 +2590,15 @@ unsigned argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(4, ClVar->head, ScVar, ClVar, heap);
   sw = ScVar->goal[0] * 1000 + ScVar->goal[1] * 100 + ScVar->goal[2] * 10 + ScVar->goal[3];
   switch (name) {
-  case hpmul: return prmul(sw, ScVar, ClVar, heap);      //умножение
-  case hpcircl: return prcircl(sw, ScVar, ClVar, heap);  //окружность
-  case hpcopy: return prcopy(sw, ScVar, ClVar, heap);    //копия
-  case hpclaus: return prclaus(sw, ScVar, ClVar, heap);  //предл
+  case hpmul: return prmul(sw, ScVar, ClVar, heap);      // УМНОЖЕНИЕ
+  case hpcircl: return prcircl(sw, ScVar, ClVar, heap);  // ОКРУЖНОСТЬ
+  case hpcopy: return prcopy(sw, ScVar, ClVar, heap);    // КОПИЯ
+  case hpclaus: return prclaus(sw, ScVar, ClVar, heap);  // ПРЕДЛ
   }
   return 0;
 }
 
+// ЛИНИЯ
 unsigned prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   //	if (/*!bitmap ||*/ !canvas) return 3;
   // int xy;
@@ -2632,7 +2670,10 @@ unsigned prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     vertical(0, occ(1, ScVar, ClVar, heap), occ(2, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
     vertical(maxgrx, occ(1, ScVar, ClVar, heap), occ(2, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
   } break;
-  default: outerror(24); return 1;  // R_T_E
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return 1;                           // R_T_E
+  }
   }
   return 3;
 }
@@ -2646,7 +2687,7 @@ unsigned argfive(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   sw += 10 * ScVar->goal[3];
   sw += ScVar->goal[4];
   switch (name) {
-  case hpline: return prger(sw, ScVar, ClVar, heap);  //линия
+  case hpline: return prger(sw, ScVar, ClVar, heap);  // ЛИНИЯ
   }
   return 1;
 }
@@ -2701,11 +2742,10 @@ bool bpred(unsigned name, unsigned narg) {
 
   case hpline: return (narg == 5) ? true : false;  // 5
   }
-  return false;  //нечего сюда лезть
+  return false;  // нечего сюда лезть
 }
 
 //=========== функции ввода ==============
-
 int Inputstring(char *buf, int size, char *caption) {
   int err = 0;
   char *pCaption = const_cast<char *>("Введите строку");
