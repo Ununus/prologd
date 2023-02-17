@@ -272,7 +272,7 @@ PrologDWorker::PrologDWorker(CanvasArea *canvas, QObject *parent)
 void PrologDWorker::run(const QStringList &program, const QStringList &input) try {
   inputList = input;
   prd = this;
-  int serr = 0, cerr = 0;
+  ErrorCode serr = ErrorCode::NoErrors, cerr = ErrorCode::NoErrors;
   std::unique_ptr<array> heap;
   std::unique_ptr<TScVar> ScVar;
   std::unique_ptr<TClVar> ClVar;
@@ -283,8 +283,9 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) tr
   ClVar->PrSetting = std::unique_ptr<TPrSetting>(new TPrSetting);
   EnableRunning = true;
   serr = buildin(ScVar.get(), heap.get());
-  if (serr)
+  if (serr != ErrorCode::NoErrors) {
     throw std::runtime_error(GetPrErrText(serr));
+  }
   Ninp = 0;
   for (Nstr = 0; EnableRunning && Nstr < program.size(); Nstr++) {
     // трансляция построчно
@@ -295,8 +296,9 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) tr
     char *p = const_cast<char *>(line.c_str());  // текущая строка
 
     serr = scaner(p, ScVar.get(), heap.get());
-    if (serr)
+    if (serr != ErrorCode::NoErrors) {
       throw std::runtime_error(GetPrErrText(serr));
+    }
     if (ScVar->Query && ScVar->EndOfClause)  //если конец предложения и вопрос то
     {
       if (m_outQuestion)  //вывод вопроса
@@ -304,8 +306,9 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) tr
         pldout(p);
       }
       cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
-      if (cerr)
+      if (cerr != ErrorCode::NoErrors) {
         throw std::runtime_error(GetPrErrText(cerr));
+      }
       ScVar->Query = ScVar->EndOfClause = false;  //на выполнение
     }
   }
@@ -335,12 +338,12 @@ void CanvasArea::resize(int w, int h) {
     }
   }
 }
-void CanvasArea::ellipse(IntegerType x, IntegerType y, IntegerType w, IntegerType h, unsigned int c) {
+void CanvasArea::ellipse(int x, int y, int w, int h, unsigned int c) {
   QPainter painter(&m_image);
   painter.setPen(ui2rgb(c));
   painter.drawEllipse(x, y, w, h);
 }
-void CanvasArea::floodFill(IntegerType x, IntegerType y, unsigned int c) {
+void CanvasArea::floodFill(int x, int y, unsigned int c) {
   if (x < 0 || y < 0 || x >= m_image.width() || y >= m_image.height()) {
     return;
   }
@@ -368,13 +371,13 @@ void CanvasArea::floodFill(IntegerType x, IntegerType y, unsigned int c) {
     }
   }
 }
-void CanvasArea::setPixel(IntegerType x, IntegerType y, unsigned int c) {
+void CanvasArea::setPixel(int x, int y, unsigned int c) {
   m_image.setPixel(x, y, ui2rgb(c));
 }
 void CanvasArea::clearView(unsigned int c) {
   m_image.fill(ui2rgb(c));
 }
-void CanvasArea::rectangle(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
+void CanvasArea::rectangle(int x1, int y1, int x2, int y2, unsigned int c) {
   QPainter painter(&m_image);
   painter.setPen(ui2rgb(c));
   if (x1 > x2)
@@ -383,7 +386,7 @@ void CanvasArea::rectangle(IntegerType x1, IntegerType y1, IntegerType x2, Integ
     std::swap(y2, y1);
   painter.drawRect(x1, y1, x2 - x1, y2 - y1);
 }
-void CanvasArea::line(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
+void CanvasArea::line(int x1, int y1, int x2, int y2, unsigned int c) {
   QPainter painter(&m_image);
   painter.setPen(ui2rgb(c));
   painter.drawLine(x1, y1, x2, y2);

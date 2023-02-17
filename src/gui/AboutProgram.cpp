@@ -76,7 +76,7 @@ AboutProgram::AboutProgram(QWidget *parent)
   programIcon->setPixmap(QPixmap(":/images/prolog1.png").scaled(42, 42, Qt::IgnoreAspectRatio, Qt::FastTransformation));
   programIcon->setFixedSize(42, 42);
   QLabel *programName = new QLabel(tr("Пролог-Д"));
-  QLabel *programVersion = new QLabel(tr("Версия: "));
+  QLabel *programVersion = new QLabel(tr("Версия: 17 февраля 2023"));
   head->addWidget(programIcon);
   head->addWidget(programName);
   head->addWidget(programVersion);
@@ -93,7 +93,7 @@ AboutProgram::AboutProgram(QWidget *parent)
     tr("Эту реализацию Пролога-Д разработали АБВГ:\n"
        "Алексеев Михаил Николаевич (прораб),\n"
        "Балдин Виктор Михайлович (топкодер до 2008),\n"
-       "Воронин Алексей Вячеславович (топкодер с 2017),\n
+       "Воронин Алексей Вячеславович (топкодер с 2017),\n"
        "Григорьев Сергей Георгиевич (идеолог)."));
   aboutProgramTextEdit->setReadOnly(true);
   tabWidget->addTab(aboutProgramTextEdit, tr("О Программе"));
