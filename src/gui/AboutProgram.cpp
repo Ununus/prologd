@@ -90,10 +90,11 @@ AboutProgram::AboutProgram(QWidget *parent)
 
   QPlainTextEdit *aboutProgramTextEdit = new QPlainTextEdit;
   aboutProgramTextEdit->setPlainText(
-    tr("Учебная система - интерпретатор\n"
-       "1987-1996 Григорьев С.Г. - идея и алгоритмы\n"
-       "1996-2008 Алексеев М.Н., Балдин В.М. - реализация\n"
-       "2017-2022 Воронин А.В. - интерфейс"));
+    tr("Эту реализацию Пролога-Д разработали АБВГ:\n"
+       "Алексеев Михаил Николаевич (прораб),\n"
+       "Балдин Виктор Михайлович (топкодер до 2008),\n"
+       "Воронин Алексей Вячеславович (топкодер с 2017),\n
+       "Григорьев Сергей Георгиевич (идеолог)."));
   aboutProgramTextEdit->setReadOnly(true);
   tabWidget->addTab(aboutProgramTextEdit, tr("О Программе"));
 
