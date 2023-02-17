@@ -162,7 +162,7 @@ void errout(const char *str) {
   std::to_chars(number, number + 8, Nstr + 1);
   emit prd->signalErrorOut(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
-int InputStringFromDialog(char *buf, size_t size, char *caption) {
+int InputStringFromDialog(char *buf, size_t size, const char *caption) {
   // emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
   std::string line;
   while (Ninp < prd->inputList.size() && prd->inputList[Ninp].isEmpty()) {

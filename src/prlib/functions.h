@@ -12,7 +12,7 @@ void ClearView(unsigned color = 15);
 void Ellipse(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color);
 void SetPixel(IntegerType x, IntegerType y, unsigned color);
 unsigned GetPixel(IntegerType x, IntegerType y);
-int InputStringFromDialog(char *Buf, size_t BufSize, char *pCaption);
+int InputStringFromDialog(char *Buf, size_t BufSize, const char *pCaption);
 // Вывод предиката (ДА, НЕТ)
 void prdout(bool value);
 // Пользовательский вывод (предикатом ВЫВОД)

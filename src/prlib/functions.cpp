@@ -51,16 +51,20 @@ ErrorCode buildin(TScVar *ScVar, array *heap) {
   ScVar->nosymbol = MAX_BUILD_PRED;
   recordunknown *ptrunkn = new recordunknown();
   ScVar->hpunkn = heap->apend(ptrunkn, sizeof(recordunknown));  // положение анонимки в heap
-  if (ptrunkn)
+  if (ptrunkn) {
     delete ptrunkn;
-  if (ScVar->hpunkn < 0)
+  }
+  if (ScVar->hpunkn < 0) {
     return ErrorCode::TooLongList;  // 44;
+  }
   recordemptylist *ptre = new recordemptylist();
   ScVar->hpempty = heap->apend(ptre, sizeof(recordemptylist));  // положение пустого списка
-  if (ptre)
+  if (ptre) {
     delete ptre;
-  if (ScVar->hpempty < 0)
+  }
+  if (ScVar->hpempty < 0) {
     return ErrorCode::TooLongList;  // 44;
+  }
 
   heap->freeheap = heap->last;
 
@@ -138,9 +142,9 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
     return ErrorCode::TooLongList;  // 44;
   }
   bptr = i;
-  if (bptr + 1 < _maxbptr_)
+  if (bptr + 1 < _maxbptr_) {
     buf[bptr++] = index;
-  else {
+  } else {
     // err = ErrorCode::CannotOpenGraphics;  // 22;
     err = ErrorCode::TooManyCharacterConstants;
   }
@@ -705,6 +709,7 @@ ErrorCode variabletable(char *&p, unsigned int len, TScVar *ScVar, array *heap) 
   return err;
 }
 
+// Поиск конастанты в Базе Знаний
 ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   unsigned int &bptr = ScVar->bptr;

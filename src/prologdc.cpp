@@ -208,7 +208,7 @@ int runProlog() {
   return 0;
 }
 
-int InputStringFromDialog(char *buf, size_t size, char *caption) {
+int InputStringFromDialog(char *buf, size_t size, const char *caption) {
   std::string line;
   if (!inputed_strs.empty()) {
     line.swap(*inputed_strs.begin());

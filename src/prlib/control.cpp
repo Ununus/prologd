@@ -127,8 +127,8 @@ void from_control(TClVar *ClVar, array *heap) {
   }
 }
 
-void to_control(TClVar *ClVar, array *heap)  // запись в стек
-{
+// запись в стек
+void to_control(TClVar *ClVar, array *heap) {
   if (ClVar->scptr + 7 > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
     outerror(ErrorCode::StackOverflow);  // 28
     ClVar->stat = PredicateState::No;    // 5; /*message_no_memory|=no_memory_stac;*/ // переполнение стека программы
@@ -512,6 +512,7 @@ void zero(TClVar *ClVar) {
   ClVar->tptr = ClVar->oldtptr;
 }
 
+// подготовка к выполнению целей
 static void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->ntro) {
     ClVar->parent = ClVar->scptr;  // место записи в стеке управлени€ о вызывающем предл
@@ -519,6 +520,9 @@ static void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
   ClVar->frame2 = ClVar->frame1;
 }
 
+// ¬ыдел€етс€ цель, котора€ должна быть удовлетворена. ≈сли все цели
+// удовлетворены, то из стека восстанавливаетс€ родительска€ среда.
+// ≈сли родительской среды нет, то выводетс€ ответна€ подстановка.
 static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (!heap->pacltarget[++ClVar->atomp])  // все цели удовлетворены
     if (ClVar->parent == NULL)            // есть ответ на вопрос
@@ -540,6 +544,12 @@ static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
 }
 
+// ќсновной шаг выполнени€. ќпредел€ютс€, есть ли предложени€, 
+// которые не были испытаны дл€ данной цели.
+// ≈сли таких предикатов нет, то цель считаетс€ неудачной (—осто€ние 5).
+// ≈сли предложени€ есть, то происходит настройка на голову проедложени€, в стеке
+// переменных выдел€етс€ новый кадр. ¬ зависимости от результата унификации либо
+// происходит переход к цел€м нового предложени€, либо испытываетс€ следующее предложение.
 static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->newclause && ClVar->newclause != isnil) {  // pnclause=head->at(newclause);pncltarget=head->at(newclause-1);
     heap->ptclause = heap->pnclause;
@@ -589,7 +599,7 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
           ClVar->aclause = ClVar->tclause;
           heap->paclause = heap->ptclause;
           heap->pacltarget = heap->ptcltarget;
-          ClVar->stat = PredicateState::State_2;  // 2;
+          ClVar->stat = PredicateState::PrepereNewTarget;  // 2;
         }
       } else if (ClVar->stat != PredicateState::Error) {
         if (ClVar->PrSetting->Trace) {
@@ -597,7 +607,7 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
         }
         ClVar->svptr = ClVar->oldsvptr;
         zero(ClVar);
-        ClVar->stat = PredicateState::State_4;  // 4;
+        ClVar->stat = PredicateState::ControlStep;  // 4;
       }
     }
   } else {
@@ -612,6 +622,8 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
 }
 
+// Ќеудача, дл€ цели не найдено решение. ќсуществл€етс€ возврат к предыдущей цели,
+// чтобы поискать другое решение.
 static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (!ClVar->scptr) {
     ClVar->stat = PredicateState::Error;  // 1;
@@ -625,10 +637,11 @@ static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
       buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
       pldout(buff);
     }
-    ClVar->stat = PredicateState::State_4;  // 4;
+    ClVar->stat = PredicateState::ControlStep;  // 4;
   }
 }
 
+// ¬ыесн€етс€, €вл€етс€ ли исполн€ема€ цель встроенным предикатом.
 static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->PrSetting->Trace) {
     pldout("÷ель ");
@@ -659,7 +672,7 @@ static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
       heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
       //(unsigned *)&heap->heaps[heap->pnclause->ptrtarget];
     }
-    ClVar->stat = PredicateState::State_4;  // 4;
+    ClVar->stat = PredicateState::ControlStep;  // 4;
   }
 }
 
@@ -682,7 +695,7 @@ static void OnControl(TClVar *ClVar, array *heap) {
   for (i = 0; i < _maxbf_; i++) {
     ClVar->bf[i] = 0;
   }
-  ClVar->stat = PredicateState::State_2;  // 2;
+  ClVar->stat = PredicateState::PrepereNewTarget;  // 2;
   ClVar->newclause = NULL;
   ClVar->ntro = false;  // нет оптимизации хвостовой рекурсии не знаю пока что это
   ClVar->flag = true;
@@ -705,13 +718,13 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
   OnControl(ClVar, heap);
   while (ClVar->stat != PredicateState::Error && ClVar->err == ErrorCode::NoErrors) {
     switch (ClVar->stat) {
-    case PredicateState::State_2:  // 2
+    case PredicateState::PrepereNewTarget:  // 2
       st_2(ScVar, ClVar, heap);
       [[fallthrough]];         // если stat = 2 то выполнение сразу же и 3
     case PredicateState::Yes:  // 3
       st_3(ScVar, ClVar, heap);
       break;
-    case PredicateState::State_4:  // 4
+    case PredicateState::ControlStep:  // 4
       st_4(ScVar, ClVar, heap);
       break;
     case PredicateState::No:  // 5
@@ -1113,7 +1126,7 @@ bool unvar(TClVar *ClVar, array *heap) {
 
     switch (tp->ident) {
     case isfunction:
-    case islist: to_stac(ClVar->st_vr2, bd1, ClVar->fr2);  // break; пока убрал break
+    case islist: to_stac(ClVar->st_vr2, bd1, ClVar->fr2);  // break; // пока убрал break
     case isfloat:                                          // также как issumbol;
     case isinteger:                                        // так же как issymbol
     case isstring:

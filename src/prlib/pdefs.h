@@ -1,5 +1,11 @@
 #pragma once
-//#include <limits.h>
+#include <type_traits>
+
+template<typename E>
+constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
+  return static_cast<typename std::underlying_type<E>::type>(e);
+}
+
 //идентификаторы структур элементов
 constexpr size_t isvar = 0;
 constexpr size_t issymbol = 1;
@@ -37,11 +43,10 @@ constexpr size_t maxarity = 5;  // пока max арность встроенного предиката
 #define ismod INT_MAX - 2        // mod
 #define isdiv INT_MAX - 1        // div
 
-#define maxlinelen 1024  //длина строки редактора,и всякие промежуточные буфера
+// длина строки редактора,и всякие промежуточные буфера
+constexpr size_t maxlinelen = 1024;
+constexpr size_t maxbf = 65536;
+constexpr size_t maxstaccalc = 3200;
 
-#define maxbf 65536
-#define maxstaccalc 3200
-//#define maxbf 2048       //размер стека унификации
-//#define maxstaccalc 100  //стек для вычисления ар выр
-#define maxgrx 1024  // max координата для скроллера графики X
-#define maxgry 768   //                                     Y
+constexpr size_t maxgrx = 1024;  // max координата для скроллера графики X
+constexpr size_t maxgry = 768;   //                                     Y
