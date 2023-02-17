@@ -114,7 +114,7 @@ PredicateState prcall(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
       //(unsigned *)&heap->heaps[heap->pnclause->ptrtarget];
     }
-    return PredicateState::State_4;  // 4;
+    return PredicateState::ControlStep;  // 4;
   } else {
     outerror(ErrorCode::UnknownError);  // 24
     return PredicateState::Error;       // 1; // r_t_e(41) не выполнимый предикат ВЫП
@@ -2398,7 +2398,7 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i1 = occ(1, ScVar, ClVar, heap);
     i2 = occ(2, ScVar, ClVar, heap);
     i3 = strlen(str1);
-    if (i1 > 0 && i2 > 0 && i3 >= i1 + i2 - 1) {
+    if (i1 > 0 && i2 >= 0 && i3 >= i1 + i2 - 1) {
       str1[i1 + i2 - 1] = NULL;
       // char *s=newStr(&str1[i1-1]);
       return zap3(&str1[i1 - 1], 4, ScVar, ClVar, heap);
@@ -2414,7 +2414,7 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i2 = occ(2, ScVar, ClVar, heap);
     i3 = strlen(str1);
     i4 = strlen(str2);
-    return (i1 > 0 && i2 > 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[i1 - 1], str2, i2)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+    return (i1 > 0 && i2 >= 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[i1 - 1], str2, i2)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
 
   case 4574:
   case 4579:
@@ -2425,7 +2425,7 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i1 = occ(2, ScVar, ClVar, heap);
     i2 = strlen(str1);
     i3 = strlen(str2);
-    if (i1 > 0 && i2 > i1 + i3 - 1 && i3 == i1) {
+    if (i1 >= 0 && i2 > i1 + i3 - 1 && i3 == i1) {
       for (i4 = i2 - i3; i4 >= 0 && strncmp(&str1[i4], str2, i3); i4--)
         ;
       if (i4 >= 0)
