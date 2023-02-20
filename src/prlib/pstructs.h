@@ -20,104 +20,6 @@ enum class PredicateState {
   Builtin = 6
 };
 
-// Идентификаторы типов аргументов функций
-enum class ArgType : unsigned char {
-  None = 0,       // Аргумента не ожидается
-  Anonim = 1,     // Анонимка
-  EmptyList = 2,  // Пустой список
-  List = 3,       // Список
-  QStr = 4,       // "Строка"
-  Var = 5,        // Переменная
-  Float = 6,      // Вещественное
-  Int = 7,        // Целое
-  Str = 9         // Строка
-};
-
-static inline ArgType DEBUGArgTypeFromInt(unsigned sw) {
-  switch (sw) {
-  case 1: return ArgType::Anonim;
-  case 2: return ArgType::EmptyList;
-  case 3: return ArgType::List;
-  case 4: return ArgType::QStr;
-  case 5: return ArgType::Var;
-  case 6: return ArgType::Float;
-  case 7: return ArgType::Int;
-  case 9: return ArgType::Str;
-
-  default: break;
-  }
-  return ArgType::None;
-}
-
-using Arg1 = std::tuple<ArgType>;
-using Arg2 = std::tuple<ArgType, ArgType>;
-using Arg3 = std::tuple<ArgType, ArgType, ArgType>;
-using Arg4 = std::tuple<ArgType, ArgType, ArgType, ArgType>;
-using Arg5 = std::tuple<ArgType, ArgType, ArgType, ArgType, ArgType>;
-
-// TODO: Exception
-struct WrongArgumentType {
-  ArgType arg;
-  size_t position;
-  // Уф, аллокация. Может можно лучше?
-  std::vector<ArgType> expectedArgs;
-
-  explicit WrongArgumentType(ArgType arg, size_t position)
-    : arg(arg)
-    , position(position) {}
-};
-
-/// @brief  Эта функция бросает исключение WrongArgumentType,
-///         если в args на I позиции находится не тип Arg.
-///         Пример:
-///         ExpectArgType<0, ArgType::Float, ArgType::Int>(args) -
-///             ожидает что в args на 0 позиции будет либо Float, либо Int,
-///             иначе бросится исключение.
-/// @tparam I - позиция аргумента
-/// @tparam Arg - ожидаемый тип
-/// @tparam ArgTuple - Arg1, Arg2, Arg3, Arg4 или Arg5
-/// @param args - проверяемые аргументы
-template<size_t I, ArgType Arg, class ArgTuple>
-void ExpectArgType(const ArgTuple &args) {
-  if (std::get<I>(args) == Arg) {
-    return;
-  }
-  WrongArgumentType err(std::get<I>(args), I);
-  err.expectedArgs.emplace_back(Arg);
-  throw err;
-}
-template<size_t I, ArgType Arg1, ArgType Arg2, ArgType... Args, class ArgTuple>
-void ExpectArgType(const ArgTuple &args) {
-  if (std::get<I>(args) == Arg1) {
-    return;
-  }
-  try {
-    ExpectArgType<I, Arg2, Args...>(args);
-  } catch (WrongArgumentType &err) {
-    err.expectedArgs.emplace_back(Arg1);
-    throw;
-  }
-}
-/// @brief  Эта функция возвращает true, если в args на I позиции находится тип Arg.
-///         Пример:
-///         IsArgType<0, ArgType::Float, ArgType::Int>(args) -
-///             вернёт true, если в args на 0 позиции будет либо Float, либо Int.
-/// @tparam I - позиция аргумента
-/// @tparam Arg - ожидаемый тип
-/// @tparam ArgTuple - Arg1, Arg2, Arg3, Arg4 или Arg5
-/// @param args - проверяемые аргументы
-template<size_t I, ArgType Arg, class ArgTuple>
-bool IsArgType(const ArgTuple &args) {
-  return std::get<I>(args) == Arg;
-}
-template<size_t I, ArgType Arg1, ArgType Arg2, ArgType... Args, class ArgTuple>
-bool IsArgType(const ArgTuple &args) {
-  if (std::get<I>(args) == Arg1) {
-    return true;
-  }
-  return IsArgType<I, Arg2, Args...>(args);
-}
-
 // предок всех структур
 struct baserecord {
   unsigned int ident;
@@ -327,6 +229,7 @@ struct TClVar {
   int atomp;  // указатель на цель
   int tryclause;
   bool ex, flag;
+  bool quiet{ false };  // Для предиката ТИХО 
 
   // для unify
   unsigned int bp, term1, term2, fr1, fr2, numb;
@@ -503,3 +406,6 @@ constexpr size_t hp_int = hpdiv + sizeof(recordsconst) + sizeof("int") - 1;
 
 // место float
 constexpr size_t hp_float = hp_int + sizeof(recordsconst) + sizeof("float") - 1;
+
+// место ТИХО
+constexpr size_t hpquiet = hp_float + sizeof(recordsconst) + sizeof("ТИХО") - 1;

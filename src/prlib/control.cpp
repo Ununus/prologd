@@ -77,7 +77,7 @@ int expand_stack(TClVar *ClVar) {
       delete[] st_vr2N;
     if (st_trailN)
       delete[] st_trailN;
-    return 28; /*message_no_memory|=no_memory_stac;*/ //переполнение стека программы
+    return 28; /*message_no_memory|=no_memory_stac;*/  // переполнение стека программы
   }
 
   unsigned i;
@@ -296,6 +296,7 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 // extern unsigned write_term(unsigned TERM,unsigned FRAME,unsigned w,unsigned j);//,FILE *d=NULL);
+
 // прологовский вывод
 PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
   unsigned k = 0;
@@ -475,7 +476,9 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
 // пока только описание функции
 void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (!ClVar->varqu) {
-    prdout(true);
+    if (!ClVar->quiet) {
+      prdout(true);
+    }
     ClVar->flag = false;
     ClVar->stat = PredicateState::Error;  // 1;
   } else {
@@ -484,22 +487,23 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
     //   bpt=BPT=new unsigned[maxbptr];
     //   unsigned i=0,j=0;
     unsigned j = 0;
-    // out(const_cast<char*>(""));
     unsigned w;
-    for (unsigned k = 0; k < ClVar->varqu; k++) {
-      w = (unsigned)k;
-      ClVar->precordvar = heap->GetPrecordvar(ScVar->tvar[k]);
-      //(recordvar *)&heap->heaps[ScVar->tvar[k]];
-      char *name = heap->GetPchar(ClVar->precordvar->ptrsymb);
-      //(char *)&heap->heaps[ClVar->precordvar->ptrsymb];
-      for (j = 0; j < (unsigned)ClVar->precordvar->length; buff[j] = *(name + j), j++)
-        ;
-      buff[j++] = '=';
-      frame = from_stac(ClVar->st_vr2, k);
-      term = from_stac(ClVar->st_vr1, k);
-      //======================================// вывод terma  пока не все
-      buff[write_term(term, frame, w, j, ScVar, ClVar, heap)] = 0;  //,//FILE *d)
-      pldout(buff);
+    if (!ClVar->quiet) {
+      for (unsigned k = 0; k < ClVar->varqu; k++) {
+        w = (unsigned)k;
+        ClVar->precordvar = heap->GetPrecordvar(ScVar->tvar[k]);
+        //(recordvar *)&heap->heaps[ScVar->tvar[k]];
+        char *name = heap->GetPchar(ClVar->precordvar->ptrsymb);
+        //(char *)&heap->heaps[ClVar->precordvar->ptrsymb];
+        for (j = 0; j < (unsigned)ClVar->precordvar->length; buff[j] = *(name + j), j++)
+          ;
+        buff[j++] = '=';
+        frame = from_stac(ClVar->st_vr2, k);
+        term = from_stac(ClVar->st_vr1, k);
+        //======================================// вывод terma  пока не все
+        buff[write_term(term, frame, w, j, ScVar, ClVar, heap)] = 0;  //,//FILE *d)
+        pldout(buff);
+      }
     }  // delete BPT;
   }
 }
@@ -544,7 +548,7 @@ static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
 }
 
-// Основной шаг выполнения. Определяются, есть ли предложения, 
+// Основной шаг выполнения. Определяются, есть ли предложения,
 // которые не были испытаны для данной цели.
 // Если таких предикатов нет, то цель считается неудачной (Состояние 5).
 // Если предложения есть, то происходит настройка на голову проедложения, в стеке
@@ -712,6 +716,7 @@ static void OnControl(TClVar *ClVar, array *heap) {
   ClVar->varqu = heap->paclause->nvars;
   ClVar->svptr = ClVar->varqu;
   ClVar->atomp = -1;
+  ClVar->quiet = false;
 }
 
 ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {

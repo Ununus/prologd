@@ -27,6 +27,10 @@ PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap)
     if (ClVar->parent) {
       to_stac(ClVar->st_con, ClVar->parent - 1, isnil);
     }
+    break;
+  case hpquiet: 
+      ClVar->quiet = true;
+      break;
   }
   return PredicateState::Yes;  // 3;
 }
@@ -2716,6 +2720,7 @@ PredicateState argfive(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap)
 
 bool bpred(unsigned name, unsigned narg) {
   switch (name) {
+  case hpquiet:
   case hpfail:
   case hptrace:
   case hpnottr:
