@@ -11,11 +11,11 @@
 #include <charconv>
 
 //=======оЕПБНМЮВЮКЭМНЕ ГЮОНКМЕМХЕ
-const char *NamesOfPredicates[] = { "mod",     "кнфэ",      "рпюяяю",   "мер_рпюяяш", "!",         "бшо",        "ббндяхлб", "ббнджек", "ббндбеы",
-                                    "ббйнд",   "времхе_хг", "гюохяэ_б", "оеп",        "жек",       "беы",        "яхлб",     "яохянй",  "бшбнд",
-                                    "анкэье",  "ярпжек",    "ярпбеы",   "ярпяохя",    "жекбеы",    "асйбю",      "жхтпю",    "репл",    "сдюкемхе",
-                                    "яйнкэйн", "рнвйю",     "яжео",     "дна",        "слмнфемхе", "нйпсфмнярэ", "гюйпюяйю", "йнохъ",   "опедк",
-                                    "кхмхъ",   "яксв",      "якнфемхе", "фдх",        "div",       "int",        "float",    "рхун" };
+const char *NamesOfPredicates[] = { "mod",      "кнфэ",    "рпюяяю",    "мер_рпюяяш", "!",       "бшо",       "ббндяхлб",   "ббндярп",  "ббнджек",
+                                    "ббндбеы",  "ббйнд",   "времхе_хг", "гюохяэ_б",   "оеп",     "жек",       "беы",        "яхлб",     "яохянй",
+                                    "бшбнд",    "анкэье",  "ярпжек",    "ярпбеы",     "ярпяохя", "жекбеы",    "асйбю",      "жхтпю",    "репл",
+                                    "сдюкемхе", "яйнкэйн", "рнвйю",     "яжео",       "дна",     "слмнфемхе", "нйпсфмнярэ", "гюйпюяйю", "йнохъ",
+                                    "опедк",    "кхмхъ",   "яксв",      "якнфемхе",   "фдх",     "div",       "int",        "float",    "рхун" };
 const int MAX_BUILD_PRED = sizeof(NamesOfPredicates) / sizeof(char *);
 
 const char *Build_in_Libriary[] = {
@@ -330,7 +330,7 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
         } else if (bptr + 1 < _maxbptr_) {
           buf[bptr++] = index;
         } else {
-          //err = ErrorCode::CannotOpenGraphics;  // 22;
+          // err = ErrorCode::CannotOpenGraphics;  // 22;
           err = ErrorCode::TooManyCharacterConstants;
         }
       } else {
@@ -341,7 +341,7 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
         if (bptr + 1 < _maxbptr_) {
           buf[bptr++] = index;
         } else {
-          //err = ErrorCode::CannotOpenGraphics;  // 22;
+          // err = ErrorCode::CannotOpenGraphics;  // 22;
           err = ErrorCode::TooManyCharacterConstants;
         }
       }
@@ -594,7 +594,7 @@ ErrorCode lbeg(char *&p, TScVar *ScVar, array *heap) {
       if (ScVar->bptr + 1 < _maxbptr_) {
         ScVar->buf[ScVar->bptr++] = ScVar->hpempty;
       } else {
-        //err = ErrorCode::CannotOpenGraphics;  // 22;
+        // err = ErrorCode::CannotOpenGraphics;  // 22;
         err = ErrorCode::TooManyCharacterConstants;
       }
       p++;
@@ -748,7 +748,7 @@ ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap) {
     if (bptr + 1 < _maxbptr_)
       buf[bptr++] = (tat[k] == hpmod) ? ismod : (tat[k] == hpdiv) ? isdiv : tat[k];
     else {
-      //err = ErrorCode::CannotOpenGraphics;  // 22;
+      // err = ErrorCode::CannotOpenGraphics;  // 22;
       err = ErrorCode::TooManyCharacterConstants;
     }
   }

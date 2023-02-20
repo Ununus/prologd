@@ -602,13 +602,14 @@ void MainWindow::prologExecute() {
 
   m_execution_thread->start();
 
-  if (m_input_spaces_as_separators->isChecked()) {
-    // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), Qt::SkipEmptyParts));
-    emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), QString::SkipEmptyParts));
-  } else {
-    // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', Qt::SkipEmptyParts));
-    emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', QString::SkipEmptyParts));
-  }
+  //if (m_input_spaces_as_separators->isChecked()) {
+  //  // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), Qt::SkipEmptyParts));
+  //  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), QString::SkipEmptyParts));
+  //} else {
+  //  // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', Qt::SkipEmptyParts));
+  //  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', QString::SkipEmptyParts));
+  //}
+  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', QString::SkipEmptyParts));
 }
 void MainWindow::prologAbort() {
   using namespace std::chrono_literals;
@@ -705,9 +706,10 @@ void MainWindow::prologEndWork() {
   m_input_console->setVisible(false);
 }
 void MainWindow::inputConsoleReturn() {
-  if (!m_prolog_want_input)
+  if (!m_prolog_want_input) {
     return;
-  m_prolog_worker->inputStr = m_input_console_line_edit->text();
+  }
+  m_prolog_worker->inputString(m_input_console_line_edit->text());
   m_prolog_want_input = false;
   m_input_console->setTitle("");
   m_input_console->setVisible(false);

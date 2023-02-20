@@ -28,9 +28,7 @@ PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap)
       to_stac(ClVar->st_con, ClVar->parent - 1, isnil);
     }
     break;
-  case hpquiet: 
-      ClVar->quiet = true;
-      break;
+  case hpquiet: ClVar->quiet = true; break;
   }
   return PredicateState::Yes;  // 3;
 }
@@ -610,6 +608,97 @@ PredicateState prrdsym(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::No;  // 5;
 }
 
+// TODO ВВОДСТР почти тоже самое что и ВВОДСИМВ
+// ВВОДСТР
+PredicateState prrdstr(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  char str0[255]{}, str1[255]{}, str2[255]{};
+  switch (sw) {
+  case 9:
+  case 4:
+  case 99: /*то же самое что и предыдущий пункт но с заголовком диалогового окна*/
+  case 94:
+  case 49:
+  case 44: {
+    if (ClVar->PrSetting->in.is_open()) {
+      ClVar->PrSetting->in.get(str2, 255);
+      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
+        ClVar->PrSetting->in.get();
+      }
+      if (!(str2[0])) {
+        break;
+      }
+    } else {
+      if (sw == 99 || sw == 94 || sw == 49 || sw == 44) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (Inputline(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
+          break;
+        }
+      } else {
+        if (Inputline(str2, sizeof(str2))) {  // по cancel вернет 1;
+          break;
+        }
+      }
+    }
+    return (strcmp(occ_line(0, str1, ScVar, ClVar, heap), str2)) ? PredicateState::No : PredicateState::Yes;  // 5 : 3;
+  }
+  case 5:
+  case 59:
+  case 54: {
+    if (ClVar->PrSetting->in.is_open()) {
+      ClVar->PrSetting->in.get(str2, 255);
+      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
+        ClVar->PrSetting->in.get();
+      }
+      if (!(str2[0])) {
+        break;
+      }
+    } else {
+      if (sw == 59 || sw == 54) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (Inputline(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
+          break;
+        }
+      } else {
+        if (Inputline(str2, sizeof(str2))) {  // по cancel вернет 1;
+          break;
+        }
+      }
+    }
+    return zap3(str2, 1, ScVar, ClVar, heap);
+  }
+  case 1:  // анонимка
+  case 19:
+  case 14: {
+    if (ClVar->PrSetting->in.is_open()) {
+      ClVar->PrSetting->in.get(str2, 255);
+      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
+        ch = ClVar->PrSetting->in.get();
+      }
+      if (!(str2[0])) {
+        break;
+      }
+    } else {
+      if (sw == 19 || sw == 14) {
+        occ_line(1, str0, ScVar, ClVar, heap);
+        if (Inputline(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
+          break;
+        }
+      } else {
+        if (Inputline(str2, sizeof(str2))) {  // по cancel вернет 1;
+          break;
+        }
+      }
+    }
+    return PredicateState::Yes;  // 3;
+  }
+  default: {
+    outerror(ErrorCode::UnknownError);  // 24
+    return PredicateState::Error;       // 1; // r_t_e
+  }
+  }
+  return PredicateState::No;  // 5;
+}
+
 // преобразование в целое
 PredicateState print(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
@@ -654,6 +743,7 @@ PredicateState argone(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) 
   switch (name) {
   case hpcall: return prcall(sw, ScVar, ClVar, heap);                                  // ВЫП
   case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);                                // ВВОДСИМВ
+  case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);                                // ВВОДСТР
   case hprdint: return prrdint(sw, ScVar, ClVar, heap);                                // ВВОДЦЕЛ
   case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);                            // ВВОДВЕЩ
   case hpiocod: return priocod(sw, ScVar, ClVar, heap);                                // ВВКОД
@@ -1281,6 +1371,7 @@ PredicateState argtwo(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) 
   case hpdel: return prdel(sw, ScVar, ClVar, heap);                   // УДАЛ
   case hpskol: return prskol(sw, ScVar, ClVar, heap);                 // СКОЛЬКО
   case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);               // ВВОДСИМВ (с заголовком)
+  case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);               // ВВОДСТР
   case hprdint: return prrdint(sw, ScVar, ClVar, heap);               // ВВОДЦЕЛ
   case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);           // ВВОДВЕЩ
   }
@@ -2741,7 +2832,8 @@ bool bpred(unsigned name, unsigned narg) {
 
   case hprdint:
   case hprdfloat:
-  case hprdsym: return (narg == 1 || narg == 2) ? true : false;
+  case hprdsym:
+  case hprdstr: return (narg == 1 || narg == 2) ? true : false;
 
   case hprand: return (narg == 1 || narg == 3) ? true : false;
 
@@ -2778,7 +2870,21 @@ int Inputstring(char *buf, int size, char *caption) {
   char *pCaption = const_cast<char *>("Введите строку");
   if (caption)
     pCaption = caption;
-  int _err = InputStringFromDialog(buf, size, pCaption);
+  int _err = InputStringFromDialog(buf, size, pCaption, true);
+  if (!_err) {
+    // pldout(buf);
+  } else {
+    err = 1;
+  }
+  return err;
+}
+
+int Inputline(char *buf, int size, char *caption) {
+  int err = 0;
+  char *pCaption = const_cast<char *>("Введите строку");
+  if (caption)
+    pCaption = caption;
+  int _err = InputStringFromDialog(buf, size, pCaption, false);
   if (!_err) {
     // pldout(buf);
   } else {
@@ -2791,7 +2897,7 @@ int InputSymbol(char *c) {
   int err = 0;
   char *pCaption = const_cast<char *>("Введите символ");
   char Buf[2];
-  err = InputStringFromDialog(Buf, sizeof(Buf), pCaption);
+  err = InputStringFromDialog(Buf, sizeof(Buf), pCaption, true);
   if (!err) {
     Buf[1] = 0;
     *c = Buf[0];
@@ -2808,7 +2914,7 @@ int InputInt(IntegerType *n, const char *caption) {
                 //    pCaption = caption;
   char Buf[255];
   while (err == 2) {
-    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
+    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
     if (!_err) {
       if (sscanf(Buf, "%lld", n) != 1) {
         continue;
@@ -2826,7 +2932,7 @@ int InputFloat(FloatType *n, const char *caption) {
   int err = 2;
   char Buf[255];
   while (err == 2) {
-    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption));
+    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
     if (!_err) {
       if (sscanf(Buf, "%lf", n) != 1) {
         continue;

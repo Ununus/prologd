@@ -162,36 +162,42 @@ void errout(const char *str) {
   std::to_chars(number, number + 8, Nstr + 1);
   emit prd->signalErrorOut(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
-int InputStringFromDialog(char *buf, size_t size, const char *caption) {
-  // emit prd->signalStdOut("<font color=\"#126799\">" + decode_cp1251_to_utf8(caption));
+int InputStringFromDialog(char *buf, size_t size, const char *caption, bool splitSpace) {
   std::string line;
-  while (Ninp < prd->inputList.size() && prd->inputList[Ninp].isEmpty()) {
-    ++Ninp;
-  }
-  if (Ninp < prd->inputList.size()) {
-    line = decode_utf8_to_cp1251(prd->inputList[Ninp]);
-    ++Ninp;
+  bool sss = false;
+  if (splitSpace) {
+    if (m_curStrStream >> line) {
+      sss = true;
+    }
   } else {
-    prd->haveInput = false;
-    emit prd->signalWantInput(decode_cp1251_to_utf8(caption));
-    while (!prd->haveInput && prd->EnableRunning) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    if (std::getline(m_curStrStream, line)) {
+      sss = true;
     }
-    if (prd->inputStr.isEmpty()) {
-      prd->EnableRunning = false;
-      return 1;
-    }
-    // out(caption);
-    line = decode_utf8_to_cp1251(prd->inputStr);
   }
-  if (size <= 0) {
+  if (!sss) {
+    if (!inputed_strs.empty()) {
+      prd->curStrStream = std::stringstream(prd->inputedStrs.front());
+      prd->inputedStrs.pop_front();
+    } else {
+      prd->haveInput = false;
+      emit prd->signalWantInput(decode_cp1251_to_utf8(caption));
+      while (!prd->haveInput && prd->EnableRunning) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      }
+      if (prd->inputed_strs.empty()) {
+        prd->EnableRunning = false;
+        return 1;
+      }
+      prd->curStrStream = std::stringstream(prd->inputedStrs.front());
+      prd->inputedStrs.pop_front();
+    }
+    return InputStringFromDialog(buf, size, caption, splitSpace);
+  }
+  if (line.empty() || size == 0) {
     return 1;
   }
-  int to = size - 1, lnsz = static_cast<int>(line.size());
-  if (lnsz < to) {
-    to = lnsz;
-  }
-  for (int i = 0; i < to; ++i) {
+  size_t to = line.size() < size - 1 ? line.size() : size - 1;
+  for (size_t i = 0; i < to; ++i) {
     buf[i] = line[i];
   }
   buf[to] = 0;
@@ -266,12 +272,18 @@ void vertical(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2) {
   // qDebug() << "vertical" << x1 << y1 << x2 << y2;
 }
 
+void PrologDWorker::inputString(QString qstr) {
+  inputedStrs.push_back(decode_utf8_to_cp1251(qstr));
+}
+
 PrologDWorker::PrologDWorker(CanvasArea *canvas, QObject *parent)
   : QObject(parent)
   , m_canvas(canvas) {}
 void PrologDWorker::run(const QStringList &program, const QStringList &input) {
   try {
-    inputList = input;
+    for (auto &e : input) {
+      inputString(e);
+    }
     prd = this;
     ErrorCode serr = ErrorCode::NoErrors, cerr = ErrorCode::NoErrors;
     std::unique_ptr<array> heap;

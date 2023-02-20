@@ -299,8 +299,11 @@ constexpr size_t hpcall = hpcut + sizeof(recordsconst) + sizeof("бшо") - 1;
 /* ЛЕЯРН ббндяхлб Б ЙСВЕ */
 constexpr size_t hprdsym = hpcall + sizeof(recordsconst) + sizeof("ббндяхлб") - 1;
 
+// ЛЕЯРН ббндярп
+constexpr size_t hprdstr = hprdsym + sizeof(recordsconst) + sizeof("ббндярп") - 1;
+
 /* ЛЕЯРН ббнджек Б ЙСВЕ */
-constexpr size_t hprdint = hprdsym + sizeof(recordsconst) + sizeof("ббнджек") - 1;
+constexpr size_t hprdint = hprdstr + sizeof(recordsconst) + sizeof("ббнджек") - 1;
 
 /* ЛЕЯРН ббндбеы Б ЙСВЕ */
 constexpr size_t hprdfloat = hprdint + sizeof(recordsconst) + sizeof("ббндбеы") - 1;

@@ -33,36 +33,15 @@ static std::istream *input_stream{ nullptr };
 static std::ostream *output_stream{ nullptr };
 static std::ostream *error_stream{ nullptr };
 
-static bool split_space{ true };
 static bool out_questions{ false };
-static bool dialog{ false };
 static int parsed_str_number{ 0 };
 
 static std::list<std::string> inputed_strs;
+static std::stringstream cur_str_stream;
 
 // Для контроля перевода строк
 // Работает только с одним потоком вывода
 static bool last_srv = true;
-
-void removeSignalChar(std::string &str) {
-  if (str.empty()) {
-    return;
-  }
-  if (str[0] == input_signal_char) {
-    str.erase(str.begin());
-  }
-}
-
-void doSplitInput(std::string& str) {
-  if (str.empty()) {
-    return;
-  }
-  std::stringstream ss(str);
-  std::string s;
-  while (ss >> s) {
-    inputed_strs.push_back(s);
-  }
-}
 
 void print_cp1251_decoded_to_utf8(const char *str, std::ostream &out) {
   for (const char *c = str; *c; ++c) {
@@ -172,12 +151,8 @@ int runProlog() {
     }
     decode_utf8_to_cp1251(line);
     if (line[0] == input_signal_char) {
-      removeSignalChar(line);
-      if (split_space) {
-        doSplitInput(line);
-      } else {
-        inputed_strs.push_back(line);
-      }
+      line.erase(line.begin());
+      inputed_strs.push_back(line);
       continue;
     }
     
@@ -208,33 +183,34 @@ int runProlog() {
   return 0;
 }
 
-int InputStringFromDialog(char *buf, size_t size, const char *caption) {
+int InputStringFromDialog(char *buf, size_t size, const char *caption, bool splitSpace) {
   std::string line;
-  if (!inputed_strs.empty()) {
-    line.swap(*inputed_strs.begin());
-    inputed_strs.pop_front();
+  bool sss = false;
+  if (splitSpace) {
+    if (cur_str_stream >> line) {
+      sss = true;
+    }
   } else {
-    if (dialog) {
-      *output_stream << "!dialog ";
-      print_cp1251_decoded_to_utf8(caption, *output_stream);
-      output_stream->flush();
+    if (std::getline(cur_str_stream, line)) {
+      sss = true;
     }
-    if (!std::getline(*input_stream, line)) {
-      // errout("Expected input, but got end of stream");
-      errout("Недостаточно входных данных");
-      return 1;
+  }
+  if (!sss) {
+    if (!inputed_strs.empty()) {
+      cur_str_stream = std::stringstream(inputed_strs.front());
+      inputed_strs.pop_front();
+      
+    } else {
+      if (!std::getline(*input_stream, line)) {
+        errout("Недостаточно входных данных");
+        return 1;
+      }
+      cur_str_stream = std::stringstream(line);
     }
-    if (split_space) {
-      removeSignalChar(line);
-      doSplitInput(line);
-      InputStringFromDialog(buf, size, caption);
-    }
+    return InputStringFromDialog(buf, size, caption, splitSpace);
   }
   if (line.empty() || size == 0) {
     return 1;
-  }
-  if (line[0] == input_signal_char) {
-    line.erase(line.begin());
   }
   if (out_questions) {
     pldout(caption);
@@ -265,7 +241,6 @@ void printHelp() {
   std::cout << "-o, --output=FILE\tuse a file to print the output.\n";
   std::cout << "-e, --error=FILE \tuse a file to print an error.\n";
   std::cout << "-q, --qustions   \tprint questions.\n";
-  std::cout << "-d, --dialog     \tuse the input dialog.\n";
   std::cout << "-h, --help       \tshow this help and exit.\n";
   std::cout << "\n";
   std::cout << "If files are not specified, then standard streams will be used.\n";
@@ -274,10 +249,6 @@ void printHelp() {
                "  then it will be used for input.\n";
   std::cout << "If there are not enough such string for input, the program\n"
                "  will read strings from the input stream.\n";
-  std::cout << "\n";
-  std::cout << "If the dialog option is set, then before input from the input stream the program\n"
-               "  prints a message starting with the '!dialog' and a caption after it.\n"
-               "  Example: !dialog Input yes or no\n";
   std::cout << '\n';
   std::cout << "If the qustions option is set, then the program prints\n"
                "  questions that were in the source code.\n";
@@ -291,10 +262,6 @@ int main(int argc, char **argv) {
     }
     if (strcmp(argv[i], "-q") == 0 || strcmp(argv[i], "--qustions") == 0) {
       out_questions = true;
-      continue;
-    }
-    if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--dialog") == 0) {
-      dialog = true;
       continue;
     }
     char *eqptr = strchr(argv[i], '=');

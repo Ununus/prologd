@@ -89,6 +89,7 @@ PredicateState prclaus(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 //=========== функции ввода ==============
 int Inputstring(char *buf, int size, char *caption = 0);
+int Inputline(char *buf, int size, char *caption = 0);
 int InputSymbol(char *buf);
 int InputInt(IntegerType *n, const char *caption);
 int InputFloat(FloatType *n, const char *caption);

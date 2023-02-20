@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QStringList>
 #include <QImage>
+#include <list>
+#include <sstream>
 
 class CanvasArea {
 public:
@@ -37,10 +39,14 @@ public:
     return *m_canvas;
   }
 
-  QStringList inputList;
-  QString inputStr;
+  void inputString(QString str);
+
+  std::list<std::string> inputedStrs;
+  std::stringstream curStrStream;
+
   // TODO: atomic?
   bool haveInput{ false };
+
 public slots:
   void run(const QStringList &program, const QStringList &input);
 signals:
