@@ -269,62 +269,60 @@ void vertical(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2) {
 PrologDWorker::PrologDWorker(CanvasArea *canvas, QObject *parent)
   : QObject(parent)
   , m_canvas(canvas) {}
-void PrologDWorker::run(const QStringList &program, const QStringList &input) try {
-  inputList = input;
-  prd = this;
-  ErrorCode serr = ErrorCode::NoErrors, cerr = ErrorCode::NoErrors;
-  std::unique_ptr<array> heap;
-  std::unique_ptr<TScVar> ScVar;
-  std::unique_ptr<TClVar> ClVar;
+void PrologDWorker::run(const QStringList &program, const QStringList &input) {
+  try {
+    inputList = input;
+    prd = this;
+    ErrorCode serr = ErrorCode::NoErrors, cerr = ErrorCode::NoErrors;
+    std::unique_ptr<array> heap;
+    std::unique_ptr<TScVar> ScVar;
+    std::unique_ptr<TClVar> ClVar;
 
-  heap = std::unique_ptr<array>(new array(_maxarray_));
-  ScVar = std::unique_ptr<TScVar>(new TScVar);
-  ClVar = std::unique_ptr<TClVar>(new TClVar);
-  ClVar->PrSetting = std::unique_ptr<TPrSetting>(new TPrSetting);
-  EnableRunning = true;
-  serr = buildin(ScVar.get(), heap.get());
-  if (serr != ErrorCode::NoErrors) {
-    throw std::runtime_error(GetPrErrText(serr));
-  }
-  Ninp = 0;
-  for (Nstr = 0; EnableRunning && Nstr < program.size(); Nstr++) {
-    // трансляция построчно
-    QString lise = program[Nstr];
-    lise.replace('\t', ' ');
-    std::string line = decode_utf8_to_cp1251(lise);
-
-    char *p = const_cast<char *>(line.c_str());  // текущая строка
-
-    serr = scaner(p, ScVar.get(), heap.get());
+    heap = std::unique_ptr<array>(new array(_maxarray_));
+    ScVar = std::unique_ptr<TScVar>(new TScVar);
+    ClVar = std::unique_ptr<TClVar>(new TClVar);
+    ClVar->PrSetting = std::unique_ptr<TPrSetting>(new TPrSetting);
+    EnableRunning = true;
+    workEnded = false;
+    serr = buildin(ScVar.get(), heap.get());
     if (serr != ErrorCode::NoErrors) {
       throw std::runtime_error(GetPrErrText(serr));
     }
-    if (ScVar->Query && ScVar->EndOfClause)  //если конец предложения и вопрос то
-    {
-      if (m_outQuestion)  //вывод вопроса
+    Ninp = 0;
+    for (Nstr = 0; EnableRunning && Nstr < program.size(); Nstr++) {
+      // трансляция построчно
+      QString lise = program[Nstr];
+      lise.replace('\t', ' ');
+      std::string line = decode_utf8_to_cp1251(lise);
+
+      char *p = const_cast<char *>(line.c_str());  // текущая строка
+
+      serr = scaner(p, ScVar.get(), heap.get());
+      if (serr != ErrorCode::NoErrors) {
+        throw std::runtime_error(GetPrErrText(serr));
+      }
+      if (ScVar->Query && ScVar->EndOfClause)  //если конец предложения и вопрос то
       {
-        pldout(p);
+        if (m_outQuestion)  //вывод вопроса
+        {
+          pldout(p);
+        }
+        cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
+        if (cerr != ErrorCode::NoErrors) {
+          throw std::runtime_error(GetPrErrText(cerr));
+        }
+        ScVar->Query = ScVar->EndOfClause = false;  //на выполнение
       }
-      cerr = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
-      if (cerr != ErrorCode::NoErrors) {
-        throw std::runtime_error(GetPrErrText(cerr));
-      }
-      ScVar->Query = ScVar->EndOfClause = false;  //на выполнение
     }
+  } catch (const std::bad_alloc &er) {
+    errout(er.what());
+  } catch (const std::runtime_error &er) {
+    errout(er.what());
+  } catch (...) {
+    errout("Prolog failure");
   }
+  workEnded = true;
   emit signalWorkEnded();
-} catch (const std::bad_alloc &er) {
-  errout(er.what());
-  emit signalWorkEnded();
-  return;
-} catch (const std::runtime_error &er) {
-  errout(er.what());
-  emit signalWorkEnded();
-  return;
-} catch (...) {
-  errout("Prolog failure");
-  emit signalWorkEnded();
-  return;
 }
 void CanvasArea::resize(int w, int h) {
   QImage old = m_image;

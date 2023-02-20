@@ -22,6 +22,8 @@
 #include <QGroupBox>
 
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
 #include <QDebug>
 
@@ -609,7 +611,12 @@ void MainWindow::prologExecute() {
   }
 }
 void MainWindow::prologAbort() {
+  using namespace std::chrono_literals;
   if (m_prolog_worker) {
+    m_prolog_worker->EnableRunning = false;
+    for (int i = 0; i < 50 && !m_prolog_worker->workEnded; ++i) {
+      std::this_thread::sleep_for(100ms);
+    }
     delete m_prolog_worker;
     m_prolog_worker = nullptr;
   }

@@ -32,7 +32,7 @@ public:
     m_outQuestion = f;
   }
   bool EnableRunning{ true };
-
+  bool workEnded{ false };
   CanvasArea &canvas() {
     return *m_canvas;
   }
