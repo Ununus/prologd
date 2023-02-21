@@ -122,13 +122,15 @@ Settings::~Settings() {
 }
 void Settings::increaseFontScale() {
   int value = m_actions.font_scale_slider->value();
-  if (value < FONT_SCALE_HI)
+  if (value < FONT_SCALE_HI) {
     m_actions.font_scale_slider->setValue(value + 1);
+  }
 }
 void Settings::decreaseFontScale() {
   int value = m_actions.font_scale_slider->value();
-  if (value > FONT_SCALE_LO)
+  if (value > FONT_SCALE_LO) {
     m_actions.font_scale_slider->setValue(value - 1);
+  }
 }
 void Settings::fontScaleValueChanged(int) {
   m_actions.font_scale_label->setText(QString::number(getFontScale()) + "%");

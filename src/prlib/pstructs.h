@@ -11,14 +11,7 @@ using FloatType = double;
 using IntegerType = long long;
 
 // используется в control
-enum class PredicateState {
-  Error = 1,
-  PrepereNewTarget = 2,
-  Yes = 3,
-  ControlStep = 4,
-  No = 5,
-  Builtin = 6
-};
+enum class PredicateState { Error = 1, PrepereNewTarget = 2, Yes = 3, ControlStep = 4, No = 5, Builtin = 6 };
 
 // предок всех структур
 struct baserecord {
@@ -167,12 +160,12 @@ constexpr int _maxarray_ = bruteExpand * 5000;
 struct TScVar {
   unsigned int *buf;
   unsigned int *goal;
-  unsigned int *tat;  // текстовое представление констант
-  unsigned int *tvar; // таблица переменных
+  unsigned int *tat;   // текстовое представление констант
+  unsigned int *tvar;  // таблица переменных
   unsigned int bptr;
   unsigned int gptr;
   unsigned int nosymbol;
-  unsigned int novar; // первое свободное место в tvar
+  unsigned int novar;  // первое свободное место в tvar
   bool right;
   bool EndOfClause;
   bool Query;
@@ -229,7 +222,7 @@ struct TClVar {
   int atomp;  // указатель на цель
   int tryclause;
   bool ex, flag;
-  bool quiet{ false };  // Для предиката ТИХО 
+  bool quiet{ false };  // Для предиката ТИХО
 
   // для unify
   unsigned int bp, term1, term2, fr1, fr2, numb;
@@ -412,3 +405,6 @@ constexpr size_t hp_float = hp_int + sizeof(recordsconst) + sizeof("float") - 1;
 
 // место ТИХО
 constexpr size_t hpquiet = hp_float + sizeof(recordsconst) + sizeof("ТИХО") - 1;
+
+// место ВЕРСИЯ
+constexpr size_t hpversion = hpquiet + sizeof(recordsconst) + sizeof("ВЕРСИЯ") - 1;

@@ -10,6 +10,9 @@
 #include "functions.h"
 #include <charconv>
 
+// TODO: автоматически менять
+const char *kPrologVersion = "21 февраля 2023";
+
 PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
   case hpfail: return PredicateState::No;  // 5;  // ложь
@@ -29,6 +32,7 @@ PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap)
     }
     break;
   case hpquiet: ClVar->quiet = true; break;
+  case hpversion: pldout(kPrologVersion); break;
   }
   return PredicateState::Yes;  // 3;
 }

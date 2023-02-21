@@ -2,12 +2,12 @@
 
 #include <QDebug>
 
-const char *KeyNames[] = { "mod",       "ЛОЖЬ",       "ТРАССА",   "НЕТ_ТРАССЫ", "!",     "ВЫП",      "ВВОДСИМВ", "ВВОДЦЕЛ",  "ВВКОД",  "ЧТЕНИЕ_ИЗ",
-                           "ЗАПИСЬ_В",  "ПЕР",        "ЦЕЛ",      "ВЕЩ",        "СИМВ",  "СПИСОК",   "ВЫВОД",    "БОЛЬШЕ",   "СТРЦЕЛ", "СТРВЕЩ",
-                           "СТРСПИС",   "ЦЕЛВЕЩ",     "БУКВА",    "ЦИФРА",      "ТЕРМ",  "УДАЛЕНИЕ", "СКОЛЬКО",  "ТОЧКА",    "СЦЕП",   "ДОБ",
-                           "УМНОЖЕНИЕ", "ОКРУЖНОСТЬ", "ЗАКРАСКА", "КОПИЯ",      "ПРЕДЛ", "ЛИНИЯ",    "СЛУЧ",     "СЛОЖЕНИЕ", "ЖДИ",    "div",
-                           "int",       "float",      "НЕ",       "ИЛИ",        "РАВНО", "МЕНЬШЕ",   "ПС",       "ДЛИНА",    "ВВОДВЕЩ" };
-const int NamesCnt = sizeof(KeyNames) / sizeof(char *);  // Также есть в MainWindow.cpp
+const char *KeyNames[] = { "mod",      "ЛОЖЬ",  "ТРАССА", "НЕТ_ТРАССЫ", "ВЫП",      "ВВОДСИМВ", "ВВОДСТР", "ВВОДЦЕЛ", "ВВОДВЕЩ", "ВВКОД",     "ЧТЕНИЕ_ИЗ",
+                           "ЗАПИСЬ_В", "ПЕР",   "ЦЕЛ",    "ВЕЩ",        "СИМВ",     "СПИСОК",   "ВЫВОД",   "БОЛЬШЕ",  "СТРЦЕЛ",  "СТРВЕЩ",    "СТРСПИС",
+                           "ЦЕЛВЕЩ",   "БУКВА", "ЦИФРА",  "ТЕРМ",       "УДАЛЕНИЕ", "СКОЛЬКО",  "ТОЧКА",   "СЦЕП",    "ДОБ",     "УМНОЖЕНИЕ", "ОКРУЖНОСТЬ",
+                           "ЗАКРАСКА", "КОПИЯ", "ПРЕДЛ",  "ЛИНИЯ",      "СЛУЧ",     "СЛОЖЕНИЕ", "ЖДИ",     "div",     "int",     "float",     "НЕ",
+                           "ИЛИ",      "РАВНО", "МЕНЬШЕ", "ПС",         "ДЛИНА",    "ТИХО",     "ВЕРСИЯ" };
+const int kNamesCnt = sizeof(KeyNames) / sizeof(char *);  // Также есть в MainWindow.cpp
 
 Highlighter::Highlighter(QTextDocument *parent)
   : QSyntaxHighlighter(parent) {
@@ -21,7 +21,7 @@ Highlighter::Highlighter(QTextDocument *parent)
 
   m_keyword_format.setForeground(Qt::darkBlue);
   // keywordFormat.setFontWeight(QFont::Bold);
-  for (int i = 0; i < NamesCnt; ++i) {
+  for (int i = 0; i < kNamesCnt; ++i) {
     QString pattern = QString(KeyNames[i]);
     rule.pattern = QRegularExpression(pattern);
     rule.format = m_keyword_format;

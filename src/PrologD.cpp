@@ -166,16 +166,16 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
   std::string line;
   bool sss = false;
   if (splitSpace) {
-    if (m_curStrStream >> line) {
+    if (prd->curStrStream >> line) {
       sss = true;
     }
   } else {
-    if (std::getline(m_curStrStream, line)) {
+    if (std::getline(prd->curStrStream, line)) {
       sss = true;
     }
   }
   if (!sss) {
-    if (!inputed_strs.empty()) {
+    if (!prd->inputedStrs.empty()) {
       prd->curStrStream = std::stringstream(prd->inputedStrs.front());
       prd->inputedStrs.pop_front();
     } else {
@@ -184,7 +184,7 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
       while (!prd->haveInput && prd->EnableRunning) {
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
       }
-      if (prd->inputed_strs.empty()) {
+      if (prd->inputedStrs.empty()) {
         prd->EnableRunning = false;
         return 1;
       }

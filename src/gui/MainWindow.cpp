@@ -28,7 +28,7 @@
 #include <QDebug>
 
 // TODO: брать это из prlib
-const int NamesCnt = 49;
+const int kNamesCnt = 51;
 extern const char *KeyNames[];
 
 MainWindow::MainWindow(QWidget *parent)
@@ -38,7 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
   , m_editors(new QTabWidget)
   , m_output_text(new PlainTextEditWithLineNumberArea(this))
   , m_input_text(new PlainTextEditWithLineNumberArea(this))
-  , m_input_dialog(nullptr)
   , m_file_system_watcher(new QFileSystemWatcher(this))
   , m_filepath_2_tab_content(new QMap<QString, TabContent>)
   , m_editor_font(new QFont)
@@ -49,7 +48,6 @@ MainWindow::MainWindow(QWidget *parent)
   , m_completer(new QCompleter)
   , m_execution_thread(nullptr)
   , m_prolog_worker(nullptr)
-  , m_input_spaces_as_separators(new QCheckBox)
   , m_output_print_questions(new QCheckBox)
   , m_grp(new GraphicsWidget(nullptr))
   , m_input_console(new QGroupBox)
@@ -115,15 +113,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   QHBoxLayout *input_hlay = new QHBoxLayout;
   QLabel *input_label = new QLabel(tr("Ввод"));
-  input_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
-  m_input_spaces_as_separators->setText(tr("Использовать пробелы как разделитель"));
-  // input_pb->setIcon(QIcon(":/images/file-new.png"));
-  // m_input_spaces_as_separators->setCheckable(true);
-  m_input_spaces_as_separators->setChecked(true);
-  // m_input_spaces_as_separators->setFixedWidth(32);
   input_hlay->addWidget(input_label);
   input_hlay->addSpacing(4);
-  input_hlay->addWidget(m_input_spaces_as_separators);
   input_hlay->setAlignment(Qt::AlignmentFlag::AlignLeft);
   input_vlay->addLayout(input_hlay);
   input_vlay->addWidget(m_input_text);
@@ -162,7 +153,7 @@ MainWindow::MainWindow(QWidget *parent)
   m_text_finder->setVisible(false);
 
   QStringList keyWords;
-  for (int i = 0; i < NamesCnt; ++i) {
+  for (int i = 0; i < kNamesCnt; ++i) {
     keyWords.append(QString(KeyNames[i]));
   }
   std::sort(keyWords.begin(), keyWords.end());
@@ -368,10 +359,11 @@ void MainWindow::updateEditor(Editor *editor) {
   if (editor == nullptr)
     editor = static_cast<Editor *>(m_editors->currentWidget());
 
-  if (m_text_finder->isVisible() && !m_text_finder->line_edit_find->text().isEmpty())
+  if (m_text_finder->isVisible() && !m_text_finder->line_edit_find->text().isEmpty()) {
     editor->setSearchString(m_text_finder->line_edit_find->text());
-  else
+  } else {
     editor->setSearchString("");
+  }
 
   // QFontMetrics metrics(editor->font());
   // editor->setTabStopDistance(settingsDialog->getTextTabSize() * metrics.horizontalAdvance(' '));
@@ -379,8 +371,9 @@ void MainWindow::updateEditor(Editor *editor) {
   editor->setCompleter(m_completer);
 
   static bool blockEnter = false;
-  if (blockEnter)
+  if (blockEnter) {
     return;
+  }
   blockEnter = true;
   if (editor->isModifiedByAnotherProgram()) {
     editor->setModifiedByAnotherProgram(false);
@@ -400,6 +393,7 @@ void MainWindow::updateEditor(Editor *editor) {
   editor->setFont(m_settings->getFont());
   m_output_text->setFont(m_settings->getFont());
   m_input_text->setFont(m_settings->getFont());
+  m_input_console_line_edit->setFont(m_settings->getFont());
 }
 void MainWindow::searchInEditor(Editor *editor, bool backwardFlag) {
   QString searchString = m_text_finder->line_edit_find->text();
@@ -601,15 +595,7 @@ void MainWindow::prologExecute() {
   m_output_text->clear();
 
   m_execution_thread->start();
-
-  //if (m_input_spaces_as_separators->isChecked()) {
-  //  // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), Qt::SkipEmptyParts));
-  //  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split(QRegularExpression("\\s+"), QString::SkipEmptyParts));
-  //} else {
-  //  // emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', Qt::SkipEmptyParts));
-  //  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', QString::SkipEmptyParts));
-  //}
-  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n', QString::SkipEmptyParts));
+  emit executeProlog(editor->toPlainText().split('\n'), m_input_text->toPlainText().split('\n'));
 }
 void MainWindow::prologAbort() {
   using namespace std::chrono_literals;

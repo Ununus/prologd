@@ -90,7 +90,6 @@ private:
   QTabWidget *m_editors;
   PlainTextEditWithLineNumberArea *m_output_text;
   PlainTextEditWithLineNumberArea *m_input_text;
-  QInputDialog *m_input_dialog;
   QFileSystemWatcher *m_file_system_watcher;
   QMap<QString, TabContent> *m_filepath_2_tab_content;
   QFont *m_editor_font;
@@ -102,7 +101,6 @@ private:
   QThread *m_execution_thread;
   PrologDWorker *m_prolog_worker;
   QMetaObject::Connection m_connection_current_index_changed;
-  QCheckBox *m_input_spaces_as_separators;
   QCheckBox *m_output_print_questions;
   GraphicsWidget *m_grp;
 

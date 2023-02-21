@@ -11,6 +11,9 @@
 #include <QScrollBar>
 #include <QDebug>
 
+extern const char *kPrologVersion;
+QString decode_cp1251_to_utf8(const char *str);
+
 Help::Help(QWidget *parent)
   : QDialog(parent)
   , m_help_text(new QTextBrowser) {
@@ -76,7 +79,7 @@ AboutProgram::AboutProgram(QWidget *parent)
   programIcon->setPixmap(QPixmap(":/images/prolog1.png").scaled(42, 42, Qt::IgnoreAspectRatio, Qt::FastTransformation));
   programIcon->setFixedSize(42, 42);
   QLabel *programName = new QLabel(tr("Пролог-Д"));
-  QLabel *programVersion = new QLabel(tr("Версия: 17 февраля 2023"));
+  QLabel *programVersion = new QLabel("Версия: " + decode_cp1251_to_utf8(kPrologVersion));
   head->addWidget(programIcon);
   head->addWidget(programName);
   head->addWidget(programVersion);
