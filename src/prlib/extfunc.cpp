@@ -11,7 +11,7 @@
 #include <charconv>
 
 // TODO: автоматически менять
-const char *kPrologVersion = "21 февраля 2023";
+const char *kPrologVersion = "22 февраля 2023";
 
 PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
@@ -469,16 +469,17 @@ PredicateState prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
   const char *caption = "Введите вещественное";
 
   switch (sw) {
-  case 7:   // Целое
-  case 74:  // Целое, "caption"
-  case 79:  // Целое, caption
+  case 6:   // Float
+  case 64:  // Float, "caption"
+  case 69:  // Float, caption
   {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
+      // TODO нужен ли тут eps?.
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
         return PredicateState::No;  // 5;
       }
     } else {
-      if (sw == 74 || sw == 79) {
+      if (sw == 64 || sw == 69) {
         occ_line(1, str0, ScVar, ClVar, heap);
         if (InputFloat(&w, str0)) {
           return PredicateState::No;  // 5;
@@ -489,7 +490,7 @@ PredicateState prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
         }
       }
     }
-    return (occ(0, ScVar, ClVar, heap) == w) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+    return (occf(0, ScVar, ClVar, heap) == w) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 5:   // Переменная
   case 54:  // Переменная, "caption"
@@ -996,10 +997,13 @@ PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    // w = atol(lnwr); //!!!не сделан контроль ошибки конверитирования
-    if (sw == 95 || sw == 45)
+    auto [ptr, erc] = std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    if (erc != std::errc{}) {
+      return PredicateState::No;
+    }
+    if (sw == 95 || sw == 45) {
       return zap1(w, 2, ScVar, ClVar, heap);
+    }
     return (w == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 57:  // var int  возможно нужно var float
@@ -1040,29 +1044,6 @@ PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Error;  // 1; //R_T_e нет памяти
 }
 
-static FloatType str2float(const char *beg, const char *ed) {
-  FloatType res = 0.f;
-  const char *pt = beg;
-  while (*pt != '.' && *pt != '\0' && pt != ed) {
-    res *= 10.f;
-    res += (*pt - '0');
-    ++pt;
-  }
-  if (pt != ed) {
-    ++pt;
-  }
-  if (pt != ed) {
-    FloatType af = 0.f;
-    FloatType dv = 1.f;
-    while (*pt != '\0' && pt != ed) {
-      dv /= 10.f;
-      af += (*pt - '0') * dv;
-      ++pt;
-    }
-    res += af;
-  }
-  return res;
-}
 // СТРВЕЩ
 PredicateState prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType w{};
@@ -1074,10 +1055,14 @@ PredicateState prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    //  TODO: здесь нужна проверка правильности конвертации
-    w = str2float(lnwr, lnwr + sizeof(lnwr));
-    // std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-
+    
+    try {
+      // TODO: здесь лучше std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+      // Проверить gcc version
+      w = std::stod(std::string(lnwr));
+    } catch (...) {
+      return PredicateState::No;
+    }    
     if (sw == 95 || sw == 45) {
       return zap1f(w, 2, ScVar, ClVar, heap);
     }
@@ -2912,40 +2897,25 @@ int InputSymbol(char *c) {
 }
 
 int InputInt(IntegerType *n, const char *caption) {
-  int err = 2;  //!!! нужна проверка на правильность ввода
-                //  char* pCaption = const_cast<char*>("Введите целое");
-                //  if (caption)
-                //    pCaption = caption;
-  char Buf[255];
-  while (err == 2) {
-    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
-    if (!_err) {
-      if (sscanf(Buf, "%lld", n) != 1) {
-        continue;
-      }
-      err = 0;
-      // pldout(Buf);
-    } else {
-      err = 1;
-    }
+  char Buf[255]{};
+  int err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
+  try {
+    // TODO: здесь лучше from_chars
+    *n = std::stoll(std::string(Buf));
+  } catch (...) {
+    err = 1;
   }
   return err;
 }
 
 int InputFloat(FloatType *n, const char *caption) {
-  int err = 2;
-  char Buf[255];
-  while (err == 2) {
-    int _err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
-    if (!_err) {
-      if (sscanf(Buf, "%lf", n) != 1) {
-        continue;
-      }
-      err = 0;
-      // pldout(Buf);
-    } else {
-      err = 1;
-    }
+  char Buf[255]{};
+  int err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
+  try {
+    // TODO: здесь лучше from_chars
+    *n = std::stod(std::string(Buf));
+  } catch (...) {
+    err = 1;
   }
   return err;
 }

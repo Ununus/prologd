@@ -49,20 +49,12 @@ inline unsigned from_stac(unsigned *b, unsigned index) {
 }
 
 int expand_stack(TClVar *ClVar) {
-#ifdef _DEBUG_
-  out("expand_stack");
-#endif
   unsigned vmaxstacknew = ClVar->vmaxstack << 1;
   unsigned *st_conN;
   unsigned *st_vr1N;
   unsigned *st_vr2N;
   unsigned *st_trailN;
-  /*
-       st_conN = (unsigned *)malloc(sizeof(unsigned int) * vmaxstacknew);
-       st_vr1N = (unsigned *)malloc(sizeof(unsigned int) * vmaxstacknew);
-       st_vr2N = (unsigned *)malloc(sizeof(unsigned int) * vmaxstacknew);
-       st_trailN = (unsigned *)malloc(sizeof(unsigned int) * vmaxstacknew);
-  */
+
   st_conN = new unsigned int[vmaxstacknew];
   st_vr1N = new unsigned int[vmaxstacknew];
   st_vr2N = new unsigned int[vmaxstacknew];
@@ -160,8 +152,8 @@ void bound(unsigned *t, unsigned *f, unsigned *j, TClVar *ClVar, array *heap) {
 unsigned occur_term(unsigned *TERM, unsigned *FRAME, TClVar *ClVar, array *heap) {
   int argt = -1;
   unsigned j;
-  long i;   // для expression пока нет
-  float f;  // тоже
+  IntegerType i;   // для expression пока нет
+  FloatType f;  // тоже
   do {
     baserecord *tp = heap->GetPbaserecord(*TERM);
     //(baserecord *)&heap->heaps[*TERM];
@@ -424,8 +416,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         ex = nextarg(&j, ScVar, ClVar, heap);
         break;
       case isexpression:
-        long ii;
-        float ff;
+        IntegerType ii;
+        FloatType ff;
         unsigned char ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
@@ -751,7 +743,7 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
 
 // ================ унификация =======================
 // возврат 0 ошибка,isinteger-результат целое,isfloat-результат вешещественное
-unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClVar *ClVar, array *heap) {
+unsigned char calculation(unsigned term, unsigned frame, IntegerType *i, FloatType *f, TClVar *ClVar, array *heap) {
   unsigned char ind = 0;  // первоначально попытка вычислить выражение с целымы
 
   void *st[maxstaccalc];
@@ -762,8 +754,8 @@ unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClV
   unsigned char n = (unsigned char)ClVar->precordexpression->length;
   ErrorCode err = ErrorCode::NoErrors;
   baserecord *tp;
-  long oi1 = 0, oi2 = 0;                                       // операнды для вычисления целых
-  float of1 = 0, of2 = 0;                                      // операнды для  вычисления вещественных
+  IntegerType oi1 = 0, oi2 = 0;                                       // операнды для вычисления целых
+  FloatType of1 = 0, of2 = 0;                                      // операнды для  вычисления вещественных
   for (int j = 0; j < n && err == ErrorCode::NoErrors; j++) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
     unsigned *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
     //(unsigned *)&heap->heaps[ClVar->precordexpression->precord];
@@ -846,7 +838,7 @@ unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClV
           else if (ind == isinteger) {
             oi2 = ClVar->precordinteger->value;  // второй операнд
           } else {
-            of2 = (float)ClVar->precordinteger->value;  // если первый вещественный
+            of2 = (FloatType)ClVar->precordinteger->value;  // если первый вещественный
           }
           delete st[index - 1];
           index--;
@@ -862,7 +854,7 @@ unsigned char calculation(unsigned term, unsigned frame, long *i, float *f, TClV
             of2 = ClVar->precordfloat->value;
             if (ind == isinteger) {
               ind = isfloat;
-              of1 = (float)oi1;
+              of1 = (FloatType)oi1;
             }
           }
           delete st[index - 1];
@@ -1166,8 +1158,8 @@ bool unvar(TClVar *ClVar, array *heap) {
       break;
     case isunknown: nextun(ClVar, heap); break;
     case isexpression:
-      long a;
-      float af;
+      IntegerType a;
+      FloatType af;
       unsigned char ind = calculation(ClVar->term2, ClVar->frame2, &a, &af, ClVar, heap);
       switch (ind) {
       case 0: ret = false; break;  //!!!abort_calculation;
@@ -1231,8 +1223,8 @@ bool unint(TClVar *ClVar, array *heap) {
     ret = true;
   } break;
   case isexpression: {
-    float af;
-    long a;
+    IntegerType a;
+    FloatType af;
     unsigned char ind = calculation(ClVar->term2, ClVar->frame2, &a, &af, ClVar, heap);
     recordinteger *pint = heap->GetPrecordinteger(ClVar->term1);
     //(recordinteger *)&heap->heaps[ClVar->term1];
@@ -1360,8 +1352,8 @@ bool unexpr(TClVar *ClVar, array *heap) {
     ret = true;
     break;
   case isexpression:
-    long c, d;
-    float cf, df;
+    IntegerType c, d;
+    FloatType cf, df;
     unsigned char ind1 = calculation(ClVar->term1, ClVar->frame1, &c, &cf, ClVar, heap), ind2 = calculation(ClVar->term2, ClVar->frame2, &d, &df, ClVar, heap);
     if (ind1 == ind2 && ind1 == isinteger)  //!!! сделано только для целых
       if (c == d) {

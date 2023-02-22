@@ -396,7 +396,7 @@ void PrintExpression(char **Buf, size_t *BufSize, recordexpression *pex, TScVar 
 }
 
 void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array *heap) {
-  char pBuf[255];
+  char pBuf[255]{};
   char *p = *Buf;
   if (2 > *BufSize) {
     pldout(const_cast<char *>("Buffer for unknown out is too small"));
