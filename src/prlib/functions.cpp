@@ -8,7 +8,7 @@
 #include "scaner.h"
 // #include "control.h"
 #include "extfunc.h"
-#include <charconv>
+//#include <charconv>
 
 //=======Первоначальное заполнение
 const char *NamesOfPredicates[] = { "mod",    "ЛОЖЬ",      "ТРАССА",    "НЕТ_ТРАССЫ", "!",        "ВЫП",   "ВВОДСИМВ", "ВВОДСТР",  "ВВОДЦЕЛ", "ВВОДВЕЩ",

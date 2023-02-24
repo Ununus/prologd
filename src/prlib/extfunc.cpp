@@ -8,7 +8,7 @@
 #include "extfunc.h"
 #include "control.h"
 #include "functions.h"
-#include <charconv>
+//#include <charconv>
 
 // TODO: автоматически менять
 const char *kPrologVersion = "22 февраля 2023";
