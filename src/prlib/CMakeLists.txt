@@ -2,9 +2,6 @@
 
 project ("prlib")
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 add_library (prlib 
 "control.cpp" "control.h"
 "err.cpp" "err.h"

@@ -331,11 +331,18 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
     if (term == isnil || term == NULL)  // || !term)
     {
       buff[j++] = '_';
-      auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
-      j = ptr - buff;
+      //auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
+      //j = ptr - buff;
+
       // Заменено на to_chars, но не поверено
       //_itoa(W, (char*)&buff[j], 10);
       // for (; (j < sizeof(buff) - 1 && buff[j]); j++);
+
+      std::string res = std::to_string(W);
+      for (size_t q = 0; q < res.size(); ++q) {
+        buff[j] = res[q];
+        ++j;
+      }
 
       ex = nextarg(&j, ScVar, ClVar, heap);
     } else {
@@ -359,11 +366,18 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       } break;  // ok
       case isinteger: {
         ClVar->precordinteger = (recordinteger *)tp;
-        auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
-        j = ptr - buff;
+        //auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
+        //j = ptr - buff;
+        
         // Заменено на to_chars, но не поверено
         //_ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
         // for (; j < sizeof(buff) - 1 && buff[j]; j++);
+
+        std::string res = std::to_string(ClVar->precordinteger->value);
+        for (size_t q = 0; q < res.size(); ++q) {
+          buff[j] = res[q];
+          ++j;
+        }
 
         ex = nextarg(&j, ScVar, ClVar, heap);
       } break;  // ok
@@ -421,12 +435,18 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         unsigned char ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
-          auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
-          // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
-          j = ptr - buff;
+          //auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
+          //j = ptr - buff;
+          
           // Заменено на to_chars, но не поверено
           //_ltoa(ii, (char*)&buff[j], 10);
           // for (; j < sizeof(buff) - 1 && buff[j]; j++);
+
+        std::string res = std::to_string(ii);
+          for (size_t q = 0; q < res.size(); ++q) {
+            buff[j] = res[q];
+            ++j;
+          }
 
         } break;
         case isfloat:

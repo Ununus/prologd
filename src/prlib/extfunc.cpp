@@ -997,10 +997,18 @@ PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    auto [ptr, erc] = std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    if (erc != std::errc{}) {
+    //auto [ptr, erc] = std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    //if (erc != std::errc{}) {
+    //  return PredicateState::No;
+    //}
+
+    try {
+      // здесь лучше from_chars или atoll
+      w = std::stoll(std::string(lnwr));
+    } catch (...) {
       return PredicateState::No;
     }
+
     if (sw == 95 || sw == 45) {
       return zap1(w, 2, ScVar, ClVar, heap);
     }
@@ -1008,10 +1016,12 @@ PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   case 57:  // var int  возможно нужно var float
   {
-    std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
+    //std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
     // Заменено на to_chars, но не поверено
     //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
     // char *str=newStr(lnwr);
+
+    sprintf(lnwr, "%lld", occ(1, ScVar, ClVar, heap));
 
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
@@ -1056,9 +1066,9 @@ PredicateState prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
     
+
     try {
-      // TODO: здесь лучше std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-      // Проверить gcc version
+      // здесь лучше std::from_chars(lnwr, lnwr + sizeof(lnwr), w) или atof;  
       w = std::stod(std::string(lnwr));
     } catch (...) {
       return PredicateState::No;
@@ -2900,7 +2910,7 @@ int InputInt(IntegerType *n, const char *caption) {
   char Buf[255]{};
   int err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
   try {
-    // TODO: здесь лучше from_chars
+    // здесь лучше from_chars или atoll
     *n = std::stoll(std::string(Buf));
   } catch (...) {
     err = 1;
@@ -2912,7 +2922,7 @@ int InputFloat(FloatType *n, const char *caption) {
   char Buf[255]{};
   int err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
   try {
-    // TODO: здесь лучше from_chars
+    // здесь лучше from_chars или atof
     *n = std::stod(std::string(Buf));
   } catch (...) {
     err = 1;

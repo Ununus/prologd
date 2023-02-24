@@ -316,8 +316,8 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuef); // в gcc не реализовано
       valuef = atof(bufnum);
     } else {
-      std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
-      // valuei = atoi(bufnum);
+      //std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
+      valuei = atoll(bufnum);
     }
     if ((valuef == valuei) && (i > 1 || (i == 1 && (*p != '0')))) {
       err = ErrorCode::InvalidNumberFormat;  // 4;  // не верный формат числа
