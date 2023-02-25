@@ -12,4 +12,8 @@ add_library (prlib
 "pdefs.h"
 )
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  target_link_libraries(prlib -static-libgcc -static-libstdc++)
+endif()
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

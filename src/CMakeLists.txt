@@ -41,3 +41,7 @@ endif()
 
 add_executable(prologd "prologdc.cpp")
 target_link_libraries(prologd prlib)
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+  target_link_libraries(prologd -static-libgcc -static-libstdc++)
+endif()
