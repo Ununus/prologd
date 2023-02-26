@@ -755,7 +755,7 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
       ClVar->err = ErrorCode::ExecutionInterrupted;  // 27;  // abort
     }
   }
-  if (ClVar->flag) {
+  if (ClVar->flag && !ClVar->quiet) {
     prdout(false);
   }
   return ClVar->err;
