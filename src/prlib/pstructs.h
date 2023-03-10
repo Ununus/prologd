@@ -6,9 +6,11 @@
 #include <vector>
 #include "err.h"
 #include "pdefs.h"
+#include <boost/multiprecision/cpp_int.hpp>
 
 using FloatType = double;
-using IntegerType = long long;
+//using IntegerType = long long;
+using IntegerType = boost::multiprecision::cpp_int;
 
 // используется в control
 enum class PredicateState { Error = 1, PrepereNewTarget = 2, Yes = 3, ControlStep = 4, No = 5, Builtin = 6 };

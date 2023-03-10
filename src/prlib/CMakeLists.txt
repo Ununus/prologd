@@ -12,6 +12,8 @@ add_library (prlib
 "pdefs.h"
 )
 
+target_include_directories(prlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/boost/include)
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   target_link_libraries(prlib -static-libgcc -static-libstdc++)
 endif()

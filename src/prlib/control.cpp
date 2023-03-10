@@ -373,7 +373,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         //_ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
         // for (; j < sizeof(buff) - 1 && buff[j]; j++);
 
-        std::string res = std::to_string(ClVar->precordinteger->value);
+        //std::string res = std::to_string(ClVar->precordinteger->value);
+        std::string res = ClVar->precordinteger->value.str();
         for (size_t q = 0; q < res.size(); ++q) {
           buff[j] = res[q];
           ++j;
@@ -442,7 +443,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
           //_ltoa(ii, (char*)&buff[j], 10);
           // for (; j < sizeof(buff) - 1 && buff[j]; j++);
 
-        std::string res = std::to_string(ii);
+        //std::string res = std::to_string(ii);
+          std::string res = ii.str();
           for (size_t q = 0; q < res.size(); ++q) {
             buff[j] = res[q];
             ++j;
@@ -1229,7 +1231,7 @@ bool unint(TClVar *ClVar, array *heap) {
     recordfloat *precordfloat = (recordfloat *)tp;
     recordinteger *precordinteger = heap->GetPrecordinteger(ClVar->term1);
     //(recordinteger *)&heap->heaps[ClVar->term1];
-    if (precordfloat->value - 1 < precordinteger->value && precordfloat->value == (float)precordinteger->value) {
+    if (precordfloat->value - 1 < precordinteger->value.convert_to<FloatType>() && precordfloat->value == (float)precordinteger->value) {
       ret = true;
       nextun(ClVar, heap);
     }
@@ -1271,7 +1273,7 @@ bool unfloat(TClVar *ClVar, array *heap) {
     recordfloat *precordfloat = heap->GetPrecordfloat(ClVar->term1);
     //(recordfloat *)&heap->heaps[ClVar->term1];
     recordinteger *precordinteger = (recordinteger *)tp;
-    if (precordfloat->value - 1 < precordinteger->value && (float)precordinteger->value == precordfloat->value) {
+    if (precordfloat->value - 1 < precordinteger->value.convert_to<FloatType>() && (float)precordinteger->value == precordfloat->value) {
       ret = true;
       nextun(ClVar, heap);
     }

@@ -251,11 +251,13 @@ PredicateState zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar 
 PredicateState prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType n, m;
   static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
-  static std::uniform_int_distribution<IntegerType> dst;
+  // TODO: multiprec rng gen
+  //static std::uniform_int_distribution<IntegerType> dst;
+  static std::uniform_int_distribution<long long> dst;
   switch (sw) {
   case 7:  // целое: инициализация генератора
     n = occ(0, ScVar, ClVar, heap);
-    rng = std::mt19937(n);
+    rng = std::mt19937(n.convert_to<long long>());
     return PredicateState::Yes;  // 3;
   case 5:                        // переменная: получить новое значение
     return zap1(rng(), 1, ScVar, ClVar, heap);
@@ -267,7 +269,8 @@ PredicateState prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
       outerror(ErrorCode::UnknownError);  // 24
       return PredicateState::Error;       // 1;
     }
-    dst = std::uniform_int_distribution<IntegerType>(n, m);
+    //dst = std::uniform_int_distribution<IntegerType>(n, m);
+    dst = std::uniform_int_distribution<long long>(n.convert_to<long long>(), m.convert_to<long long>());
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -736,7 +739,7 @@ PredicateState prwait(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   IntegerType n = occ(0, ScVar, ClVar, heap);
   if (n > 0) {
-    std::this_thread::sleep_for(std::chrono::duration<IntegerType, std::milli>(n));
+    std::this_thread::sleep_for(std::chrono::duration<size_t, std::milli>(n.convert_to<size_t>()));
   }
   return PredicateState::Yes;  // 3;
 }
@@ -1138,12 +1141,13 @@ PredicateState whatisit(unsigned sw, bool (*f)(char), unsigned i, TScVar *ScVar,
   case 47:
     w = occ(1, ScVar, ClVar, heap);
     if (w && len >= w) {
-      return (*f)(lnwr[--w]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+      w -= 1;
+      return (*f)(lnwr[w.convert_to<size_t>()]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
     }
     break;
   case 95:  // str var
   case 45:
-    for (w = 0; w < len && !(*f)(lnwr[w]); w++)
+    for (w = 0; w < len && !(*f)(lnwr[w.convert_to<size_t>()]); w++)
       ;
     if (w < len)
       return zap1(w + 1, 2, ScVar, ClVar, heap);
@@ -1328,7 +1332,7 @@ PredicateState prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     outerror(ErrorCode::UnknownError);  // 24
     return PredicateState::Error;       // 1; // r_t_e
   }
-  unsigned i = occ(1, ScVar, ClVar, heap);
+  IntegerType i = occ(1, ScVar, ClVar, heap);
   recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
   //(recordsconst *)&heap->heaps[ScVar->goal[maxarity]];
   if (ps->begin == isnil || ps->begin == NULL)
@@ -1388,7 +1392,7 @@ PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     y1 = occ(1, ScVar, ClVar, heap);
     y2 = y1 + 5;
     color = occ(2, ScVar, ClVar, heap);
-    SetPixel(x1, y1, color);
+    SetPixel(x1, y1, color.convert_to<size_t>());
     /*
     if (color > -1 && color < _MaxColors_)
               {   color = colorstable[color];
@@ -1455,7 +1459,7 @@ PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
               canvas->Brush->Color=canvas->Pen->Color;
               canvas->Rectangle(x1,y1,x2,y2);
     */
-    ClearView(color);
+    ClearView(color.convert_to<size_t>());
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -1777,7 +1781,7 @@ void PrintInteger(recordinteger *pbr, int Level) {
   char *p = pBuf + Level;
   sprintf(p, "PrintInteger: Level %d", Level);
   pldout(pBuf);
-  sprintf(p, "Value: %lld", pbr->value);
+  sprintf(p, "Value: %s", pbr->value.str().c_str());
   pldout(pBuf);
 }
 
@@ -2405,7 +2409,7 @@ PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     */
     // x2 = y2 = 0;
     // Ellipse(x1, y1, x2, y2, color);
-    Ellipse(x1, y1, r, r, color);
+    Ellipse(x1, y1, r, r, color.convert_to<size_t>());
   } break;
 
   case 7577: {
@@ -2457,7 +2461,7 @@ PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
               canvas->Brush->Color=canvas->Pen->Color;
               canvas->Rectangle(x1,y1,x2,y2);
     */
-    ClearView(color);
+    ClearView(color.convert_to<size_t>());
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -2477,7 +2481,7 @@ PredicateState prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   x = occ(0, ScVar, ClVar, heap);
   y = occ(1, ScVar, ClVar, heap);
   color = occ(2, ScVar, ClVar, heap);
-  FloodFill(x, y, color);
+  FloodFill(x, y, color.convert_to<size_t>());
   return PredicateState::Yes;  // 3;
 }
 
@@ -2493,9 +2497,9 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i2 = occ(2, ScVar, ClVar, heap);
     i3 = strlen(str1);
     if (i1 > 0 && i2 >= 0 && i3 >= i1 + i2 - 1) {
-      str1[i1 + i2 - 1] = NULL;
+      str1[(i1 + i2 - 1).convert_to<size_t>()] = NULL;
       // char *s=newStr(&str1[i1-1]);
-      return zap3(&str1[i1 - 1], 4, ScVar, ClVar, heap);
+      return zap3(&str1[(i1 - 1).convert_to<size_t>()], 4, ScVar, ClVar, heap);
     }
     break;
   case 4774:
@@ -2508,7 +2512,8 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i2 = occ(2, ScVar, ClVar, heap);
     i3 = strlen(str1);
     i4 = strlen(str2);
-    return (i1 > 0 && i2 >= 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[i1 - 1], str2, i2)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+    return (i1 > 0 && i2 >= 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[(i1 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>())) ? PredicateState::Yes
+                                                                                                                            : PredicateState::No;  // 3 : 5;
 
   case 4574:
   case 4579:
@@ -2519,8 +2524,8 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i1 = occ(2, ScVar, ClVar, heap);
     i2 = strlen(str1);
     i3 = strlen(str2);
-    if (i1 >= 0 && i2 > i1 + i3 - 1 && i3 == i1) {
-      for (i4 = i2 - i3; i4 >= 0 && strncmp(&str1[i4], str2, i3); i4--)
+    if (i1 >= 0 && i2 >= i1 + i3 - 1 && i3 == i1) {
+      for (i4 = i2 - i3; i4 >= 0 && strncmp(&str1[i4.convert_to<size_t>()], str2, i3.convert_to<size_t>()); i4--)
         ;
       if (i4 >= 0)
         return zap1(i4 + 1, 2, ScVar, ClVar, heap);
@@ -2537,7 +2542,7 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (i1 >= i2) {
       int result = 1;
       for (i3 = i1 - i2; i3 >= 0 && result != 0; i3--)
-        result = strncmp(&str1[i3], str2, i2);
+        result = strncmp(&str1[i3.convert_to<size_t>()], str2, i2.convert_to<size_t>());
       if (!result) {
         return zap2(i3 + 2, i2, 2, 3, ScVar, ClVar, heap);
       }
@@ -2552,7 +2557,7 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i1 = strlen(str1);
     i2 = strlen(str2);
     i3 = occ(1, ScVar, ClVar, heap);
-    if ((i3 > 0) && (i1 >= i2 + i3 - 1) && (!strncmp(&str1[i3 - 1], str2, i2)))
+    if ((i3 > 0) && (i1 >= i2 + i3 - 1) && (!strncmp(&str1[(i3 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>())))
       return zap1(i2, 3, ScVar, ClVar, heap);
     break;
   default: {
@@ -2726,7 +2731,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = occ(2, ScVar, ClVar, heap);
     y2 = occ(3, ScVar, ClVar, heap);
     color = occ(4, ScVar, ClVar, heap);
-    MoveTo_LineTo(x1, y1, x2, y2, color);
+    MoveTo_LineTo(x1, y1, x2, y2, color.convert_to<size_t>());
     /*
     SetPenColor(color);
     MoveTo(x1, y1);
@@ -2756,7 +2761,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = maxgrx;
     y2 = maxgry;
     // SetPenAndBrushColor(color);
-    Rectangle(x1, y1, x2, y2, color);
+    Rectangle(x1, y1, x2, y2, color.convert_to<size_t>());
   } break;
 
   case 75757: {
@@ -2766,7 +2771,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = occ(2, ScVar, ClVar, heap);
     y2 = maxgry;
     // SetPenAndBrushColor(color);
-    Rectangle(x1, y1, x2, y2, color);
+    Rectangle(x1, y1, x2, y2, color.convert_to<size_t>());
   } break;
 
   case 57577: {
@@ -2776,7 +2781,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = maxgrx;
     y2 = occ(3, ScVar, ClVar, heap);
     // SetPenAndBrushColor(color);
-    Rectangle(x1, y1, x2, y2, color);
+    Rectangle(x1, y1, x2, y2, color.convert_to<size_t>());
   } break;
   case 75577: {
     vertical(0, occ(3, ScVar, ClVar, heap), occ(0, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));

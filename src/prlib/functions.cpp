@@ -317,9 +317,10 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
       valuef = atof(bufnum);
     } else {
       //std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
-      valuei = atoll(bufnum);
+      //valuei = atoll(bufnum);
+      valuei = boost::multiprecision::cpp_int(bufnum);
     }
-    if ((valuef == valuei) && (i > 1 || (i == 1 && (*p != '0')))) {
+    if ((valuef == valuei.convert_to<FloatType>()) && (i > 1 || (i == 1 && (*p != '0')))) {
       err = ErrorCode::InvalidNumberFormat;  // 4;  // не верный формат числа
     } else {
       if (punkt || e) {
