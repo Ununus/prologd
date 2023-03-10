@@ -33,6 +33,7 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
+[Bb]uild/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -373,3 +374,4 @@ src/prlib/Makefile
 
 # Pycharm files
 .idea/
+/build-PrologD-Desktop_Qt_6_2_4_MinGW_64_bit-Debug
