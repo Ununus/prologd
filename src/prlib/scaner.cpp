@@ -96,7 +96,7 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {  // функция синтаксиче
       } else if (bptr + 1 < _maxbptr_) {
         buf[bptr++] = ScVar->hpunkn;
       } else {
-        //err = ErrorCode::CannotOpenGraphics;  // 22;
+        // err = ErrorCode::CannotOpenGraphics;  // 22;
         err = ErrorCode::TooManyCharacterConstants;
       }
     } break;
@@ -106,7 +106,7 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {  // функция синтаксиче
       } else if (bptr + 1 < _maxbptr_) {
         buf[bptr++] = hpcut;
       } else {
-        //err = ErrorCode::CannotOpenGraphics;  // 22;
+        // err = ErrorCode::CannotOpenGraphics;  // 22;
         err = ErrorCode::TooManyCharacterConstants;
       }
       break;

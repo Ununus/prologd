@@ -8,10 +8,10 @@
 #include "extfunc.h"
 #include "control.h"
 #include "functions.h"
-//#include <charconv>
+// #include <charconv>
 
 // TODO: автоматически менять
-const char *kPrologVersion = "26 февраля 2023";
+const char *kPrologVersion = "11 марта 2023";
 
 PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
@@ -161,6 +161,7 @@ PredicateState zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar,
 
 // унификация целого num с arg аргументом предиката
 PredicateState zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  // std::cout << "Zap " << num << ' ' << sizeof(num) << '\n'; 
   recordinteger pi(num);
   unsigned bakindex = heap->last;
   unsigned index = heap->apend(&pi, sizeof(recordinteger));
@@ -252,7 +253,7 @@ PredicateState prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
   IntegerType n, m;
   static std::mt19937 rng(std::chrono::steady_clock::now().time_since_epoch().count());
   // TODO: multiprec rng gen
-  //static std::uniform_int_distribution<IntegerType> dst;
+  // static std::uniform_int_distribution<IntegerType> dst;
   static std::uniform_int_distribution<long long> dst;
   switch (sw) {
   case 7:  // целое: инициализация генератора
@@ -269,7 +270,7 @@ PredicateState prrandom(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
       outerror(ErrorCode::UnknownError);  // 24
       return PredicateState::Error;       // 1;
     }
-    //dst = std::uniform_int_distribution<IntegerType>(n, m);
+    // dst = std::uniform_int_distribution<IntegerType>(n, m);
     dst = std::uniform_int_distribution<long long>(n.convert_to<long long>(), m.convert_to<long long>());
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: {
@@ -476,7 +477,7 @@ PredicateState prrdfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
   case 64:  // Float, "caption"
   case 69:  // Float, caption
   {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
-      // TODO нужен ли тут eps?.
+            // TODO нужен ли тут eps?.
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
         return PredicateState::No;  // 5;
@@ -1000,10 +1001,10 @@ PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    //auto [ptr, erc] = std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    //if (erc != std::errc{}) {
-    //  return PredicateState::No;
-    //}
+    // auto [ptr, erc] = std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
+    // if (erc != std::errc{}) {
+    //   return PredicateState::No;
+    // }
 
     try {
       // здесь лучше from_chars или atoll
@@ -1019,12 +1020,12 @@ PredicateState prstint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   case 57:  // var int  возможно нужно var float
   {
-    //std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
-    // Заменено на to_chars, но не поверено
+    // std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
+    //  Заменено на to_chars, но не поверено
     //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
-    // char *str=newStr(lnwr);
+    //  char *str=newStr(lnwr);
 
-    sprintf(lnwr, "%lld", occ(1, ScVar, ClVar, heap));
+    sprintf(lnwr, "%s", occ(1, ScVar, ClVar, heap).str().c_str());
 
     return zap3(lnwr, 1, ScVar, ClVar, heap);
   }
@@ -1068,14 +1069,13 @@ PredicateState prstfloat(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap)
   case 45:  // symb var
   {
     occ_line(0, lnwr, ScVar, ClVar, heap);
-    
 
     try {
-      // здесь лучше std::from_chars(lnwr, lnwr + sizeof(lnwr), w) или atof;  
+      // здесь лучше std::from_chars(lnwr, lnwr + sizeof(lnwr), w) или atof;
       w = std::stod(std::string(lnwr));
     } catch (...) {
       return PredicateState::No;
-    }    
+    }
     if (sw == 95 || sw == 45) {
       return zap1f(w, 2, ScVar, ClVar, heap);
     }
@@ -1392,7 +1392,7 @@ PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     y1 = occ(1, ScVar, ClVar, heap);
     y2 = y1 + 5;
     color = occ(2, ScVar, ClVar, heap);
-    SetPixel(x1, y1, color.convert_to<size_t>());
+    SetPixel(x1.convert_to<long long>(), y1.convert_to<long long>(), color.convert_to<unsigned>());
     /*
     if (color > -1 && color < _MaxColors_)
               {   color = colorstable[color];
@@ -1403,7 +1403,7 @@ PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 775: {
     x1 = occ(0, ScVar, ClVar, heap);
     y1 = occ(1, ScVar, ClVar, heap);
-    color = GetPixel(x1, y1);
+    color = GetPixel(x1.convert_to<long long>(), y1.convert_to<long long>());
     /*
               for (int i = 0; i < _MaxColors_; i++)
                       if (color == colorstable[i])
@@ -1426,7 +1426,7 @@ PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
               canvas->MoveTo(x1, y1);
               canvas->LineTo(x2, y2);
     */
-    vertical(x1, y1, x2, color);
+    vertical(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
   case 577: {
     xy = occ(1, ScVar, ClVar, heap);
@@ -1443,7 +1443,7 @@ PredicateState prset(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
               canvas->LineTo(x2,y2);
     */
     color = 0;
-    horisontal(x1, y1, y2, color);
+    horisontal(x1.convert_to<long long>(), y1.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
   case 557: {
     color = occ(2, ScVar, ClVar, heap);
@@ -2409,7 +2409,7 @@ PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     */
     // x2 = y2 = 0;
     // Ellipse(x1, y1, x2, y2, color);
-    Ellipse(x1, y1, r, r, color.convert_to<size_t>());
+    Ellipse(x1.convert_to<long long>(), y1.convert_to<long long>(), r.convert_to<long long>(), r.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
 
   case 7577: {
@@ -2419,7 +2419,7 @@ PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     y1 = 0;
     x2 = x1 + r + r;
     // y2 = maxgry;
-    vertical(x1, y1, x2, color);
+    vertical(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), color.convert_to<unsigned>());
     /*
               if (color > -1 && color < _MaxColors_)
               {   color = colorstable[color];
@@ -2444,7 +2444,7 @@ PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
               canvas->Brush->Color=canvas->Pen->Color;
               canvas->Rectangle(x1,y1,x2,y2);
     */
-    horisontal(x1, y1, y2, color);
+    horisontal(x1.convert_to<long long>(), y1.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
   case 7757:
   case 7557:
@@ -2461,7 +2461,7 @@ PredicateState prcircl(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
               canvas->Brush->Color=canvas->Pen->Color;
               canvas->Rectangle(x1,y1,x2,y2);
     */
-    ClearView(color.convert_to<size_t>());
+    ClearView(color.convert_to<unsigned>());
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -2481,7 +2481,7 @@ PredicateState prpaint(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   x = occ(0, ScVar, ClVar, heap);
   y = occ(1, ScVar, ClVar, heap);
   color = occ(2, ScVar, ClVar, heap);
-  FloodFill(x, y, color.convert_to<size_t>());
+  FloodFill(x.convert_to<long long>(), y.convert_to<long long>(), color.convert_to<unsigned>());
   return PredicateState::Yes;  // 3;
 }
 
@@ -2512,8 +2512,9 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i2 = occ(2, ScVar, ClVar, heap);
     i3 = strlen(str1);
     i4 = strlen(str2);
-    return (i1 > 0 && i2 >= 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[(i1 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>())) ? PredicateState::Yes
-                                                                                                                            : PredicateState::No;  // 3 : 5;
+    return (i1 > 0 && i2 >= 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[(i1 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>()))
+           ? PredicateState::Yes
+           : PredicateState::No;  // 3 : 5;
 
   case 4574:
   case 4579:
@@ -2731,7 +2732,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = occ(2, ScVar, ClVar, heap);
     y2 = occ(3, ScVar, ClVar, heap);
     color = occ(4, ScVar, ClVar, heap);
-    MoveTo_LineTo(x1, y1, x2, y2, color.convert_to<size_t>());
+    MoveTo_LineTo(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
     /*
     SetPenColor(color);
     MoveTo(x1, y1);
@@ -2740,11 +2741,29 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     //!!!gbuf->addobject(new Tgrline(occ(0),occ(1),occ(2),occ(3),occ(4)));
     // setcolor(occ(4));line(occ(0),occ(1),occ(2),occ(3));
   } break;
-  case 77757: vertical(occ(0, ScVar, ClVar, heap), occ(1, ScVar, ClVar, heap), occ(2, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap)); break;
-  case 77577: horisontal(occ(0, ScVar, ClVar, heap), occ(1, ScVar, ClVar, heap), occ(3, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap)); break;
-  case 75777: vertical(occ(2, ScVar, ClVar, heap), occ(3, ScVar, ClVar, heap), occ(0, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap)); break;
+  case 77757:
+    vertical(occ(0, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(1, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(2, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    break;
+  case 77577:
+    horisontal(occ(0, ScVar, ClVar, heap).convert_to<long long>(),
+               occ(1, ScVar, ClVar, heap).convert_to<long long>(),
+               occ(3, ScVar, ClVar, heap).convert_to<long long>(),
+               occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    break;
+  case 75777:
+    vertical(occ(2, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(3, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(0, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    break;
   case 57777:
-    horisontal(occ(2, ScVar, ClVar, heap), occ(3, ScVar, ClVar, heap), occ(1, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
+    horisontal(occ(2, ScVar, ClVar, heap).convert_to<long long>(),
+               occ(3, ScVar, ClVar, heap).convert_to<long long>(),
+               occ(1, ScVar, ClVar, heap).convert_to<long long>(),
+               occ(4, ScVar, ClVar, heap).convert_to<long long>());
     break;
     //=================
 
@@ -2761,7 +2780,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = maxgrx;
     y2 = maxgry;
     // SetPenAndBrushColor(color);
-    Rectangle(x1, y1, x2, y2, color.convert_to<size_t>());
+    Rectangle(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
 
   case 75757: {
@@ -2771,7 +2790,7 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = occ(2, ScVar, ClVar, heap);
     y2 = maxgry;
     // SetPenAndBrushColor(color);
-    Rectangle(x1, y1, x2, y2, color.convert_to<size_t>());
+    Rectangle(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
 
   case 57577: {
@@ -2781,15 +2800,27 @@ PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap
     x2 = maxgrx;
     y2 = occ(3, ScVar, ClVar, heap);
     // SetPenAndBrushColor(color);
-    Rectangle(x1, y1, x2, y2, color.convert_to<size_t>());
+    Rectangle(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
   } break;
   case 75577: {
-    vertical(0, occ(3, ScVar, ClVar, heap), occ(0, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
-    vertical(maxgrx, occ(3, ScVar, ClVar, heap), occ(0, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
+    vertical(0,
+             occ(3, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(0, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    vertical(maxgrx,
+             occ(3, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(0, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(4, ScVar, ClVar, heap).convert_to<long long>());
   } break;
   case 57757: {
-    vertical(0, occ(1, ScVar, ClVar, heap), occ(2, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
-    vertical(maxgrx, occ(1, ScVar, ClVar, heap), occ(2, ScVar, ClVar, heap), occ(4, ScVar, ClVar, heap));
+    vertical(0,
+             occ(1, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(2, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    vertical(maxgrx,
+             occ(1, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(2, ScVar, ClVar, heap).convert_to<long long>(),
+             occ(4, ScVar, ClVar, heap).convert_to<long long>());
   } break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24

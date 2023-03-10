@@ -3,8 +3,8 @@
 
 #include <QApplication>
 #include <QSettings>
-#include <QTextCodec>
-#include <QTranslator>
+// #include <QTextCodec>
+// #include <QTranslator>
 #include "gui/MainWindow.h"
 
 #include <stdio.h>
@@ -45,23 +45,23 @@ const QRgb PROLOG_COLOR_WHITE = QColor(255, 255, 255).rgb();
 
 QRgb ui2rgb(unsigned int c) {
   switch (c) {
-  case 0: return PROLOG_COLOR_BLACK;     //черный
-  case 1: return PROLOG_COLOR_BLUE;      //синий
-  case 2: return PROLOG_COLOR_GEEN;      //зеленый
-  case 3: return PROLOG_COLOR_LBLUE;     //голубой
-  case 4: return PROLOG_COLOR_BROWN;     //коричневый
-  case 5: return PROLOG_COLOR_VIOLET;    //фиолетовый
-  case 6: return PROLOG_COLOR_DYELLOW;   //темно-желтый
-  case 7: return PROLOG_COLOR_GRAY;      //серый
-  case 8: return PROLOG_COLOR_DGRAY;     //стремно-серый
-  case 9: return PROLOG_COLOR_CYAN;      //светло-синий
-  case 10: return PROLOG_COLOR_LGREEN;   //светло-зеленый
-  case 11: return PROLOG_COLOR_LCYAN;    //светло-голубой
-  case 12: return PROLOG_COLOR_RED;      //красный
-  case 13: return PROLOG_COLOR_LVIOLET;  //сиреневый
-  case 14: return PROLOG_COLOR_YELLOW;   //желтый
+  case 0: return PROLOG_COLOR_BLACK;     // черный
+  case 1: return PROLOG_COLOR_BLUE;      // синий
+  case 2: return PROLOG_COLOR_GEEN;      // зеленый
+  case 3: return PROLOG_COLOR_LBLUE;     // голубой
+  case 4: return PROLOG_COLOR_BROWN;     // коричневый
+  case 5: return PROLOG_COLOR_VIOLET;    // фиолетовый
+  case 6: return PROLOG_COLOR_DYELLOW;   // темно-желтый
+  case 7: return PROLOG_COLOR_GRAY;      // серый
+  case 8: return PROLOG_COLOR_DGRAY;     // стремно-серый
+  case 9: return PROLOG_COLOR_CYAN;      // светло-синий
+  case 10: return PROLOG_COLOR_LGREEN;   // светло-зеленый
+  case 11: return PROLOG_COLOR_LCYAN;    // светло-голубой
+  case 12: return PROLOG_COLOR_RED;      // красный
+  case 13: return PROLOG_COLOR_LVIOLET;  // сиреневый
+  case 14: return PROLOG_COLOR_YELLOW;   // желтый
   }
-  return PROLOG_COLOR_WHITE;  //белый
+  return PROLOG_COLOR_WHITE;  // белый
 }
 unsigned int rgb2ui(QRgb color) {
   if (color == PROLOG_COLOR_BLACK)
@@ -203,7 +203,7 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
   buf[to] = 0;
   return 0;
 }
-unsigned int GetPixel(IntegerType x, IntegerType y) {
+unsigned int GetPixel(long long x, long long y) {
   // qDebug() << "GetPixel" << x << y;
   int iw = prd->canvas().image().width();
   int ih = prd->canvas().image().height();
@@ -221,19 +221,19 @@ void ClearView(unsigned int c) {
   // update(x-w, y-h, x+w, y+h);
   emit prd->signalCanvasUpdated();
 }
-void Ellipse(IntegerType x, IntegerType y, IntegerType w, IntegerType h, unsigned int c) {
+void Ellipse(long long x, long long y, long long w, long long h, unsigned int c) {
   // qDebug() << "Ellipse" << x << y << w*2<<h*2 << c;
   // emit prd->signalEllipse(x-w, y-h, w*2, h*2, c);
   prd->canvas().ellipse(x - w, y - h, w * 2, h * 2, c);
   emit prd->signalCanvasUpdated();
 }
-void Rectangle(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
+void Rectangle(long long x1, long long y1, long long x2, long long y2, unsigned int c) {
   // qDebug() << "Rectangle" << x1 << y1 << x2 << y2 << c;
   // emit prd->signalRectangle(x1, y1, x2, y2, c);
   prd->canvas().rectangle(x1, y1, x2, y2, c);
   emit prd->signalCanvasUpdated();
 }
-void FloodFill(IntegerType x, IntegerType y, unsigned int c) {
+void FloodFill(long long x, long long y, unsigned int c) {
   // qDebug() << "FloodFill" << x << y << c;
   // emit prd->signalFloodFill(x, y, c);
   int iw = prd->canvas().image().width();
@@ -245,13 +245,13 @@ void FloodFill(IntegerType x, IntegerType y, unsigned int c) {
   prd->canvas().floodFill(x, y, c);
   emit prd->signalCanvasUpdated();
 }
-void MoveTo_LineTo(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned int c) {
+void MoveTo_LineTo(long long x1, long long y1, long long x2, long long y2, unsigned int c) {
   // qDebug() << "MoveTo_LineTo" << x1 << y1 << x2 << y2 << c;
   // emit prd->signalMoveTo_LineTo(x1, y1, x2, y2, c);
   prd->canvas().line(x1, y1, x2, y2, c);
   emit prd->signalCanvasUpdated();
 }
-void SetPixel(IntegerType x, IntegerType y, unsigned int c) {
+void SetPixel(long long x, long long y, unsigned int c) {
   // qDebug() << "SetPixel" << x << y << c;
   // emit prd->signalSetPixel(x, y, c);
   int iw = prd->canvas().image().width();
@@ -263,11 +263,11 @@ void SetPixel(IntegerType x, IntegerType y, unsigned int c) {
   prd->canvas().setPixel(x, y, c);
   emit prd->signalCanvasUpdated();
 }
-void horisontal(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2) {
+void horisontal(long long x1, long long y1, long long x2, long long y2) {
   errout("Функционал не реализован");
   // qDebug() << "horisontal" << x1 << y1 << x2 << y2;
 }
-void vertical(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2) {
+void vertical(long long x1, long long y1, long long x2, long long y2) {
   errout("Функционал не реализован");
   // qDebug() << "vertical" << x1 << y1 << x2 << y2;
 }
@@ -313,9 +313,9 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) {
       if (serr != ErrorCode::NoErrors) {
         throw std::runtime_error(GetPrErrText(serr));
       }
-      if (ScVar->Query && ScVar->EndOfClause)  //если конец предложения и вопрос то
+      if (ScVar->Query && ScVar->EndOfClause)  // если конец предложения и вопрос то
       {
-        if (m_outQuestion)  //вывод вопроса
+        if (m_outQuestion)  // вывод вопроса
         {
           pldout(p);
         }
@@ -323,7 +323,7 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) {
         if (cerr != ErrorCode::NoErrors) {
           throw std::runtime_error(GetPrErrText(cerr));
         }
-        ScVar->Query = ScVar->EndOfClause = false;  //на выполнение
+        ScVar->Query = ScVar->EndOfClause = false;  // на выполнение
       }
     }
   } catch (const std::bad_alloc &er) {
@@ -411,16 +411,10 @@ int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
 
   // setlocale(LC_ALL, "ru");
-  QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+  // QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
   // loadTranslation
   QSettings settings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);
-  const QString ru_language = settings.value("language", "Russian").toString();
-  QTranslator translator;
-  bool tt = translator.load(":/" + ru_language);
-  if (tt) {
-    qApp->installTranslator(&translator);
-  }
 
   MainWindow wnd;
   wnd.setWindowIcon(QIcon(":/images/prolog1.png"));

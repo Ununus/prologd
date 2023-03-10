@@ -3,15 +3,15 @@
 #include "pstructs.h"
 
 // Пользовательские функции для переопределения интерфейсом
-void Rectangle(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color);
-void MoveTo_LineTo(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color);
-void FloodFill(IntegerType x, IntegerType y, unsigned color);
-void vertical(IntegerType x1, IntegerType y, IntegerType x2, IntegerType color);
-void horisontal(IntegerType x, IntegerType y1, IntegerType y2, IntegerType color);
+void Rectangle(long long x1, long long y1, long long x2, long long y2, unsigned color);
+void MoveTo_LineTo(long long x1, long long y1, long long x2, long long y2, unsigned color);
+void FloodFill(long long x, long long y, unsigned color);
+void vertical(long long x1, long long y, long long x2, long long color);
+void horisontal(long long x, long long y1, long long y2, long long color);
 void ClearView(unsigned color = 15);
-void Ellipse(IntegerType x1, IntegerType y1, IntegerType x2, IntegerType y2, unsigned color);
-void SetPixel(IntegerType x, IntegerType y, unsigned color);
-unsigned GetPixel(IntegerType x, IntegerType y);
+void Ellipse(long long x1, long long y1, long long x2, long long y2, unsigned color);
+void SetPixel(long long x, long long y, unsigned color);
+unsigned GetPixel(long long x, long long y);
 // Ввод
 int InputStringFromDialog(char *buf, size_t size, const char *caption, bool splitSpace);
 // Вывод предиката (ДА, НЕТ)

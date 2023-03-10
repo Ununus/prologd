@@ -9,7 +9,7 @@
 #include <QMessageBox>
 #include <QDir>
 #include <QFileIconProvider>
-#include <QDesktopWidget>
+// #include <QScreen>
 #include <QToolBar>
 #include <QStringListModel>
 #include <QVBoxLayout>
@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
   , m_grp(new GraphicsWidget(nullptr))
   , m_input_console(new QGroupBox)
   , m_input_console_line_edit(new QLineEdit) {
-  setWindowTitle(tr("Пролог-Д"));
+  setWindowTitle("Пролог-Д");
 
   Actions *actions = m_settings->getActions();
   setMenuBar(actions->menu_bar);
@@ -61,10 +61,11 @@ MainWindow::MainWindow(QWidget *parent)
   QSettings qsettings(qApp->applicationDirPath() + "/settings.ini", QSettings::IniFormat);
   const QByteArray geometry = qsettings.value("geometry", QByteArray()).toByteArray();
   if (!restoreGeometry(geometry)) {
-    const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
-    resize(availableGeometry.width() * 6 / 8, availableGeometry.height() * 6 / 8);
-    move((availableGeometry.width()) / 8, (availableGeometry.height()) / 8);
-    // showMaximized();
+  //   const QRect availableGeometry = QScreen::availableGeometry(this);
+  //   resize(availableGeometry.width() * 6 / 8, availableGeometry.height() * 6 / 8);
+  //   move((availableGeometry.width()) / 8, (availableGeometry.height()) / 8);
+  //   // showMaximized();
+      resize(800, 600);
   }
 
   m_editors->setMovable(true);
@@ -74,9 +75,9 @@ MainWindow::MainWindow(QWidget *parent)
   QWidget *outputWidget = new QWidget;
   QVBoxLayout *output_vlay = new QVBoxLayout;
   QHBoxLayout *output_hlay = new QHBoxLayout;
-  QLabel *output_label = new QLabel(tr("Вывод"));
+  QLabel *output_label = new QLabel("Вывод");
   output_label->setStyleSheet("QLabel { background-color : white; border: 1px solid lightgray; }");
-  m_output_print_questions->setText(tr("Выводить вопросы"));
+  m_output_print_questions->setText("Выводить вопросы");
   // output_pb->setIcon(QIcon(":/images/file-new.png"));
   // m_output_print_questions->setCheckable(true);
   m_output_print_questions->setChecked(true);
@@ -87,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
   output_hlay->setAlignment(Qt::AlignmentFlag::AlignLeft);
   output_vlay->addLayout(output_hlay);
   output_vlay->addWidget(m_output_text);
-  output_vlay->setMargin(2);
+  output_vlay->setContentsMargins(2, 2, 2, 2);
   output_vlay->setSpacing(0);
   outputWidget->setLayout(output_vlay);
   m_output_text->setFont(m_settings->getFont());
@@ -103,7 +104,7 @@ MainWindow::MainWindow(QWidget *parent)
   QLabel *m_console_label = new QLabel(">_");
   m_input_line_edit_layout->addWidget(m_console_label);
   m_input_line_edit_layout->addWidget(m_input_console_line_edit);
-  m_input_line_edit_layout->setMargin(0);
+  m_input_line_edit_layout->setContentsMargins(0, 0, 0, 0);
   m_input_console_layout->addLayout(m_input_line_edit_layout);
   m_input_console->setLayout(m_input_console_layout);
   input_vlay->addWidget(m_input_console);
@@ -112,13 +113,13 @@ MainWindow::MainWindow(QWidget *parent)
   // m_input_console_line_edit->setStyleSheet("border: 1px solid gray; border-radius: 6px;");
 
   QHBoxLayout *input_hlay = new QHBoxLayout;
-  QLabel *input_label = new QLabel(tr("Ввод"));
+  QLabel *input_label = new QLabel("Ввод");
   input_hlay->addWidget(input_label);
   input_hlay->addSpacing(4);
   input_hlay->setAlignment(Qt::AlignmentFlag::AlignLeft);
   input_vlay->addLayout(input_hlay);
   input_vlay->addWidget(m_input_text);
-  input_vlay->setMargin(2);
+  input_vlay->setContentsMargins(2, 2, 2, 2);
   input_vlay->setSpacing(0);
   inputWidget->setLayout(input_vlay);
 
@@ -130,7 +131,7 @@ MainWindow::MainWindow(QWidget *parent)
   QVBoxLayout *topLayout = new QVBoxLayout;
   topLayout->addWidget(m_editors);
   topLayout->addWidget(m_text_finder);
-  topLayout->setMargin(0);
+  topLayout->setContentsMargins(0, 0, 0, 0);
   topLayout->setSpacing(0);
   topWidget->setLayout(topLayout);
   // putWidget->addWidget(outputTabWidget);
@@ -316,7 +317,7 @@ bool MainWindow::loadFileToTopTabWidget(const QString &filePath) {
 bool MainWindow::loadFileToEditor(const QString &filePath, Editor *editor) {
   QFile file(filePath);
   if (!file.open(QFile::ReadOnly | QFile::Text)) {
-    QMessageBox::warning(this, tr("Программа"), tr("Не могу прочитать файл %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
+    QMessageBox::warning(this, "Программа", QString("Не могу прочитать файл %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
     return false;
   }
   editor->loadFile(&file);
@@ -342,7 +343,7 @@ bool MainWindow::safeToFileFromEditor(const QString &filePath, Editor *editor) {
   }
   QFile file(filePath);
   if (!file.open(QFile::WriteOnly | QFile::Text)) {
-    QMessageBox::warning(this, tr("Программа"), tr("Не могу записать файл %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
+    QMessageBox::warning(this, "Программа", QString("Не могу записать файл %1:\n%2.").arg(QDir::toNativeSeparators(filePath), file.errorString()));
     return false;
   }
   if (filePath != editor->getFilePath()) {
@@ -378,12 +379,11 @@ void MainWindow::updateEditor(Editor *editor) {
   if (editor->isModifiedByAnotherProgram()) {
     editor->setModifiedByAnotherProgram(false);
     if (QFile::exists(editor->getFilePath())) {
-      int reply =
-        QMessageBox::question(this, tr("Пролог-Д"), tr("Этот файл был изменён другой программой\nПерезагрузить?"), tr("Перезагрузить"), tr("Оставить"));
+      int reply = QMessageBox::question(this, "Пролог-Д", "Этот файл был изменён другой программой\nПерезагрузить?", "Перезагрузить", "Оставить");
       if (reply == 0)
         loadFileToEditor(editor->getFilePath(), editor);
     } else {
-      int reply = QMessageBox::question(this, tr("Пролог-Д"), tr("Этот файл больше не существует\nОставить?"), tr("Оставить"), tr("Закрыть"));
+      int reply = QMessageBox::question(this, "Пролог-Д", "Этот файл больше не существует\nОставить?", "Оставить", "Закрыть");
       if (reply == 1)
         closeFile();
     }
@@ -426,13 +426,13 @@ void MainWindow::searchInEditor(Editor *editor, bool backwardFlag) {
 
 void MainWindow::newFile() {
   Editor *editor = new Editor(this);
-  int idx = m_editors->addTab(editor, tr("Без имени"));
+  int idx = m_editors->addTab(editor, "Без имени");
   m_editors->setCurrentIndex(idx);
   updateEditor(editor);
   m_editors->setTabIcon(m_editors->currentIndex(), QIcon(":/images/file.png"));
 }
 void MainWindow::openFile() {
-  QString filePath = QFileDialog::getOpenFileName(this, tr("Открыть"), QString(), tr("Пролог-Д - файлы (*.pld);;Prolog - файлы (*.pl);;Все файлы (*)"));
+  QString filePath = QFileDialog::getOpenFileName(this, "Открыть", QString(), "Пролог-Д - файлы (*.pld);;Prolog - файлы (*.pl);;Все файлы (*)");
   if (!filePath.isEmpty()) {
     loadFileToTopTabWidget(filePath);
     updateEditor();
@@ -446,7 +446,7 @@ bool MainWindow::saveFileAs() {
   QFileDialog dialog(this);
   dialog.setWindowModality(Qt::WindowModal);
   dialog.setAcceptMode(QFileDialog::AcceptSave);
-  dialog.setNameFilter(tr("Пролог-Д - файлы (*.pld);;Prolog - файлы (*.pl);;Все файлы (*)"));
+  dialog.setNameFilter("Пролог-Д - файлы (*.pld);;Prolog - файлы (*.pl);;Все файлы (*)");
   if (dialog.exec() != QDialog::Accepted)
     return false;
   Editor *editor = static_cast<Editor *>(m_editors->currentWidget());
@@ -654,7 +654,7 @@ void MainWindow::updateEditor(QString filePath) {
 bool MainWindow::closeEditor(int index) {
   Editor *editor = static_cast<Editor *>(m_editors->widget(index));
   if (editor->document()->isModified() && !editor->document()->isEmpty()) {
-    int reply = QMessageBox::question(this, tr("Пролог-Д"), tr("Этот файл был изменён\nСохранить?"), tr("Сохранить"), tr("Нет"), tr("Отмена"));
+    int reply = QMessageBox::question(this, "Пролог-Д", "Этот файл был изменён\nСохранить?", "Сохранить", "Нет", "Отмена");
     if (reply == 0)
       safeToFileFromEditor(editor);
     else if (reply == 2)

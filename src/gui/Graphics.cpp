@@ -20,14 +20,14 @@ GraphicsWidget::GraphicsWidget(QWidget *parent)
   , m_draw_area(new GraphicsCanvas)
   , m_input_width(new QSpinBox)
   , m_input_height(new QSpinBox)
-  , m_clear_when_exec(new QCheckBox(tr("Очищать при запуске"))) {
+  , m_clear_when_exec(new QCheckBox("Очищать при запуске")) {
   setWindowFlags((windowFlags() ^ Qt::WindowContextHelpButtonHint) | Qt::WindowMinMaxButtonsHint);
-  setWindowTitle(tr("Графика"));
+  setWindowTitle("Графика");
 
   QHBoxLayout *control_layout = new QHBoxLayout;
-  QPushButton *clear_pb = new QPushButton(tr("Очистить"));
-  QPushButton *accept_pb = new QPushButton(tr("Принять"));
-  QLabel *size_lb = new QLabel(tr("Размер холста:"));
+  QPushButton *clear_pb = new QPushButton("Очистить");
+  QPushButton *accept_pb = new QPushButton("Принять");
+  QLabel *size_lb = new QLabel("Размер холста:");
 
   m_input_width->setRange(1, 3840);
   m_input_height->setRange(1, 2160);

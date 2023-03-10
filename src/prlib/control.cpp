@@ -6,7 +6,7 @@
 #include "control.h"
 #include "extfunc.h"
 #include "functions.h"
-//#include <charconv>
+// #include <charconv>
 
 char buff[2048];
 
@@ -152,8 +152,8 @@ void bound(unsigned *t, unsigned *f, unsigned *j, TClVar *ClVar, array *heap) {
 unsigned occur_term(unsigned *TERM, unsigned *FRAME, TClVar *ClVar, array *heap) {
   int argt = -1;
   unsigned j;
-  IntegerType i;   // для expression пока нет
-  FloatType f;  // тоже
+  IntegerType i;  // для expression пока нет
+  FloatType f;    // тоже
   do {
     baserecord *tp = heap->GetPbaserecord(*TERM);
     //(baserecord *)&heap->heaps[*TERM];
@@ -331,8 +331,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
     if (term == isnil || term == NULL)  // || !term)
     {
       buff[j++] = '_';
-      //auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
-      //j = ptr - buff;
+      // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
+      // j = ptr - buff;
 
       // Заменено на to_chars, но не поверено
       //_itoa(W, (char*)&buff[j], 10);
@@ -366,14 +366,14 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       } break;  // ok
       case isinteger: {
         ClVar->precordinteger = (recordinteger *)tp;
-        //auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
-        //j = ptr - buff;
-        
+        // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
+        // j = ptr - buff;
+
         // Заменено на to_chars, но не поверено
         //_ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
         // for (; j < sizeof(buff) - 1 && buff[j]; j++);
 
-        //std::string res = std::to_string(ClVar->precordinteger->value);
+        // std::string res = std::to_string(ClVar->precordinteger->value);
         std::string res = ClVar->precordinteger->value.str();
         for (size_t q = 0; q < res.size(); ++q) {
           buff[j] = res[q];
@@ -436,14 +436,14 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         unsigned char ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
-          //auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
-          //j = ptr - buff;
-          
+          // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
+          // j = ptr - buff;
+
           // Заменено на to_chars, но не поверено
           //_ltoa(ii, (char*)&buff[j], 10);
           // for (; j < sizeof(buff) - 1 && buff[j]; j++);
 
-        //std::string res = std::to_string(ii);
+          // std::string res = std::to_string(ii);
           std::string res = ii.str();
           for (size_t q = 0; q < res.size(); ++q) {
             buff[j] = res[q];
@@ -776,8 +776,8 @@ unsigned char calculation(unsigned term, unsigned frame, IntegerType *i, FloatTy
   unsigned char n = (unsigned char)ClVar->precordexpression->length;
   ErrorCode err = ErrorCode::NoErrors;
   baserecord *tp;
-  IntegerType oi1 = 0, oi2 = 0;                                       // операнды для вычисления целых
-  FloatType of1 = 0, of2 = 0;                                      // операнды для  вычисления вещественных
+  IntegerType oi1 = 0, oi2 = 0;                                // операнды для вычисления целых
+  FloatType of1 = 0, of2 = 0;                                  // операнды для  вычисления вещественных
   for (int j = 0; j < n && err == ErrorCode::NoErrors; j++) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
     unsigned *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
     //(unsigned *)&heap->heaps[ClVar->precordexpression->precord];

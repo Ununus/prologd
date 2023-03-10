@@ -3,9 +3,4 @@ Prolog D - Пролог детский, интерпретатор языка П
 
 ## Requirements
 `C++17`
-`Qt 5.*` для GUI
-
-## Сборка
- - `git clone https://github.com/Ununus/prologd.git`
- - `cmake -DBUILD_GUI=ON`
- - `make`
+`Qt 6.2.4` для GUI

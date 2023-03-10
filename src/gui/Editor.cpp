@@ -19,7 +19,7 @@ static bool canBeFunction(QString &str, int start, int &end) {
     }
     if (op == 0 && !othop && (str[i] == ':' || str[i] == '.' || str[i] == ',' || str[i] == ';'))
       return true;
-    if (str[i] == "\"" && (i == 0 || (i > 1 && str[i - 1] != '\\')))
+    if (str[i] == '\"' && (i == 0 || (i > 1 && str[i - 1] != '\\')))
       othop = !othop;
     if (othop)
       continue;
@@ -58,7 +58,7 @@ int PlainTextEditWithLineNumberArea::lineNumberAreaWidth() {
     ++digits;
   }
   // int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * (digits + 1);
-  int space = 3 + fontMetrics().width(QLatin1Char('9')) * (digits + 1);
+  int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * (digits + 1);
   return space;
 }
 void PlainTextEditWithLineNumberArea::updateLineNumberAreaWidth(int) {
@@ -87,7 +87,7 @@ void PlainTextEditWithLineNumberArea::lineNumberAreaPaintEvent(QPaintEvent *even
       QString number = QString::number(blockNumber + 1);
       painter.setPen(Qt::black);
       // painter.drawText(4, top, m_line_number_area->width() - fnt_metric.horizontalAdvance('0'), fnt_metric.height(), Qt::AlignRight, number);
-      painter.drawText(4, top, m_line_number_area->width() - fnt_metric.width('0'), fnt_metric.height(), Qt::AlignRight, number);
+      painter.drawText(4, top, m_line_number_area->width() - fnt_metric.horizontalAdvance('0'), fnt_metric.height(), Qt::AlignRight, number);
     }
 
     block = block.next();
@@ -396,7 +396,7 @@ void Editor::dropEvent(QDropEvent *e) {
   const QMimeData *data = e->mimeData();
   if (data->hasText()) {
     // QStringList filepaths(QString(data->text()).split('\n', Qt::SplitBehaviorFlags::SkipEmptyParts));
-      QStringList filepaths(QString(data->text()).split('\n', QString::SplitBehavior::SkipEmptyParts));
+    QStringList filepaths(QString(data->text()).split('\n'));
     for (QString filepath : filepaths) {
       if (filepath.startsWith("file:///")) {
         filepath.remove(0, 8);

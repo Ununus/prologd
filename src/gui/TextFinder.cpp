@@ -16,12 +16,12 @@ TextFinder::TextFinder(QWidget *parent)
   , button_advanced(new QPushButton) {
   button_find_prev->setIcon(QIcon(":/images/search-find-prev.png"));
   button_find_next->setIcon(QIcon(":/images/search-find-next.png"));
-  button_replace->setText(tr("Заменить"));
-  button_replace_all->setText(tr("Заменить всё"));
-  button_advanced->setText(tr("Дополнительно"));
+  button_replace->setText("Заменить");
+  button_replace_all->setText("Заменить всё");
+  button_advanced->setText("Дополнительно");
   button_advanced->setEnabled(false);
-  QLabel *findLabel = new QLabel(tr("Найти:"));
-  QLabel *replaceLabel = new QLabel(tr("Заменить на:"));
+  QLabel *findLabel = new QLabel("Найти:");
+  QLabel *replaceLabel = new QLabel("Заменить на:");
   QGridLayout *layout = new QGridLayout;
   layout->addWidget(findLabel, 0, 0);
   layout->addWidget(replaceLabel, 1, 0);
@@ -32,7 +32,7 @@ TextFinder::TextFinder(QWidget *parent)
   layout->addWidget(button_replace, 1, 2, 1, 2);
   // layout->addWidget(replaceAllButton, 1, 4);
   // layout->addWidget(advancedButton, 0, 4);
-  layout->setMargin(4);
+  layout->setContentsMargins(4, 4, 4, 4);
   setLayout(layout);
 
   line_edit_find->installEventFilter(this);

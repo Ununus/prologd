@@ -7,7 +7,7 @@ constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
   return static_cast<typename std::underlying_type<E>::type>(e);
 }
 
-//идентификаторы структур элементов
+// идентификаторы структур элементов
 constexpr size_t isvar = 0;
 constexpr size_t issymbol = 1;
 constexpr size_t isinteger = 2;
@@ -24,8 +24,8 @@ constexpr size_t iscut = 12;
 
 constexpr size_t maxarity = 5;  // пока max арность встроенного предиката
 
-//константы для записи в массив buf
-#define isnil INT_MAX            //не значит ничего
+// константы для записи в массив buf
+#define isnil INT_MAX            // не значит ничего
 #define isbase INT_MAX - 17      //
 #define iscomma INT_MAX - 16     //     ,
 #define isstick INT_MAX - 15     //     |

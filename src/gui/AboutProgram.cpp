@@ -6,7 +6,8 @@
 #include <QPushButton>
 #include <QPlainTextEdit>
 #include <QApplication>
-#include <QDesktopWidget>
+// #include <QDesktopWidget>
+#include <QFile>
 #include <QTextBrowser>
 #include <QScrollBar>
 #include <QDebug>
@@ -18,7 +19,7 @@ Help::Help(QWidget *parent)
   : QDialog(parent)
   , m_help_text(new QTextBrowser) {
   setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
-  setWindowTitle(tr("Помощь"));
+  setWindowTitle("Помощь");
 
   QVBoxLayout *layout = new QVBoxLayout;
   QHBoxLayout *head_layout = new QHBoxLayout;
@@ -37,13 +38,13 @@ Help::Help(QWidget *parent)
   connect(closeButton, SIGNAL(clicked(bool)), SLOT(close()));
 
   QFile file(qApp->applicationDirPath() + "/prologd-help.html");
-  ;
+
   if (file.exists()) {
     file.open(QFile::OpenModeFlag::ReadOnly);
     m_help_text->setHtml(QString(file.readAll()));
     file.close();
   } else {
-    m_help_text->setHtml(tr("No documentation available"));
+    m_help_text->setHtml("No documentation available");
   }
   m_help_text->zoomIn(2);
   // const QRect availableGeometry = QApplication::desktop()->availableGeometry(this);
@@ -70,7 +71,7 @@ void Help::setCurosrIfFound(QString word) {
 AboutProgram::AboutProgram(QWidget *parent)
   : QDialog(parent) {
   setWindowFlags(windowFlags() ^ Qt::WindowContextHelpButtonHint);
-  setWindowTitle(tr("О Программе"));
+  setWindowTitle("О Программе");
 
   QTabWidget *tabWidget = new QTabWidget;
   QVBoxLayout *layout = new QVBoxLayout;
@@ -78,7 +79,7 @@ AboutProgram::AboutProgram(QWidget *parent)
   QLabel *programIcon = new QLabel;
   programIcon->setPixmap(QPixmap(":/images/prolog1.png").scaled(42, 42, Qt::IgnoreAspectRatio, Qt::FastTransformation));
   programIcon->setFixedSize(42, 42);
-  QLabel *programName = new QLabel(tr("Пролог-Д"));
+  QLabel *programName = new QLabel("Пролог-Д");
   QLabel *programVersion = new QLabel("Версия: " + decode_cp1251_to_utf8(kPrologVersion));
   head->addWidget(programIcon);
   head->addWidget(programName);
@@ -93,13 +94,13 @@ AboutProgram::AboutProgram(QWidget *parent)
 
   QPlainTextEdit *aboutProgramTextEdit = new QPlainTextEdit;
   aboutProgramTextEdit->setPlainText(
-    tr("Эту реализацию Пролога-Д разработали АБВГ:\n"
-       "Алексеев Михаил Николаевич (прораб),\n"
-       "Балдин Виктор Михайлович (топкодер до 2008),\n"
-       "Воронин Алексей Вячеславович (топкодер с 2017),\n"
-       "Григорьев Сергей Георгиевич (идеолог)."));
+    "Эту реализацию Пролога-Д разработали АБВГ:\n"
+    "Алексеев Михаил Николаевич (прораб),\n"
+    "Балдин Виктор Михайлович (топкодер до 2008),\n"
+    "Воронин Алексей Вячеславович (топкодер с 2017),\n"
+    "Григорьев Сергей Георгиевич (идеолог).");
   aboutProgramTextEdit->setReadOnly(true);
-  tabWidget->addTab(aboutProgramTextEdit, tr("О Программе"));
+  tabWidget->addTab(aboutProgramTextEdit, "О Программе");
 
   QString helpTxt = QString(
     "Ctrl + '<' -> МЕНЬШЕ\n"
@@ -125,7 +126,7 @@ AboutProgram::AboutProgram(QWidget *parent)
   QPlainTextEdit *helpAbout = new QPlainTextEdit;
   helpAbout->setPlainText(helpTxt);
   helpAbout->setReadOnly(true);
-  tabWidget->addTab(helpAbout, tr("Горячие клавиши"));
+  tabWidget->addTab(helpAbout, "Горячие клавиши");
 
   setLayout(layout);
   setFixedWidth(360);

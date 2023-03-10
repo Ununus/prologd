@@ -44,12 +44,8 @@ HEADERS  += \
     prlib/pstructs.h \
     prlib/scaner.h
 
+INCLUDEPATH += $$PWD/prlib/3rdparty/boost/include
+
 RESOURCES += res.qrc
-
-system(lrelease \"$$_PRO_FILE_\")
-
-tr.commands = lupdate \"$$_PRO_FILE_\" && lrelease \"$$_PRO_FILE_\"
-    PRE_TARGETDEPS += tr
-    QMAKE_EXTRA_TARGETS += tr
 
 win32: RC_ICONS += images/prolog1.ico

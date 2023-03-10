@@ -8,7 +8,7 @@
 #include "scaner.h"
 // #include "control.h"
 #include "extfunc.h"
-//#include <charconv>
+// #include <charconv>
 
 //=======Первоначальное заполнение
 const char *NamesOfPredicates[] = { "mod",    "ЛОЖЬ",      "ТРАССА",    "НЕТ_ТРАССЫ", "!",        "ВЫП",   "ВВОДСИМВ", "ВВОДСТР",  "ВВОДЦЕЛ", "ВВОДВЕЩ",
@@ -289,7 +289,7 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   unsigned int &bptr = ScVar->bptr;
   unsigned int *buf = ScVar->buf;
-  char bufnum[1024];
+  char bufnum[1024]{};
   FloatType valuef = 0;
   IntegerType valuei = 0;
   int punkt = 0, e = 0;
@@ -316,9 +316,10 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuef); // в gcc не реализовано
       valuef = atof(bufnum);
     } else {
-      //std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
-      //valuei = atoll(bufnum);
-      valuei = boost::multiprecision::cpp_int(bufnum);
+      // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
+      // valuei = atoll(bufnum);
+
+      valuei = IntegerType(bufnum);
     }
     if ((valuef == valuei.convert_to<FloatType>()) && (i > 1 || (i == 1 && (*p != '0')))) {
       err = ErrorCode::InvalidNumberFormat;  // 4;  // не верный формат числа
