@@ -336,8 +336,8 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
           err = ErrorCode::TooManyCharacterConstants;
         }
       } else {
-        recordinteger ptr(valuei);
-        index = heap->apend(&ptr, sizeof(recordinteger));
+        recordinteger *ptr = new recordinteger(valuei);
+        index = heap->apend(ptr, sizeof(recordinteger));
         if (index < 0)
           return ErrorCode::TooLongList;  // 44;
         if (bptr + 1 < _maxbptr_) {

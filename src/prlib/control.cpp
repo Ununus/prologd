@@ -1186,8 +1186,8 @@ bool unvar(TClVar *ClVar, array *heap) {
       switch (ind) {
       case 0: ret = false; break;  //!!!abort_calculation;
       case isinteger: {
-        recordinteger ptr(a);
-        ClVar->term2 = heap->apend(&ptr, sizeof(recordinteger));
+        recordinteger *ptr = new recordinteger(a);
+        ClVar->term2 = heap->apend(ptr, sizeof(recordinteger));
         if (ClVar->term2 < 0) {
           outerror(ErrorCode::TooLongList);  // 44
           ret = false;
