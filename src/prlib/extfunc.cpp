@@ -162,9 +162,9 @@ PredicateState zap3(const char *str, unsigned arg, TScVar *ScVar, TClVar *ClVar,
 // унификация целого num с arg аргументом предиката
 PredicateState zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // std::cout << "Zap " << num << ' ' << sizeof(num) << '\n'; 
-  recordinteger pi(num);
+  recordinteger *pi = new recordinteger(num);
   unsigned bakindex = heap->last;
-  unsigned index = heap->apend(&pi, sizeof(recordinteger));
+  unsigned index = heap->apend(pi, sizeof(recordinteger));
   if (!index) {
     outerror(ErrorCode::TooLongList);  // 44
     return PredicateState::No;         // 5;
@@ -183,11 +183,11 @@ PredicateState zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, arra
 
 // унификация целых num1 и num2 с arg1 и arg2 соотвественно аргументами предиката
 PredicateState zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  recordinteger pi1(num1);
-  recordinteger pi2(num2);
+  recordinteger *pi1 = new recordinteger(num1);
+  recordinteger *pi2 = new recordinteger(num2);
   unsigned bakindex = heap->last;
-  unsigned index1 = heap->apend(&pi1, sizeof(recordinteger));
-  unsigned index2 = heap->apend(&pi2, sizeof(recordinteger));
+  unsigned index1 = heap->apend(pi1, sizeof(recordinteger));
+  unsigned index2 = heap->apend(pi2, sizeof(recordinteger));
   if (!index1 || !index2) {
     outerror(ErrorCode::TooLongList);  // 44
     return PredicateState::Error;      // 1;
@@ -960,8 +960,8 @@ PredicateState prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       // строка не пустая
       unsigned j = heap->last, index1, index2;
       for (i = 0; i < k; i++) {
-        recordinteger pi((unsigned char)lnwr[i]);  // 2006/10/17
-        index1 = heap->apend(&pi, sizeof(recordinteger));
+        recordinteger *pi = new recordinteger((unsigned char)lnwr[i]);  // 2006/10/17
+        index1 = heap->apend(pi, sizeof(recordinteger));
         recordlist pl(index1, heap->last + sizeof(recordinteger) + sizeof(recordlist));
         index2 = heap->apend(&pl, sizeof(recordlist));
       }

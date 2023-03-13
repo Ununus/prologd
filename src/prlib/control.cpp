@@ -8,7 +8,8 @@
 #include "functions.h"
 // #include <charconv>
 
-char buff[2048];
+//char buff[2048];
+std::string outBuff;
 
 void outerror(ErrorCode err) {
   errout(GetPrErrText(err));
@@ -175,8 +176,8 @@ unsigned occur_term(unsigned *TERM, unsigned *FRAME, TClVar *ClVar, array *heap)
       unsigned char ind = calculation(*TERM, *FRAME, &i, &f, ClVar, heap);
       switch (ind) {
       case isinteger: {
-        recordinteger pi(i);
-        *TERM = heap->apend(&pi, sizeof(recordinteger));
+        recordinteger *pi = new recordinteger(i);
+        *TERM = heap->apend(pi, sizeof(recordinteger));
         if (*TERM < 0) {
           outerror(ErrorCode::TooLongList);  // 44
           argt = 0;
@@ -241,11 +242,13 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case isfunction: {
       recordfunction *pf = (recordfunction *)tp;
       if (arg - 1 > (unsigned)pf->narg) {
-        buff[*j] = ')';
+        // buff[*j] = ')';
+        outBuff.push_back(')');
         (*j)++;
         nxaex = false;
       } else {
-        buff[*j] = ',';
+        // buff[*j] = ',';
+        outBuff.push_back(',');
         (*j)++;
         nxaex = stac(ClVar, heap);
       }
@@ -254,7 +257,8 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
       recordlist *pl = (recordlist *)tp;
       {
         if (arg == 2) {
-          buff[*j] = ']';
+          // buff[*j] = ']';
+          outBuff.push_back(']');
           (*j)++;
           nxaex = false;
         } else {
@@ -264,15 +268,18 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
           int a = occur_term(&trm, &ff, ClVar, heap);
           switch (a) {
           case 3:
-            buff[*j] = ',';
+            // buff[*j] = ',';
+            outBuff.push_back(',');
             (*j)++;
             break;
           case 2:
-            buff[*j] = ']';
+            // buff[*j] = ']';
+            outBuff.push_back(']');
             (*j)++;
             break;
           default:
-            buff[*j] = '|';
+            // buff[*j] = '|';
+            outBuff.push_back('|');
             (*j)++;
             // term=trm;
             nxaex = stac(ClVar, heap);
@@ -304,12 +311,15 @@ PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
     //(unsigned *)&heap->heaps[pf->ptrarg];
     k = write_term(ptr[i], ClVar->frame2, i, k, ScVar, ClVar, heap);
   }
-  buff[k] = 0;
+  // buff[k] = 0;
   if (ClVar->PrSetting->out.is_open()) {
-    ClVar->PrSetting->out << buff;
+    // ClVar->PrSetting->out << buff;
+    ClVar->PrSetting->out << outBuff.c_str();
   } else {
-    usrout(buff);
+    // usrout(buff);
+    usrout(outBuff.c_str());
   }
+  outBuff.clear();
   return PredicateState::Yes;  // 3;
 }
 
@@ -330,7 +340,9 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
   while (ex) {                          // здесь цикл8ический вывод терма
     if (term == isnil || term == NULL)  // || !term)
     {
-      buff[j++] = '_';
+      // buff[j++] = '_';
+      outBuff.push_back('_');
+	  ++j;
       // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
       // j = ptr - buff;
 
@@ -340,7 +352,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
 
       std::string res = std::to_string(W);
       for (size_t q = 0; q < res.size(); ++q) {
-        buff[j] = res[q];
+        //buff[j] = res[q];
+        outBuff.push_back(res[q]);
         ++j;
       }
 
@@ -356,9 +369,14 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         char *name = heap->GetPchar(ClVar->precordsconst->ptrsymb);
         //(char *)&heap->heaps[ClVar->precordsconst->ptrsymb];
 
-        for (i = 0; i < (unsigned)ClVar->precordsconst->length; buff[j++] = *(name + i), i++)
-          ;
-        buff[j++] = '(';
+		for (i = 0; i < (unsigned)ClVar->precordsconst->length; i++) 
+		{
+          outBuff.push_back(*(name+i));
+		  ++j;
+		}
+        //buff[j++] = '(';
+        outBuff.push_back('(');
+		++j;
         arg = 2;
         flaglist = false;
         ex = stac(ClVar, heap);
@@ -376,7 +394,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         // std::string res = std::to_string(ClVar->precordinteger->value);
         std::string res = ClVar->precordinteger->value.str();
         for (size_t q = 0; q < res.size(); ++q) {
-          buff[j] = res[q];
+          // buff[j] = res[q];
+          outBuff.push_back(res[q]);
           ++j;
         }
 
@@ -386,9 +405,12 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         ClVar->precordfloat = (recordfloat *)tp;
         char string[40];
         sprintf(string, "%g", ClVar->precordfloat->value);
-        for (i = 0; j < sizeof(buff) - 1 && string[i]; buff[j++] = string[i++])
-          ;
-        buff[j] = 0;
+        for (i = 0; /* j < sizeof(buff) - 1 && */ string[i]; ++i)
+		{
+          outBuff.push_back(string[i]);
+		  ++j;
+		}
+        //buff[j] = 0;
         i = 0;
         ex = nextarg(&j, ScVar, ClVar, heap);  // ok
       } break;
@@ -400,8 +422,10 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         ClVar->precordsconst = (recordsconst *)tp;
         char *name = heap->GetPchar(ClVar->precordsconst->ptrsymb);
         //(char *)&heap->heaps[ClVar->precordsconst->ptrsymb];
-        for (i = 0; i < (unsigned)ClVar->precordsconst->length; buff[j + i] = *(name + i), i++)
-          ;
+		for (i = 0; i < (unsigned)ClVar->precordsconst->length; i++) 
+		{
+          outBuff.push_back(*(name+i));
+		}
         j += i;
         i = 0;
         ex = nextarg(&j, ScVar, ClVar, heap);
@@ -409,7 +433,9 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       case islist: {
         if (!(arg && flaglist))  // список встретился
         {
-          buff[j++] = '[';
+          //buff[j++] = '[';
+          outBuff.push_back('[');
+		  ++j;
           flaglist = true;
         }
         arg = 0;
@@ -417,17 +443,23 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       } break;
       case isemptylist: {
         if (arg != 1) {
-          buff[j++] = '[';
-          buff[j++] = ']';
+          //buff[j++] = '[';
+          //buff[j++] = ']';
+          outBuff += "[]";
+		  j += 2;
         }
         ex = nextarg(&j, ScVar, ClVar, heap);
       } break;
       case iscut: {
-        buff[j++] = '!';
+        //buff[j++] = '!';
+        outBuff.push_back('!');
+		++j;
         ex = nextarg(&j, ScVar, ClVar, heap);
       } break;
       case isunknown:
-        buff[j++] = '_';
+        //buff[j++] = '_';
+        outBuff.push_back('_');
+		++j;
         ex = nextarg(&j, ScVar, ClVar, heap);
         break;
       case isexpression:
@@ -446,7 +478,8 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
           // std::string res = std::to_string(ii);
           std::string res = ii.str();
           for (size_t q = 0; q < res.size(); ++q) {
-            buff[j] = res[q];
+            //buff[j] = res[q];
+            outBuff.push_back(res[q]);
             ++j;
           }
 
@@ -454,9 +487,12 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         case isfloat:
           char string[40];
           sprintf(string, "%g", ff);
-          for (i = 0; j < sizeof(buff) - 1 && string[i]; buff[j++] = string[i++])
-            ;
-          buff[j] = 0;
+          for (i = 0; /* j < sizeof(buff) - 1 && */ string[i]; ++i)
+		  {
+            outBuff.push_back(string[i]);
+			++j;
+		  }
+          //buff[j] = 0;
           i = 0;
           break;
         /*                   case isfloat  :    заменено но не проверено
@@ -473,8 +509,10 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         */
         default:
           char *s = const_cast<char *>("#_?_#");
-          for (i = 0; i < 5 && i + j < sizeof(buff) - 1; buff[i + j] = s[i], i++)
-            ;
+          for (i = 0; i < 5 /* && i + j < sizeof(buff) - 1 */; i++)
+		  {
+            outBuff.push_back(s[i]);
+		  }
           j += i;
           i = 0;
           break;
@@ -509,14 +547,19 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
         //(recordvar *)&heap->heaps[ScVar->tvar[k]];
         char *name = heap->GetPchar(ClVar->precordvar->ptrsymb);
         //(char *)&heap->heaps[ClVar->precordvar->ptrsymb];
-        for (j = 0; j < (unsigned)ClVar->precordvar->length; buff[j] = *(name + j), j++)
-          ;
-        buff[j++] = '=';
+        for (j = 0; j < (unsigned)ClVar->precordvar->length; j++)
+		{
+          outBuff.push_back(*(name+j));
+		}
+        //buff[j++] = '=';
+        outBuff.push_back('=');
         frame = from_stac(ClVar->st_vr2, k);
         term = from_stac(ClVar->st_vr1, k);
         //======================================// вывод terma  пока не все
-        buff[write_term(term, frame, w, j, ScVar, ClVar, heap)] = 0;  //,//FILE *d)
-        pldout(buff);
+        //buff[write_term(term, frame, w, j, ScVar, ClVar, heap)] = 0;  //,//FILE *d)
+        write_term(term, frame, w, j, ScVar, ClVar, heap);
+        pldout(outBuff.c_str());
+        outBuff.clear();
       }
     }  // delete BPT;
   }
@@ -595,8 +638,10 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
     } else {
       if (ClVar->PrSetting->Trace) {
         pldout("Согласуется с ");
-        buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap)] = 0;
-        pldout(buff);
+        //buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap)] = 0;
+        write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap);
+        pldout(outBuff.c_str());
+        outBuff.clear();
       }
       ClVar->oldtptr = ClVar->tptr;
       if (unify(heap->ptcltarget[ClVar->tryclause], ClVar->head, ClVar->frame1, ClVar->frame2, ClVar, heap)) {  // удачная унификация
@@ -632,7 +677,9 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (ClVar->PrSetting->Trace) {
       if (heap->ptcltarget) {
         pldout("Цель");
-        buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
+        //buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
+        write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap);
+        outBuff.clear();
       }
       pldout("Неудачна ");
     }
@@ -652,8 +699,10 @@ static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->svptr = ClVar->oldsvptr;
     if (ClVar->PrSetting->Trace) {
       pldout("Переделка. Цель ");
-      buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-      pldout(buff);
+      //buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
+      write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap);
+      pldout(outBuff.c_str());
+      outBuff.clear();
     }
     ClVar->stat = PredicateState::ControlStep;  // 4;
   }
@@ -663,8 +712,10 @@ static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
 static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ClVar->PrSetting->Trace) {
     pldout("Цель ");
-    buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-    pldout(buff);
+    //buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
+    write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap);
+    pldout(outBuff.c_str());
+    outBuff.clear();
   }
   ClVar->precordfunction = heap->GetPrecordfunction(ClVar->head);
   //(recordfunction *)&heap->heaps[ClVar->head];
