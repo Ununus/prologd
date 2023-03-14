@@ -162,7 +162,7 @@ template<class T>
 size_t array::append(const T &record, size_t count) {
   unsigned int baklast = last;
   auto sz = sizeof(record) * count;
-  if (last + sz + 1 > size) {
+  while (last + sz + 1 > size) {
     expand();
   }
   for (size_t i = 0; i < count; ++i) {
