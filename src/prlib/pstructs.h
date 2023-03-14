@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <memory>
 #include <vector>
+#include <type_traits>
 #include "err.h"
 #include "pdefs.h"
 #include <boost/multiprecision/cpp_int.hpp>
@@ -118,39 +119,62 @@ struct array {
 protected:
   unsigned char *heaps;  // указатель на массив
 public:
-  unsigned int freeheap;                           // кол-во эл-тов до разбора программы
-  unsigned int size;                               // кол-во эл-тов всего /типа unsigned int/
-  unsigned int last;                               // индекс массива указывающий на первый свободный эл
-  unsigned int query;                              // индекс предложения - вопроса.
-  unsigned int apend(void *, unsigned int count);  // добавление в конец
-  array(unsigned int SIZE);
+  size_t freeheap;        // кол-во эл-тов до разбора программы
+  size_t size;            // кол-во эл-тов всего /типа unsigned int/
+  size_t last;            // индекс массива указывающий на первый свободный эл
+  size_t query;           // индекс предложения - вопроса.
+  template<class T>
+  size_t append(const T &record, size_t count = 1);  // добавление в конец
+
+  array(size_t SIZE);
   void clear();
-  int expand();
+  void cleanUp(size_t idx);
+  void expand();
   ~array();
-  baserecord *GetPbaserecord(unsigned int index);
-  recordsconst *GetPrecordsconst(unsigned int index);
-  recordstring *GetPrecordstring(unsigned int index);
-  recordvar *GetPrecordvar(unsigned int index);
-  recordinteger *GetPrecordinteger(unsigned int index);
-  recordfloat *GetPrecordfloat(unsigned int index);
-  recordunknown *GetPrecordunknown(unsigned int index);
-  recordcut *GetPrecordcut(unsigned int index);
-  recordemptylist *GetPrecordemptylist(unsigned int index);
-  recordexpression *GetPrecordexpression(unsigned int index);
-  recordfunction *GetPrecordfunction(unsigned int index);
-  recordlist *GetPrecordlist(unsigned int index);
-  recordclause *GetPrecordclause(unsigned int index);
-  unsigned *GetPunsigned(unsigned index);
-  char *GetPchar(unsigned index);
+  baserecord *GetPbaserecord(size_t index);
+  recordsconst *GetPrecordsconst(size_t index);
+  recordstring *GetPrecordstring(size_t index);
+  recordvar *GetPrecordvar(size_t index);
+  recordinteger *GetPrecordinteger(size_t index);
+  recordfloat *GetPrecordfloat(size_t index);
+  recordunknown *GetPrecordunknown(size_t index);
+  recordcut *GetPrecordcut(size_t index);
+  recordemptylist *GetPrecordemptylist(size_t index);
+  recordexpression *GetPrecordexpression(size_t index);
+  recordfunction *GetPrecordfunction(size_t index);
+  recordlist *GetPrecordlist(size_t index);
+  recordclause *GetPrecordclause(size_t index);
+  unsigned *GetPunsigned(size_t index);
+  char *GetPchar(size_t index);
 
   recordclause *pnclause;    // для newclause
   recordclause *ptclause;    // для trylause
   recordclause *phclause;    // для head
   recordclause *paclause;    // ук на структ для atomp
-  unsigned int *pacltarget,  // указатель на цели предложения aclause
-                             //(aclause-1)
-    *ptcltarget, *pncltarget;
+  unsigned int *pacltarget;  // указатель на цели предложения aclause
+  unsigned int *ptcltarget;
+  unsigned int *pncltarget;
+
+  std::vector<size_t> recordintegersInHeap;
 };
+
+template<class T>
+size_t array::append(const T &record, size_t count) {
+  unsigned int baklast = last;
+  auto sz = sizeof(record) * count;
+  if (last + sz + 1 > size) {
+    expand();
+  }
+  for (size_t i = 0; i < count; ++i) {
+    new (heaps + last + i * sizeof(record)) T(record);
+    if constexpr (std::is_same<T, recordinteger>()) {
+      recordintegersInHeap.emplace_back(last + i * sizeof(record));
+    }
+  }
+  last += sz;
+  return baklast;
+  // return heaps + last;
+}
 
 constexpr int bruteExpand = 8;
 // структура для scaner
@@ -173,8 +197,8 @@ struct TScVar {
   bool EndOfClause;
   bool Query;
   unsigned int exprip;   // нужна ли здесь ? !!!
-  unsigned int hpunkn;   // положенме анонимки в buf
-  unsigned int hpempty;  // положение пустого списка
+  size_t hpunkn;         // положенме анонимки в buf
+  size_t hpempty;        // положение пустого списка
 
   TScVar();
   ~TScVar();

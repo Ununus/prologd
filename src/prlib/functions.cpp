@@ -34,38 +34,16 @@ const int LEN_BUILD_LIBR = sizeof(Build_in_Libriary) / sizeof(char *);
 // подключение встроенных предикатов
 ErrorCode buildin(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-
+  size_t len;
   for (int i = 0; i < MAX_BUILD_PRED; i++) {
-    unsigned index = heap->apend((void *)NamesOfPredicates[i], (unsigned char)strlen(NamesOfPredicates[i]));
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
-    recordsconst ptr(index, (unsigned char)strlen(NamesOfPredicates[i]));
-    index = heap->apend(&ptr, sizeof(recordsconst));
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
-    ScVar->tat[i] = index;
+    auto index = heap->append<char>(0, len = strlen(NamesOfPredicates[i]));
+    memcpy(heap->GetPchar(index), NamesOfPredicates[i], sizeof(char) * len);
+    ScVar->tat[i] = heap->append(recordsconst(index, (unsigned char)len));
   }
   // freesymbol = MAX_BUILD_PRED;
   ScVar->nosymbol = MAX_BUILD_PRED;
-  recordunknown *ptrunkn = new recordunknown();
-  ScVar->hpunkn = heap->apend(ptrunkn, sizeof(recordunknown));  // положение анонимки в heap
-  if (ptrunkn) {
-    delete ptrunkn;
-  }
-  if (ScVar->hpunkn < 0) {
-    return ErrorCode::TooLongList;  // 44;
-  }
-  recordemptylist *ptre = new recordemptylist();
-  ScVar->hpempty = heap->apend(ptre, sizeof(recordemptylist));  // положение пустого списка
-  if (ptre) {
-    delete ptre;
-  }
-  if (ScVar->hpempty < 0) {
-    return ErrorCode::TooLongList;  // 44;
-  }
-
+  ScVar->hpunkn = heap->append(recordunknown());     // положение анонимки в heap
+  ScVar->hpempty = heap->append(recordemptylist());  // положение пустого списка
   heap->freeheap = heap->last;
 
   // extern char*Build_in_Libriary[] ;
@@ -93,17 +71,16 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
   unsigned int *buf = ScVar->buf;
   unsigned int *goal = ScVar->goal;
   unsigned int &gptr = ScVar->gptr;
-  gptr--;
-  if (gptr < 0 || gptr >= _maxgptr_ || buf[goal[gptr]] != isbbeg) {
+  if (gptr == 0 || gptr >= _maxgptr_ || buf[goal[gptr - 1]] != isbbeg) {
     return ErrorCode::UnpairedBracketsInFunctionProcessing;  // 16; //нет откр скобки или не issymbol
   }
+  --gptr;
   unsigned int i = goal[gptr];  // индекс в массиве buf указывающий на (
   recordsconst *ptr;
   if (buf[--i] > isbase) {
     return ErrorCode::AbsentFunctorBeforeOpenBracket;  // 17;
   }
   ptr = heap->GetPrecordsconst(buf[i]);
-  //(recordsconst *)&heap->heaps[buf[i]];
   if (ptr->ident != issymbol) {
     return ErrorCode::AbsentFunctorBeforeOpenBracket;  // 17;
   }
@@ -116,31 +93,19 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
   if (n > sizeof(ptrargs) / sizeof(unsigned int)) {
     return ErrorCode::NotEnoughFreeMemory;  // 2;
   }
-  /*
-  unsigned int *ptrargs = (unsigned int *)calloc(n, sizeof(unsigned int));
-  if (!ptrargs)
-    return 2;
-  */
   for (unsigned int j = 0; j < n; j++) {
     if ((ptrargs[j] = buf[i + j * 2]) > isbase) {
       err = ErrorCode::ErrorWhileParsingFunction;  // 38;
     }
   }
   // аргументы в массив
-  unsigned int index = heap->apend(ptrargs, sizeof(unsigned int) * n);
+  auto index = heap->append<unsigned>(0, n);
+  memcpy(heap->GetPunsigned(index), ptrargs, sizeof(unsigned) * n);
   i -= 2;
-  if (index < 0) {
-    err = ErrorCode::TooLongList;  // 44;
-  }
-  //::free(ptrargs);
   if (err != ErrorCode::NoErrors) {
     return err;
   }
-  recordfunction ptrf((unsigned char)n, buf[i], index);
-  index = heap->apend(&ptrf, sizeof(recordfunction));
-  if (index < 0) {
-    return ErrorCode::TooLongList;  // 44;
-  }
+  index = heap->append(recordfunction((unsigned char)n, buf[i], index));
   bptr = i;
   if (bptr + 1 < _maxbptr_) {
     buf[bptr++] = index;
@@ -164,24 +129,25 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
   }
   //!!! здесь нужны проверки на другие ошибки
   baserecord *tp;
-  unsigned int ntarget = 1;  // число целей
+  size_t ntarget = 1;  // число целей
   int i = 1, j = 0;
   int n = 0;
-  while (buf[n] != isend)
+  while (buf[n] != isend) {
     n++;
+  }
   // на первом месте должна быть симв константа или func
   if (buf[0] >= heap->last) {
     err = ErrorCode::ErrorWhileParsingSentence;  // 20;  //ошибка при разборе предл
   } else {
     tp = heap->GetPbaserecord(buf[0]);
-    //(baserecord *)&heap->heaps[buf[0]];
-    if (tp->ident != isfunction && tp->ident != issymbol)
+    if (tp->ident != isfunction && tp->ident != issymbol) {
       err = ErrorCode::ErrorWhileParsingSentence;  // 20;
+    }
   }
   while (i < n && err == ErrorCode::NoErrors) {
-    if (buf[i] == iscomma || (buf[i] == isimpl && i == 1))
-      ;
-    else {
+    if (buf[i] == iscomma || (buf[i] == isimpl && i == 1)) {
+      // ;
+    } else {
       err = ErrorCode::ErrorWhileParsingSentence;  // 20;
     }
     if (buf[i - 1] >= heap->last) {
@@ -190,8 +156,9 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
       tp = heap->GetPbaserecord(buf[i - 1]);
       //(baserecord *)&heap->heaps[buf[i - 1]];
       unsigned char ident = tp->ident;
-      if (ident != isfunction && ident != issymbol)
+      if (ident != isfunction && ident != issymbol) {
         err = ErrorCode::ErrorWhileParsingSentence;  // 20;
+      }
     }
     i += 2;
   }
@@ -205,27 +172,15 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
   }
   if (err == ErrorCode::NoErrors) {
     unsigned int ptarget[1024];
-    unsigned int index;
     if ((ntarget + 1) * sizeof(unsigned int) > sizeof(ptarget)) {
       return ErrorCode::NotEnoughFreeMemory;  // 2;
     }
-    index = heap->apend(ptarget, sizeof(unsigned int) * (ntarget + 1));
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
+    auto index = heap->append<unsigned>(0, (ntarget + 1));
+    // memcpy(heap->GetPunsigned(index), ptarget, sizeof(unsigned int) * (ntarget + 1));
     unsigned int *_ptarget = heap->GetPunsigned(index);
-    //(unsigned int *)&heap->heaps[index];
     recordclause *ptrpred = 0;
-    recordclause *ptr = new recordclause(id, (unsigned int)0, novar, buf[0], index);
-    index = heap->apend(ptr, sizeof(recordclause));
-    if (ptr) {
-      delete ptr;
-    }
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
-    ptr = heap->GetPrecordclause(index);
-    //(recordclause *)&heap->heaps[index];
+    index = heap->append(recordclause(id, (unsigned int)0, novar, buf[0], index));
+    recordclause *ptr = heap->GetPrecordclause(index);
     // теперь перенести цели
     i = 0;
     j = 0;
@@ -239,20 +194,16 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
       // i=j=heap->indexOf(ptr)-1;j++;i--;//j-индекс данного предложения в heap
       // в ptr - указатель на предложение в index индекс данного предложения
       recordfunction *pf = heap->GetPrecordfunction(ptr->head);
-      //(recordfunction *)&heap->heaps[ptr->head];
       recordsconst *ps;
       if (pf->ident == issymbol) {
         ps = (recordsconst *)pf;
       } else {
         ps = heap->GetPrecordsconst(pf->func);
       }
-      //(recordsconst *)&heap->heaps[pf->func];
       if (ps->begin != NULL && ps->begin != isnil) {
         ptrpred = heap->GetPrecordclause(ps->begin);
-        //(recordclause *)&heap->heaps[ps->begin];
         while (ptrpred->next != NULL && ptrpred->next != isnil)
           ptrpred = heap->GetPrecordclause(ptrpred->next);
-        //(recordclause *)&heap->heaps[ptrpred->next];
         ptrpred->next = index;
       } else {
         ps->begin = index;
@@ -310,7 +261,6 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
     err = ErrorCode::InvalidNumberFormat;  // 4;
   }
   if (err == ErrorCode::NoErrors) {
-    unsigned int index;
     bufnum[i] = 0;
     if (punkt || e) {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuef); // в gcc не реализовано
@@ -318,28 +268,21 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
     } else {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
       // valuei = atoll(bufnum);
-
       valuei = IntegerType(bufnum);
     }
     if ((valuef == valuei.convert_to<FloatType>()) && (i > 1 || (i == 1 && (*p != '0')))) {
       err = ErrorCode::InvalidNumberFormat;  // 4;  // не верный формат числа
     } else {
       if (punkt || e) {
-        recordfloat ptr(valuef);
-        index = heap->apend(&ptr, sizeof(recordfloat));
-        if (index < 0) {
-          err = ErrorCode::TooLongList;  // 44;
-        } else if (bptr + 1 < _maxbptr_) {
+        auto index = heap->append(recordfloat(valuef));
+        if (bptr + 1 < _maxbptr_) {
           buf[bptr++] = index;
         } else {
           // err = ErrorCode::CannotOpenGraphics;  // 22;
           err = ErrorCode::TooManyCharacterConstants;
         }
       } else {
-        recordinteger *ptr = new recordinteger(valuei);
-        index = heap->apend(ptr, sizeof(recordinteger));
-        if (index < 0)
-          return ErrorCode::TooLongList;  // 44;
+        auto index = heap->append(recordinteger(valuei));
         if (bptr + 1 < _maxbptr_) {
           buf[bptr++] = index;
         } else {
@@ -464,8 +407,6 @@ unsigned prioritet(unsigned ch) {
 ErrorCode arexpr(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   unsigned obuf[maxlinelen];
-  unsigned o;
-  // unsigned ch;
   unsigned stac[maxlinelen];
   unsigned st, n, p;  // индекс в стеке,число эл,приоритет
   ScVar->bptr = ScVar->exprip;
@@ -517,7 +458,7 @@ ErrorCode arexpr(TScVar *ScVar, array *heap) {
   stac[st = 0] = 0;
   st++;
   stac[st++] = ScVar->buf[ScVar->bptr++];
-  o = 0;
+  size_t o = 0;
   n = 0;
   while (ScVar->buf[ScVar->bptr] != isnil && err == ErrorCode::NoErrors) {
     if (ScVar->buf[ScVar->bptr] == isbend && stac[st - 1] == isbbeg) {
@@ -556,17 +497,10 @@ ErrorCode arexpr(TScVar *ScVar, array *heap) {
   unsigned index = heap->apend(ptrar, sizeof(unsigned) * o);
   ::free(ptrar);
   */
-  unsigned index = heap->apend(obuf, sizeof(unsigned) * o);
-  if (index < 0) {
-    return ErrorCode::TooLongList;  // 44;
-  }
-  recordexpression *ptr = new recordexpression(o, index);  // ptrar,o-1);
-  index = heap->apend(ptr, sizeof(recordexpression));
-  if (ptr)
-    delete ptr;
-  if (index < 0) {
-    return ErrorCode::TooLongList;  // 44;
-  }
+
+  auto index = heap->append<unsigned>(0, o);
+  memcpy(heap->GetPunsigned(index), obuf, sizeof(unsigned) * o);
+  index = heap->append(recordexpression(o, index));
   ScVar->bptr = ScVar->exprip - 1;
   ScVar->buf[ScVar->bptr++] = index;
   return err;
@@ -611,8 +545,8 @@ ErrorCode lbeg(char *&p, TScVar *ScVar, array *heap) {
 //========
 ErrorCode list(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-  unsigned index;
-  unsigned indexlast;
+  size_t index;
+  size_t indexlast;
   recordlist *ptr;
   ScVar->gptr--;
   if (ScVar->gptr <= 0 || ScVar->gptr >= _maxgptr_ || ScVar->buf[ScVar->goal[ScVar->gptr]] != islbeg) {
@@ -626,19 +560,13 @@ ErrorCode list(TScVar *ScVar, array *heap) {
       }
       recordlist pl(ScVar->buf[ScVar->bptr],
                     heap->last + sizeof(recordlist));  //!!! это не доделано
-      index = heap->apend(&pl, sizeof(recordlist));
-      if (index < 0) {
-        err = ErrorCode::TooLongList;  // 44;
-      }
+      index = heap->append(pl);
     } while (ScVar->buf[++ScVar->bptr] == iscomma && err == ErrorCode::NoErrors);
     if (err == ErrorCode::NoErrors) {
       switch (ScVar->buf[ScVar->bptr]) {
       case islend: {
-        recordemptylist ptre;
         indexlast = index;
-        index = heap->apend(&ptre, sizeof(recordemptylist));
-        if (index < 0)
-          return ErrorCode::TooLongList;  // 44;
+        index = heap->append(recordemptylist());
         recordlist *prl = heap->GetPrecordlist(indexlast);
         prl->link = index;
       } break;
@@ -647,9 +575,8 @@ ErrorCode list(TScVar *ScVar, array *heap) {
           err = ErrorCode::WrongList;  // 15;  // не верный синтаксис списка
         } else {
           ptr = heap->GetPrecordlist(index);
-          //(recordlist*)&heap->heaps[index];
-          //						recordlist prl(ScVar->buf[ScVar->bptr], ScVar->hpempty);
-          //						index = heap->apend(&prl, sizeof(recordlist));
+          // recordlist prl(ScVar->buf[ScVar->bptr], ScVar->hpempty);
+          // index = heap->apend(&prl, sizeof(recordlist));
           ptr->link = ScVar->buf[ScVar->bptr];
         }
         break;
@@ -684,28 +611,21 @@ ErrorCode variabletable(char *&p, unsigned int len, TScVar *ScVar, array *heap) 
   unsigned int &bptr = ScVar->bptr;
   for (k = 0; k < novar; k++) {
     ptr = heap->GetPrecordvar(tvar[k]);
-    //(recordvar *)&heap->heaps[tvar[k]];
     char *name = heap->GetPchar(ptr->ptrsymb);
-    //(char *)&heap->heaps[ptr->ptrsymb];
     if (((unsigned char)len == ptr->length) && (!strncmp(name, p, len)))
       break;
   }
   if (k == novar)  // такой переменной нет
   {
-    unsigned index = heap->apend(p, len);
-    if (index < 0) {
-      return ErrorCode::CharacterConstantNameBufferOverflow;  // 42;
-    }
-    recordvar ptr(index, (unsigned char)len, novar);  // номера переменных будут с 1
-    index = heap->apend(&ptr, sizeof(recordvar));
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
+    auto index = heap->append<char>(0, len);
+    memcpy(heap->GetPchar(index), p, sizeof(char) * len);
+    // номера переменных будут с 1
+    index = heap->append(recordvar(index, (unsigned char)len, novar));
     tvar[novar++] = index;
   }
-  if (bptr + 1 < _maxbptr_)
+  if (bptr + 1 < _maxbptr_) {
     buf[bptr++] = tvar[k];
-  else {
+  } else {
     return ErrorCode::SentenceOverflow;  // 13;
   }
   return err;
@@ -722,24 +642,15 @@ ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap) {
   unsigned int k;
   for (k = 0; k < nosymbol; k++) {
     ptr = heap->GetPrecordsconst(tat[k]);
-    //(recordsconst *)&heap->heaps[tat[k]];
     char *name = heap->GetPchar(ptr->ptrsymb);
-    //(char *)&heap->heaps[ptr->ptrsymb];
     if (((unsigned char)len == ptr->length) && (!strncmp(name, p, len)))
       break;
   }
   if (k == nosymbol)  // такой sconst нет
   {
-    unsigned index = heap->apend(p, len);
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
-    //        strncpy(psconst,lptr,i);
-    recordsconst ptr(index, (unsigned char)len);
-    index = heap->apend(&ptr, sizeof(recordsconst));
-    if (index < 0) {
-      return ErrorCode::TooLongList;  // 44;
-    }
+    auto index = heap->append<char>(0, len);
+    memcpy(heap->GetPchar(index), p, sizeof(char) * len);
+    index = heap->append(recordsconst(index, (unsigned char)len));
     if (nosymbol + 1 < _maxsymbol_) {
       tat[nosymbol++] = index;
     } else {
@@ -747,9 +658,9 @@ ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap) {
     }
   }
   if (err == ErrorCode::NoErrors) {
-    if (bptr + 1 < _maxbptr_)
+    if (bptr + 1 < _maxbptr_) {
       buf[bptr++] = (tat[k] == hpmod) ? ismod : (tat[k] == hpdiv) ? isdiv : tat[k];
-    else {
+    } else {
       // err = ErrorCode::CannotOpenGraphics;  // 22;
       err = ErrorCode::TooManyCharacterConstants;
     }

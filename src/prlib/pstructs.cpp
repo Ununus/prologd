@@ -175,31 +175,41 @@ void array::clear() {
   ptcltarget = (unsigned *)0;
   pncltarget = (unsigned *)0;
 }
-array::array(unsigned int SIZE) {
+void array::cleanUp(size_t idx) {
+  while (!recordintegersInHeap.empty() && recordintegersInHeap.back() >= idx) {
+    // std::cout << "Int destr call " << idx << std::endl;
+    GetPrecordinteger(recordintegersInHeap.back())->value.~IntegerType();
+    recordintegersInHeap.pop_back();
+  }
+  last = idx;
+}
+array::array(size_t SIZE) {
   heaps = new unsigned char[SIZE];
   size = (heaps != 0) ? SIZE : 0;
   clear();
 }
 
 array::~array() {
-  if (heaps)
+  if (heaps) {
+    for (size_t idx : recordintegersInHeap) {
+      // std::cout << "Int destr call " << idx << std::endl;
+      GetPrecordinteger(idx)->value.~IntegerType();
+    }
+    recordintegersInHeap.clear();
     delete[] heaps;
+  }
 }
 
-int array::expand() {
-#ifdef _DEBUG_
-  pldout("array::expand");
-#endif
-  unsigned sizenew = size << 1;
-  unsigned char *heapsnew = new unsigned char[sizenew];
+void array::expand() {
+  size_t sizenew = size << 1;
+  unsigned char *heapsnew = new (std::nothrow) unsigned char[sizenew];
   if (!heapsnew) {
-    // throw(T_Exception(ExErrAndMessage, LgError,
-    //	"can`t allocate memory for array expand"));
-    return 44;
+    throw std::runtime_error("Not enoth memory");
   }
   memset(heapsnew, 0, sizenew);
-  for (unsigned i = 0; i < size; i++)
+  for (unsigned i = 0; i < size; i++) {
     heapsnew[i] = heaps[i];
+  }
   if (pnclause)
     pnclause = (recordclause *)&heapsnew[(unsigned char *)pnclause - heaps];
   if (ptclause)
@@ -218,81 +228,65 @@ int array::expand() {
   heaps = heapsnew;
   size = sizenew;
   //    maxarray = size;
-  return 0;
-}
-unsigned int array::apend(void *ptr, unsigned int count) {
-  unsigned int baklast = last;
-  if (!ptr)
-    return -1;
-  if (last + count + 1 > size && expand() != 0)
-    return -1;
-  unsigned char *d = (unsigned char *)&heaps[last];
-  memcpy(d, ptr, count);
-  last += count;
-  //   for(;count; *d++ = *s++, count--);
-  return baklast;
 }
 
-baserecord *array::GetPbaserecord(unsigned int index) {
-  // if (index < 0 || index >= last)
-  //	throw(T_Exception(ExErrAndMessage, LgError,
-  //		"GetPbaserecord from array: incorrect index"));
+baserecord *array::GetPbaserecord(size_t index) {
   return (baserecord *)&heaps[index];
 }
 
-recordsconst *array::GetPrecordsconst(unsigned int index) {
+recordsconst *array::GetPrecordsconst(size_t index) {
   return (recordsconst *)GetPbaserecord(index);
 }
 
-recordstring *array::GetPrecordstring(unsigned int index) {
+recordstring *array::GetPrecordstring(size_t index) {
   return (recordstring *)GetPbaserecord(index);
 }
 
-recordvar *array::GetPrecordvar(unsigned int index) {
+recordvar *array::GetPrecordvar(size_t index) {
   return (recordvar *)GetPbaserecord(index);
 }
 
-recordinteger *array::GetPrecordinteger(unsigned int index) {
+recordinteger *array::GetPrecordinteger(size_t index) {
   return (recordinteger *)GetPbaserecord(index);
 }
 
-recordfloat *array::GetPrecordfloat(unsigned int index) {
+recordfloat *array::GetPrecordfloat(size_t index) {
   return (recordfloat *)GetPbaserecord(index);
 }
 
-recordunknown *array::GetPrecordunknown(unsigned int index) {
+recordunknown *array::GetPrecordunknown(size_t index) {
   return (recordunknown *)GetPbaserecord(index);
 }
 
-recordcut *array::GetPrecordcut(unsigned int index) {
+recordcut *array::GetPrecordcut(size_t index) {
   return (recordcut *)GetPbaserecord(index);
 }
 
-recordemptylist *array::GetPrecordemptylist(unsigned int index) {
+recordemptylist *array::GetPrecordemptylist(size_t index) {
   return (recordemptylist *)GetPbaserecord(index);
 }
 
-recordexpression *array::GetPrecordexpression(unsigned int index) {
+recordexpression *array::GetPrecordexpression(size_t index) {
   return (recordexpression *)GetPbaserecord(index);
 }
 
-recordfunction *array::GetPrecordfunction(unsigned int index) {
+recordfunction *array::GetPrecordfunction(size_t index) {
   return (recordfunction *)GetPbaserecord(index);
 }
 
-recordlist *array::GetPrecordlist(unsigned int index) {
+recordlist *array::GetPrecordlist(size_t index) {
   return (recordlist *)GetPbaserecord(index);
 }
 
-recordclause *array::GetPrecordclause(unsigned int index) {
+recordclause *array::GetPrecordclause(size_t index) {
   return (recordclause *)GetPbaserecord(index);
 }
 
-unsigned *array::GetPunsigned(unsigned index) {
+unsigned *array::GetPunsigned(size_t index) {
   return (unsigned *)GetPbaserecord(index);
 }
 
-char *array::GetPchar(unsigned index) {
+char *array::GetPchar(size_t index) {
   return (char *)GetPbaserecord(index);
 }
 
@@ -310,21 +304,18 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
   char pBuf[255];
   char *p = *Buf;
   baserecord *pbr = heap->GetPbaserecord(prf->func);
-  //(baserecord *)&heap->heaps[prf->func];
   if (pbr->ident == issymbol) {
     char *p = *Buf;
     PrintSconst(Buf, BufSize, (recordsconst *)pbr, ScVar, heap);
     //*Buf = 0;
     pldout(const_cast<char *>("finction:"));
     char Func[1024];
-    int len = (*Buf - p);
+    auto len = (*Buf - p);
     strncpy(Func, p, len);
     Func[len] = 0;
     pldout(const_cast<const char *>(Func));
   }
   unsigned *ptrarg = heap->GetPunsigned(prf->ptrarg);
-
-  //(unsigned *)&heap->heaps[prf->ptrarg];
   if (prf->narg && (*BufSize) > 2) {
     sprintf(*Buf, "(");
     (*Buf)++;
@@ -337,7 +328,6 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
         (*BufSize)--;
       }
       baserecord *pbr = heap->GetPbaserecord(ptrarg[i]);
-      //(baserecord *)&heap->heaps[ptrarg[i]];
       char sarg[255];
       sprintf(sarg, "argument index: %d", ptrarg[i]);
       pldout(const_cast<const char *>(sarg));
@@ -350,7 +340,7 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
       case isexpression: PrintExpression(Buf, BufSize, (recordexpression *)pbr, ScVar, heap); break;
       case isemptylist: PrintEmptyList(Buf, BufSize, (recordemptylist *)pbr, ScVar, heap); break;
       default:
-        int len = *Buf - p;
+        auto len = *Buf - p;
         if (len > 0) {
           strncpy(pBuf, p, len);
           pBuf[len] = 0;
@@ -418,7 +408,6 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
       (*Buf) += 1;
     }
     baserecord *pbr = heap->GetPbaserecord(rl->head);
-    //(baserecord *)&heap->heaps[rl->head];
     switch (pbr->ident) {
     case issymbol: PrintSconst(Buf, BufSize, (recordsconst *)pbr, ScVar, heap); break;
     case isvar: PrintVar(Buf, BufSize, (recordvar *)pbr, ScVar, heap); break;
@@ -427,7 +416,7 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
     case islist: PrintList(Buf, BufSize, (recordlist *)pbr, ScVar, heap); break;
     case isemptylist: break;
     default:
-      int len = *Buf - p;
+      auto len = *Buf - p;
       if (len > 0) {
         strncpy(pBuf, p, len);
         pBuf[len] = 0;
@@ -438,11 +427,11 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
     }
     unsigned rl_link = rl->link;
     unsigned ident = pbr->ident;
-    if (rl->link != NULL && rl->link != isnil && pbr->ident != isemptylist)
+    if (rl->link != NULL && rl->link != isnil && pbr->ident != isemptylist) {
       rl = heap->GetPrecordlist(rl->link);
-    //(recordlist *)&heap->heaps[rl->link];
-    else
+    } else {
       rl = (recordlist *)0;
+    }
   }
 
   if (2 > *BufSize) {
@@ -456,7 +445,6 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
 
 void PrintSconst(char **Buf, size_t *BufSize, recordsconst *rsc, TScVar *ScVar, array *heap) {
   char *pc = heap->GetPchar(rsc->ptrsymb);
-  //(char *)&heap->heaps[rsc->ptrsymb];
   if (rsc->length + 1 < *BufSize) {
     strncpy(*Buf, pc, rsc->length);
     *(BufSize) -= rsc->length;
@@ -468,7 +456,6 @@ void PrintSconst(char **Buf, size_t *BufSize, recordsconst *rsc, TScVar *ScVar, 
 
 void PrintVar(char **Buf, size_t *BufSize, recordvar *prv, TScVar *ScVar, array *heap) {
   char *pc = heap->GetPchar(prv->ptrsymb);
-  //(char *)&heap->heaps[prv->ptrsymb];
   if (prv->length + 1 < *BufSize) {
     strncpy(*Buf, pc, prv->length);
     *(BufSize) -= prv->length;
@@ -493,7 +480,7 @@ void PrintEmptyList(char **Buf, size_t *BufSize, recordemptylist *pr, TScVar *Sc
 
 void PrintInteger(char **Buf, size_t *BufSize, recordinteger *pri, TScVar *ScVar, array *heap) {
   char pBuf[255];
-  sprintf(pBuf, "%lld", pri->value);
+  sprintf(pBuf, "%s", pri->value.str().c_str());
   size_t Length = strlen(pBuf);
   if (Length + 1 < *BufSize) {
     strcpy(*Buf, pBuf);
@@ -513,7 +500,6 @@ void PrintClause(recordclause *rc, TScVar *ScVar, array *heap) {
     BufSize--;
   }
   unsigned *ptarget = heap->GetPunsigned(rc->ptrtarget);
-  //(unsigned *)&heap->heaps[rc->ptrtarget];
   for (int i = 0; *(ptarget + i); i++) {
     if (i == 1 && BufSize > 3) {
       *(p++) = ':';
@@ -524,7 +510,6 @@ void PrintClause(recordclause *rc, TScVar *ScVar, array *heap) {
       BufSize--;
     }
     recordfunction *rf = heap->GetPrecordfunction(*(ptarget + i));
-    //(recordfunction *)&heap->heaps[*(ptarget + i)];
     switch (rf->ident) {
     case isfunction: PrintFunction(&p, &BufSize, rf, ScVar, heap); break;
     case issymbol: PrintSconst(&p, &BufSize, (recordsconst *)rf, ScVar, heap); break;
@@ -542,7 +527,6 @@ void PrintClauses(recordclause *rc, TScVar *ScVar, array *heap) {
     if (rc->next == NULL || rc->next == isnil)
       return;
     rc = heap->GetPrecordclause(rc->next);
-    //(recordclause *)&heap->heaps[rc->next];
   }
 }
 

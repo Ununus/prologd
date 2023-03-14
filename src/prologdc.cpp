@@ -222,15 +222,15 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
   return 0;
 }
 
-void Rectangle(long long x1, long long y1, long long x2, long long y2, unsigned color) {}
-void MoveTo_LineTo(long long x1, long long y1, long long x2, long long y2, unsigned color) {}
-void FloodFill(long long x, long long y, unsigned color) {}
-void vertical(long long x1, long long y, long long x2, long long color) {}
-void horisontal(long long x, long long y1, long long y2, long long color) {}
-void ClearView(unsigned color) {}
-void Ellipse(long long x1, long long y1, long long x2, long long y2, unsigned color) {}
-void SetPixel(long long x, long long y, unsigned color) {}
-unsigned GetPixel(long long x, long long y) {
+void Rectangle(long long, long long, long long, long long, unsigned) {}
+void MoveTo_LineTo(long long, long long, long long, long long, unsigned) {}
+void FloodFill(long long, long long, unsigned) {}
+void vertical(long long, long long, long long, long long) {}
+void horisontal(long long, long long, long long, long long) {}
+void ClearView(unsigned) {}
+void Ellipse(long long, long long, long long, long long, unsigned) {}
+void SetPixel(long long, long long, unsigned) {}
+unsigned GetPixel(long long, long long) {
   return 0;
 }
 

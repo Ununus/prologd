@@ -12,6 +12,10 @@ add_library (prlib
 "pdefs.h"
 )
 
+set_property(TARGET prlib PROPERTY CXX_STANDARD 17)
+set_property(TARGET prlib PROPERTY CXX_STANDARD_REQUIRED 17)
+set_property(TARGET prlib PROPERTY CXX_EXTENSIONS Off)
+
 target_include_directories(prlib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/boost/include)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
