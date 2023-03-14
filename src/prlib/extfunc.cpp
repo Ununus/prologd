@@ -16,12 +16,8 @@ const char *kPrologVersion = "14 марта 2023";
 PredicateState argnull(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
   case hpfail: return PredicateState::No;  // 5;  // ложь
-  case hptrace:
-    ClVar->PrSetting->Trace = true;
-    break;
-  case hpnottr:
-    ClVar->PrSetting->Trace = false;
-    break;
+  case hptrace: ClVar->PrSetting->Trace = true; break;
+  case hpnottr: ClVar->PrSetting->Trace = false; break;
   case hpcut:
     ClVar->scptr = ClVar->parent;  //"!"
     //   zero();
@@ -828,7 +824,6 @@ PredicateState prstlst(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 52:  // isvar []
   {
     tp = heap->GetPbaserecord(ScVar->goal[maxarity + 1]);
-    //(baserecord *)&heap->heaps[ScVar->goal[maxarity + 1]];
     int len = GetStrFromList(lnwr, sizeof(lnwr), tp, ScVar, ClVar, heap);
     /*
     while (tp->ident == islist)
@@ -1523,7 +1518,6 @@ unsigned int prepare_target(unsigned term, TScVar *ScVar, TClVar *ClVar, array *
     return 1;
   }
   baserecord *pt = heap->GetPbaserecord(term);
-  //    recordlist * pl=(recordlist *)&heap->heaps[term];
   if (!ClVar->bpt) {
     return 1;
   }
@@ -1661,10 +1655,36 @@ unsigned GetConstTerm(unsigned Term, unsigned Frame, TClVar *ClVar, array *heap)
         return _PrevTerm;
       }
     } break;
-    case islist:
+    case islist: {
+      // это не было написано Балдиным
+      // Если лист, то скопирую его
+      // Константантый наверно можно не копировать?
+      auto indx = _Term;
+      size_t lstPrev = 0, fstIdx = 0;
+      while (heap->GetPbaserecord(indx)->ident == islist) {
+        auto *lst = heap->GetPrecordlist(indx);
+        auto cstTermIdx = GetConstTerm(lst->head, _Frame, ClVar, heap);
+        auto lstCopy = heap->append(recordlist(cstTermIdx));
+        if (lstPrev > 0) {
+          heap->GetPrecordlist(lstPrev)->link = lstCopy;
+        } else {
+          fstIdx = lstCopy;
+        }
+        lstPrev = lstCopy;
+        indx = lst->link;
+        while (heap->GetPbaserecord(indx)->ident == isvar) {
+          // Это всегда работает?
+          unsigned j;
+          bound(&indx, &_Frame, &j, ClVar, heap);
+        }
+      }
+      heap->GetPrecordlist(lstPrev)->link = heap->append(recordemptylist());
+      return fstIdx;
+    }
     case issymbol:
     case isinteger:
     case isfloat:
+    case isemptylist:
     case isstring: return _Term;
     default: return 0;
     }
@@ -1782,8 +1802,7 @@ PredicateState prassrt(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     unsigned *prf_arg = heap->GetPunsigned(prf->ptrarg);
     for (int i = 0; i < static_cast<int>(prf->narg); i++) {
       // достать константы из агрументов функции.
-      unsigned Arg = GetConstTerm(*(prf_arg + i), ClVar->frame2, ClVar, heap);
-      *(parg + i) = Arg;
+      *(parg + i) = GetConstTerm(*(prf_arg + i), ClVar->frame2, ClVar, heap);
     }
     auto findex = heap->append(recordfunction(prf->narg, prf->func, ArgIndex));
     int id = tp->ident;
