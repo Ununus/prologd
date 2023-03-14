@@ -1213,7 +1213,6 @@ PredicateState prdel(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   for (w = 1; pc->next != isnil && pc->next != NULL && w < i; w++) {
     pcpred = pc;
     pc = heap->GetPrecordclause(pc->next);
-    //(recordclause *)&heap->heaps[pc->next];
   }
 
   if (w == 1) {  // первое предложение  даже если последнее
@@ -1339,7 +1338,6 @@ PredicateState prapp(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     auto w = strlen(wrln1);
     auto i = strlen(wrln2);
     // если lnwr1 входит в lnwr2 и причем спереди
-
     if (w <= i && !strncmp(wrln1, wrln2, w))  // 2006/10/17
     {
       return zap3(&wrln2[w], 2, ScVar, ClVar, heap);
@@ -2266,10 +2264,12 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i2 = strlen(str1);
     i3 = strlen(str2);
     if (i1 >= 0 && i2 >= i1 + i3 - 1 && i3 == i1) {
-      for (i4 = i2 - i3; i4 >= 0 && strncmp(&str1[i4.convert_to<size_t>()], str2, i3.convert_to<size_t>()); i4--)
+      for (i4 = i2 - i3; i4 >= 0 && strncmp(&str1[i4.convert_to<size_t>()], str2, i3.convert_to<size_t>()); i4--) {
         ;
-      if (i4 >= 0)
+      }
+      if (i4 >= 0) {
         return zap1(i4 + 1, 2, ScVar, ClVar, heap);
+      }
     }
     break;
   case 4554:
@@ -2298,8 +2298,9 @@ PredicateState prcopy(unsigned sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     i1 = strlen(str1);
     i2 = strlen(str2);
     i3 = occ(1, ScVar, ClVar, heap);
-    if ((i3 > 0) && (i1 >= i2 + i3 - 1) && (!strncmp(&str1[(i3 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>())))
+    if ((i3 > 0) && (i1 >= i2 + i3 - 1) && (!strncmp(&str1[(i3 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>()))) {
       return zap1(i2, 3, ScVar, ClVar, heap);
+    }
     break;
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -2445,7 +2446,6 @@ PredicateState argfour(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap)
 
 // Ћ»Ќ»я
 PredicateState prger(unsigned long sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  // int xy;
   IntegerType x1, x2, y1, y2, color;
   switch (sw) {
   case 77777: {
@@ -2618,8 +2618,9 @@ bool bpred(unsigned name, unsigned narg) {
 int Inputstring(char *buf, int size, char *caption) {
   int err = 0;
   char *pCaption = const_cast<char *>("¬ведите строку");
-  if (caption)
+  if (caption) {
     pCaption = caption;
+  }
   int _err = InputStringFromDialog(buf, size, pCaption, true);
   if (!_err) {
     // pldout(buf);
@@ -2632,8 +2633,9 @@ int Inputstring(char *buf, int size, char *caption) {
 int Inputline(char *buf, int size, char *caption) {
   int err = 0;
   char *pCaption = const_cast<char *>("¬ведите строку");
-  if (caption)
+  if (caption) {
     pCaption = caption;
+  }
   int _err = InputStringFromDialog(buf, size, pCaption, false);
   if (!_err) {
     // pldout(buf);

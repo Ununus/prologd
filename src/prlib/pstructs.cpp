@@ -65,6 +65,7 @@ void TClVar::Clear() {
     delete[] st_trail;
   if (BPT)
     delete[] BPT;
+  outBuff.clear();
 }
 
 TClVar::TClVar() {

@@ -221,6 +221,7 @@ constexpr int _maxbf_ = bruteExpand2 * 2048;
 
 struct TClVar {
   PredicateState stat;
+  std::string outBuff;
   unsigned int vmaxstack;
   unsigned int *st_con;
   unsigned int *st_vr1;

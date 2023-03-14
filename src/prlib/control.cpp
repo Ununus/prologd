@@ -8,9 +8,6 @@
 #include "functions.h"
 // #include <charconv>
 
-// char buff[2048];
-std::string outBuff;
-
 void outerror(ErrorCode err) {
   errout(GetPrErrText(err));
 }
@@ -207,6 +204,7 @@ bool stac(TClVar *ClVar, array *heap) {
 
 // j для печати разделителя
 bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   bool nxaex;
   do {
     nxaex = true;
@@ -278,6 +276,7 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // прологовский вывод
 PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   unsigned k = 0;
   recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
   unsigned *ptr = heap->GetPunsigned(pf->ptrarg);
@@ -300,6 +299,7 @@ PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   unsigned i = 0;
   term = TERM;
   frame = FRAME;
@@ -493,6 +493,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
 
 // пока только описание функции
 void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   if (!ClVar->varqu) {
     if (!ClVar->quiet) {
       prdout(true);
@@ -575,6 +576,7 @@ static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
 // переменных выделяется новый кадр. В зависимости от результата унификации либо
 // происходит переход к целям нового предложения, либо испытывается следующее предложение.
 static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   if (ClVar->newclause && ClVar->newclause != isnil) {  // pnclause=head->at(newclause);pncltarget=head->at(newclause-1);
     heap->ptclause = heap->pnclause;
     heap->ptcltarget = heap->pncltarget;
@@ -651,6 +653,7 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
 // Неудача, для цели не найдено решение. Осуществляется возврат к предыдущей цели,
 // чтобы поискать другое решение.
 static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   if (!ClVar->scptr) {
     ClVar->stat = PredicateState::Error;  // 1;
   } else {
@@ -671,6 +674,7 @@ static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // Выесняется, является ли исполняемая цель встроенным предикатом.
 static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
+  auto &outBuff = ClVar->outBuff;
   if (ClVar->PrSetting->Trace) {
     pldout("Цель ");
     // buff[write_term(ClVar->head, ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
