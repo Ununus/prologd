@@ -6,10 +6,10 @@
 #include <string.h>
 
 void TScVar::Init() {
-  buf = (unsigned int *)0;
-  goal = (unsigned int *)0;
-  tvar = (unsigned int *)0;
-  tat = (unsigned int *)0;
+  buf = nullptr;
+  goal = nullptr;
+  tvar = nullptr;
+  tat = nullptr;
   bptr = 0;
   gptr = 0;
   novar = 0;
@@ -18,10 +18,10 @@ void TScVar::Init() {
   EndOfClause = false;
   Query = false;
   exprip = 0;
-  buf = new unsigned int[_maxbptr_];
-  goal = new unsigned int[_maxgptr_];
-  tvar = new unsigned int[_maxvar_];
-  tat = new unsigned int[_maxsymbol_];
+  buf = new size_t[_maxbptr_];
+  goal = new size_t[_maxgptr_];
+  tvar = new size_t[_maxvar_];
+  tat = new size_t[_maxsymbol_];
 }
 
 void TScVar::Clear() {
@@ -45,12 +45,12 @@ TScVar::~TScVar() {
 
 void TClVar::Init() {
   vmaxstack = _vmaxstack_;
-  st_con = new unsigned int[_vmaxstack_];
-  st_vr1 = new unsigned int[_vmaxstack_];
-  st_vr2 = new unsigned int[_vmaxstack_];
-  st_trail = new unsigned int[_vmaxstack_];
-  bf = new unsigned int[_maxbf_];
-  BPT = new unsigned int[_maxbptr_];
+  st_con = new size_t[_vmaxstack_];
+  st_vr1 = new size_t[_vmaxstack_];
+  st_vr2 = new size_t[_vmaxstack_];
+  st_trail = new size_t[_vmaxstack_];
+  bf = new size_t[_maxbf_];
+  BPT = new size_t[_maxbptr_];
   bpt = BPT;
 }
 
@@ -75,107 +75,19 @@ TClVar::~TClVar() {
   Clear();
 }
 
-recordsconst::recordsconst(unsigned PTRsymb, unsigned char LENGTH, unsigned int BEGIN) {
-  ident = issymbol;
-  ptrsymb = PTRsymb;
-  length = LENGTH;
-  begin = BEGIN;
-}
-
-recordstring::recordstring(unsigned PTRsymb, unsigned char LENGTH, unsigned int BEGIN) {
-  ident = isstring;
-  ptrsymb = PTRsymb;
-  length = LENGTH;
-  begin = BEGIN;
-}
-// если begin!=0 то это значит что строка создана при исполнении программы
-// функцией zap3();
-// пролога и она находится не в тексте редактора а динам памяти
-// следовательно ее нужно уничточить при выходи из исполнения программы
-//  иначе это в тексте редактора и уничтожится при закрытии окна с текстом
-/*
-recordstring::~recordstring()
-{   if (begin) delete (char*)ptr;
-}
-*/
-recordvar::recordvar(unsigned PTRsymb, unsigned char LENGTH, unsigned int NUM) {
-  ident = isvar;
-  ptrsymb = PTRsymb;
-  length = LENGTH;
-  num = NUM;
-}
-
-recordinteger::recordinteger(IntegerType VALUE) {
-  ident = isinteger;
-  value = VALUE;
-}
-
-recordfloat::recordfloat(FloatType VALUE) {
-  ident = isfloat;
-  value = VALUE;
-}
-
-recordunknown::recordunknown() {
-  ident = isunknown;
-}
-
-recordcut::recordcut() {
-  ident = iscut;
-  func = hpcut;
-}
-
-recordemptylist::recordemptylist() {
-  ident = isemptylist;
-}
-
-recordexpression::recordexpression(unsigned int LENGTH,
-                                   unsigned int PRECORD)  //(unsigned int *PTR,unsigned int LENGTH)
-{
-  ident = isexpression;
-  length = LENGTH;
-  precord = PRECORD;
-}  // ptr=PTR;length=LENGTH;}
-
-recordfunction::recordfunction(unsigned char NARG,
-                               unsigned int FUNC,
-                               unsigned int PTRARG)  //,unsigned int *PTRARG)
-{
-  ident = isfunction;
-  narg = NARG;
-  func = FUNC;
-  ptrarg = PTRARG;
-}  //;ptrarg=PTRARG;}
-
-recordlist::recordlist(unsigned int HEAD, unsigned int LINK) {
-  ident = islist;
-  head = HEAD;
-  link = LINK;
-}
-
-recordclause::recordclause(unsigned char IDENT,
-                           unsigned int NEXT,
-                           unsigned int NVARS,
-                           unsigned int HEAD,
-                           unsigned int PTRTARGET)  //,unsigned int *PTRTARGET)
-{
-  ident = IDENT;
-  next = NEXT;
-  nvars = NVARS;
-  head = HEAD;
-  ptrtarget = PTRTARGET;
-}  // ptrtarget=PTRTARGET;}
-
 //============array=============
 void array::clear() {
   freeheap = last = 0;
-  pnclause = (recordclause *)0;
-  ptclause = (recordclause *)0;
-  paclause = (recordclause *)0;
-  phclause = (recordclause *)0;
-  pacltarget = (unsigned *)0;
-  ptcltarget = (unsigned *)0;
-  pncltarget = (unsigned *)0;
+  pnclause = nullptr;
+  ptclause = nullptr;
+  paclause = nullptr;
+  phclause = nullptr;
+  pacltarget = nullptr;
+  ptcltarget = nullptr;
+  pncltarget = nullptr;
 }
+
+// heap->last = bakindex;
 void array::cleanUp(size_t idx) {
   while (!recordintegersInHeap.empty() && recordintegersInHeap.back() >= idx) {
     // std::cout << "Int destr call " << idx << std::endl;
@@ -220,11 +132,11 @@ void array::expand() {
   if (phclause)
     phclause = (recordclause *)&heapsnew[(unsigned char *)phclause - heaps];
   if (pacltarget)
-    pacltarget = (unsigned *)&heapsnew[(unsigned char *)pacltarget - heaps];
+    pacltarget = (size_t *)&heapsnew[(unsigned char *)pacltarget - heaps];
   if (ptcltarget)
-    ptcltarget = (unsigned *)&heapsnew[(unsigned char *)ptcltarget - heaps];
+    ptcltarget = (size_t *)&heapsnew[(unsigned char *)ptcltarget - heaps];
   if (pncltarget)
-    pncltarget = (unsigned *)&heapsnew[(unsigned char *)pncltarget - heaps];
+    pncltarget = (size_t *)&heapsnew[(unsigned char *)pncltarget - heaps];
   delete[] heaps;
   heaps = heapsnew;
   size = sizenew;
@@ -283,8 +195,8 @@ recordclause *array::GetPrecordclause(size_t index) {
   return (recordclause *)GetPbaserecord(index);
 }
 
-unsigned *array::GetPunsigned(size_t index) {
-  return (unsigned *)GetPbaserecord(index);
+size_t *array::GetPunsigned(size_t index) {
+  return (size_t *)GetPbaserecord(index);
 }
 
 char *array::GetPchar(size_t index) {
@@ -316,7 +228,7 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
     Func[len] = 0;
     pldout(const_cast<const char *>(Func));
   }
-  unsigned *ptrarg = heap->GetPunsigned(prf->ptrarg);
+  auto *ptrarg = heap->GetPunsigned(prf->ptrarg);
   if (prf->narg && (*BufSize) > 2) {
     sprintf(*Buf, "(");
     (*Buf)++;
@@ -330,7 +242,7 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
       }
       baserecord *pbr = heap->GetPbaserecord(ptrarg[i]);
       char sarg[255];
-      sprintf(sarg, "argument index: %d", ptrarg[i]);
+      sprintf(sarg, "argument index: %zd", ptrarg[i]);
       pldout(const_cast<const char *>(sarg));
       switch (pbr->ident) {
       case issymbol: PrintSconst(Buf, BufSize, (recordsconst *)pbr, ScVar, heap); break;
@@ -347,7 +259,7 @@ void PrintFunction(char **Buf, size_t *BufSize, recordfunction *prf, TScVar *ScV
           pBuf[len] = 0;
           pldout(pBuf);
         }
-        sprintf(pBuf, "PrintFunction: unknown ident: %d", pbr->ident);
+        sprintf(pBuf, "PrintFunction: unknown ident: %zd", pbr->ident);
         pldout(pBuf);
       }
     }
@@ -423,11 +335,11 @@ void PrintList(char **Buf, size_t *BufSize, recordlist *rl, TScVar *ScVar, array
         pBuf[len] = 0;
         pldout(pBuf);
       }
-      sprintf(pBuf, "PrintList: unknown ident: %d", pbr->ident);
+      sprintf(pBuf, "PrintList: unknown ident: %zd", pbr->ident);
       pldout(pBuf);
     }
-    unsigned rl_link = rl->link;
-    unsigned ident = pbr->ident;
+    auto rl_link = rl->link;
+    auto ident = pbr->ident;
     if (rl->link != NULL && rl->link != isnil && pbr->ident != isemptylist) {
       rl = heap->GetPrecordlist(rl->link);
     } else {
@@ -500,7 +412,7 @@ void PrintClause(recordclause *rc, TScVar *ScVar, array *heap) {
     *(p++) = '?';
     BufSize--;
   }
-  unsigned *ptarget = heap->GetPunsigned(rc->ptrtarget);
+  auto *ptarget = heap->GetPunsigned(rc->ptrtarget);
   for (int i = 0; *(ptarget + i); i++) {
     if (i == 1 && BufSize > 3) {
       *(p++) = ':';
@@ -514,7 +426,7 @@ void PrintClause(recordclause *rc, TScVar *ScVar, array *heap) {
     switch (rf->ident) {
     case isfunction: PrintFunction(&p, &BufSize, rf, ScVar, heap); break;
     case issymbol: PrintSconst(&p, &BufSize, (recordsconst *)rf, ScVar, heap); break;
-    default: sprintf(_Buf, "PrintClause: unknown ident: %d", rf->ident);
+    default: sprintf(_Buf, "PrintClause: unknown ident: %zd", rf->ident);
     }
   }
   if (BufSize > 2)

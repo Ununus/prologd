@@ -10,16 +10,16 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {  // функция синтаксиче
   ErrorCode err = ErrorCode::NoErrors;                     // вызывает функции записи в таблицы
   bool &EndOfClause = ScVar->EndOfClause;
   bool &Query = ScVar->Query;
-  unsigned int *buf = ScVar->buf;
-  unsigned int &bptr = ScVar->bptr;
-  unsigned int *goal = ScVar->goal;
-  unsigned int &gptr = ScVar->gptr;
-  unsigned int &novar = ScVar->novar;
-  unsigned int *tat = ScVar->tat;
-  unsigned int *tvar = ScVar->tvar;
-  unsigned int &nosymbol = ScVar->nosymbol;
+  auto *buf = ScVar->buf;
+  auto &bptr = ScVar->bptr;
+  auto *goal = ScVar->goal;
+  auto &gptr = ScVar->gptr;
+  auto &novar = ScVar->novar;
+  auto *tat = ScVar->tat;
+  auto *tvar = ScVar->tvar;
+  auto &nosymbol = ScVar->nosymbol;
   bool &right = ScVar->right;
-  unsigned int &exprip = ScVar->exprip;
+  auto &exprip = ScVar->exprip;
   EndOfClause = false;
   char *p = Str;
   while (*p && err == ErrorCode::NoErrors)  // возвратит 0 или код ошибки в конструкции
@@ -131,7 +131,7 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {  // функция синтаксиче
     }
       // символы арифметических функций должны обработатся в expresse
     default: {
-      unsigned int len = 0;
+      size_t len = 0;
       if (issvar(p, len)) {
         err = variabletable(p, len, ScVar, heap);
         p += len - 1;

@@ -39,14 +39,14 @@ ErrorCode implic(char *&p, TScVar *ScVar, array *heap);
 ErrorCode expbeg(TScVar *ScVar, array *heap);
 ErrorCode lbeg(char *&p, TScVar *ScVar, array *heap);
 ErrorCode list(TScVar *ScVar, array *heap);
-ErrorCode arsgn(TScVar *ScVar, unsigned int i);
+ErrorCode arsgn(TScVar *ScVar, size_t i);
 //==============================================
 bool isalpharus(char symb);
 bool isalphaang(char symb);
 bool isalphanumang(char symb);
 bool isdigitrus(char symb);
-bool issvar(char *&p, unsigned int &len);
-bool issconst(char *&p, unsigned int &len);
+bool issvar(char *&p, size_t &len);
+bool issconst(char *&p, size_t &len);
 //=====функции для записи ========================================
-ErrorCode variabletable(char *&p, unsigned int len, TScVar *ScVar, array *heap);
-ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap);
+ErrorCode variabletable(char *&p, size_t len, TScVar *ScVar, array *heap);
+ErrorCode wrsconst(char *&p, size_t len, TScVar *ScVar, array *heap);

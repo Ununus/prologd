@@ -19,98 +19,121 @@ enum class PredicateState { Error = 1, PrepereNewTarget = 2, Yes = 3, ControlSte
 
 // предок всех структур
 struct baserecord {
-  unsigned int ident;
+  size_t ident;
+  baserecord(size_t ident)
+    : ident(ident) {}
 };
 
 // строковая константа
-struct recordsconst : public baserecord {
-  // char *ptr;          //указатель в текст на символьное представление
-  unsigned int ptrsymb;  // индекс в heap симв представления
-  unsigned int length;   // длина
-  unsigned int begin;    // индекс в heap на первое предл. где она стоит предикатом
-  recordsconst(unsigned PTRsymb, unsigned char LENGTH, unsigned int BEGIN = 0);
+struct recordsconst final : public baserecord {
+  // char *ptr;    // указатель в текст на символьное представление
+  size_t ptrsymb;  // индекс в heap симв представления
+  size_t length;   // длина
+  size_t begin;    // индекс в heap на первое предл. где она стоит предикатом
+  recordsconst(size_t PTRsymb, size_t LENGTH, size_t BEGIN = 0)
+    : baserecord(issymbol)
+    , ptrsymb(PTRsymb)
+    , length(LENGTH)
+    , begin(BEGIN) {}
 };
 
-struct recordstring : public baserecord {
-  // char *ptr;           //указатель на строку в тексте
-  unsigned int ptrsymb;  // индекс в heap симв представления
-  unsigned int length;   // длина строки не считая " и '\0'
-  unsigned int begin;    // введен для совместимости с recordsconst всегда =0;
-  recordstring(unsigned PTRsymb, unsigned char LENGTH, unsigned int BEGIN = 0);
-  // если begin!=0 то это значит что строка создана при исполнении программы
-  // функцией zap3();
-  // пролога и она находится не в тексте редактора а динам памяти
-  // следовательно ее нужно уничточить при выходи из исполнения программы
-  //  иначе это в тексте редактора и уничтожится при закрытии окна с текстом
-  //~recordstring();
+// "строка"
+struct recordstring final : public baserecord {
+  // char *ptr;    // указатель на строку в тексте
+  size_t ptrsymb;  // индекс в heap симв представления
+  size_t length;   // длина строки не считая " и '\0'
+  size_t begin;    // введен для совместимости с recordsconst всегда =0;
+  recordstring(size_t PTRsymb, size_t LENGTH, size_t BEGIN = 0)
+    : baserecord(isstring)
+    , ptrsymb(PTRsymb)
+    , length(LENGTH)
+    , begin(BEGIN) {}
 };
 
 // структура записи переменной
-struct recordvar : public baserecord {
-  // char *ptr;         //указатель на текст представл переменной
-  unsigned int ptrsymb;  // индекс в heap симв представления
-  unsigned int length;   // длина переменной
-  unsigned int num;      // номер переменный в предложении начиная с 0
-  recordvar(unsigned PTRsymb, unsigned char LENGTH, unsigned int NUM = 0);
+struct recordvar final : public baserecord {
+  // char *ptr;    // указатель на текст представл переменной
+  size_t ptrsymb;  // индекс в heap симв представления
+  size_t length;   // длина переменной
+  size_t num;      // номер переменный в предложении начиная с 0
+  recordvar(size_t PTRsymb, size_t LENGTH, size_t NUM = 0)
+    : baserecord(isvar)
+    , ptrsymb(PTRsymb)
+    , length(LENGTH)
+    , num(NUM) {}
 };
 
-struct recordinteger : public baserecord {
+struct recordinteger final : public baserecord {
   IntegerType value;
-  recordinteger(IntegerType VALUE);
+  recordinteger(IntegerType VALUE)
+    : baserecord(isinteger)
+    , value(VALUE) {}
 };
 
-struct recordfloat : public baserecord {
+struct recordfloat final : public baserecord {
   FloatType value;
-  recordfloat(FloatType VALUE);
+  recordfloat(FloatType VALUE)
+    : baserecord(isfloat)
+    , value(VALUE) {}
 };
 
-struct recordunknown : public baserecord {
-  recordunknown();
+struct recordunknown final : public baserecord {
+  recordunknown()
+    : baserecord(isunknown) {}
 };
 
-struct recordcut : public baserecord {
-  unsigned int func;
-  recordcut();
+struct recordcut final : public baserecord {
+  size_t func;
+  recordcut(size_t hpcut)
+    : baserecord(iscut)
+    , func(hpcut) {}
 };
 
-struct recordemptylist : public baserecord {
-  recordemptylist();
+struct recordemptylist final : public baserecord {
+  recordemptylist()
+    : baserecord(isemptylist) {}
 };
 
-struct recordexpression : public baserecord {
-  // unsigned int *ptr;//указатель на обратную польскую запись
-  // запись в эл-те указатель которой на 1 меньше чем эл-та структуры
-  unsigned int length;   // длина записи
-  unsigned int precord;  // индекс польской записи
-  recordexpression(unsigned int LENGTH, unsigned int PRECORD);
+struct recordexpression final : public baserecord {
+  size_t length;   // длина записи
+  size_t precord;  // индекс польской записи
+  recordexpression(size_t LENGTH, size_t PRECORD)
+    : baserecord(isexpression)
+    , length(LENGTH)
+    , precord(PRECORD) {}
 };
 
-struct recordfunction : public baserecord {
-  unsigned int narg;    // число аргументов в функции
-  unsigned int func;    // указатель на функц символ
-  unsigned int ptrarg;  // индекс массива с аргументами
-  // unsigned int *ptrarg; //указатель на массив индексов в массиве heap
-  // при использовании указатели из массива нужно приводить
-  // к нужному типу  число указателей в narg
-  // индекс массива в на 1 меньше чем индекс функции
-  recordfunction(unsigned char NARG, unsigned int FUNC, unsigned int PTRARG);
+struct recordfunction final : public baserecord {
+  size_t narg;    // число аргументов в функции
+  size_t func;    // указатель на функц символ
+  size_t ptrarg;  // индекс массива с аргументами
+  recordfunction(size_t NARG, size_t FUNC, size_t PTRARG)
+    : baserecord(isfunction)
+    , narg(NARG)
+    , func(FUNC)
+    , ptrarg(PTRARG) {}
 };
 
-struct recordlist : public baserecord {
-  unsigned int head;  // указатель на голову
-  unsigned int link;  // указатель на хвост
-  recordlist(unsigned int HEAD, unsigned int LINK = 0);
+struct recordlist final : public baserecord {
+  size_t head;  // указатель на голову
+  size_t link;  // указатель на хвост
+  explicit recordlist(size_t HEAD, size_t LINK = 0)
+    : baserecord(islist)
+    , head(HEAD)
+    , link(LINK) {}
 };
 
-struct recordclause : public baserecord {
-  unsigned int next;       // инекс в массиве heap следующего одноименного предложения
-  unsigned int nvars;      // число переменных в предложении
-  unsigned int head;       // индекс в heap (на issymbol???) голову предложения
-  unsigned int ptrtarget;  // индекс начала целей
-  // unsigned int *ptrtarget;   //указатель на массив индексов в массиве heap
-  // аргументы можно найти череы указатель инекс которого на 1 меньше индекса
-  // предложения
-  recordclause(unsigned char IDENT, unsigned int NEXT, unsigned int NVARS, unsigned int HEAD, unsigned int PTRTARGET);
+struct recordclause final : public baserecord {
+  size_t next;       // инекс в массиве heap следующего одноименного предложения
+  size_t nvars;      // число переменных в предложении
+  size_t head;       // индекс в heap (на issymbol???) голову предложения
+  size_t ptrtarget;  // индекс начала целей
+  recordclause(size_t IDENT, size_t NEXT, size_t NVARS, size_t HEAD, size_t PTRTARGET)
+    : baserecord(IDENT)
+    , next(NEXT)
+    , nvars(NVARS)
+    , head(HEAD)
+    , ptrtarget(PTRTARGET) {}
 };
 //-----------------------------------------------
 // массив для трансляции и исполнения программы
@@ -119,10 +142,10 @@ struct array {
 protected:
   unsigned char *heaps;  // указатель на массив
 public:
-  size_t freeheap;        // кол-во эл-тов до разбора программы
-  size_t size;            // кол-во эл-тов всего /типа unsigned int/
-  size_t last;            // индекс массива указывающий на первый свободный эл
-  size_t query;           // индекс предложения - вопроса.
+  size_t freeheap;  // кол-во эл-тов до разбора программы
+  size_t size;      // кол-во эл-тов всего /типа size_t/
+  size_t last;      // индекс массива указывающий на первый свободный эл
+  size_t query;     // индекс предложения - вопроса.
   template<class T>
   size_t append(const T &record, size_t count = 1);  // добавление в конец
 
@@ -144,23 +167,26 @@ public:
   recordfunction *GetPrecordfunction(size_t index);
   recordlist *GetPrecordlist(size_t index);
   recordclause *GetPrecordclause(size_t index);
-  unsigned *GetPunsigned(size_t index);
+  size_t *GetPunsigned(size_t index);
   char *GetPchar(size_t index);
 
-  recordclause *pnclause;    // для newclause
-  recordclause *ptclause;    // для trylause
-  recordclause *phclause;    // для head
-  recordclause *paclause;    // ук на структ для atomp
-  unsigned int *pacltarget;  // указатель на цели предложения aclause
-  unsigned int *ptcltarget;
-  unsigned int *pncltarget;
+  recordclause *pnclause;  // для newclause
+  recordclause *ptclause;  // для trylause
+  recordclause *phclause;  // для head
+  recordclause *paclause;  // ук на структ для atomp
+  size_t *pacltarget;      // указатель на цели предложения aclause
+  size_t *ptcltarget;
+  size_t *pncltarget;
 
   std::vector<size_t> recordintegersInHeap;
 };
 
 template<class T>
 size_t array::append(const T &record, size_t count) {
-  unsigned int baklast = last;
+  if (std::is_same<T, unsigned>()) {
+    throw 1;
+  }
+  auto baklast = last;
   auto sz = sizeof(record) * count;
   while (last + sz + 1 > size) {
     expand();
@@ -176,29 +202,29 @@ size_t array::append(const T &record, size_t count) {
   // return heaps + last;
 }
 
-constexpr int bruteExpand = 8;
+constexpr size_t bruteExpand = 8;
 // структура для scaner
-constexpr int _maxbptr_ = bruteExpand * 1024;
-constexpr int _maxgptr_ = bruteExpand * 150;
-constexpr int _maxvar_ = bruteExpand * 512;
-constexpr int _maxsymbol_ = bruteExpand * 4096;
-constexpr int _maxarray_ = bruteExpand * 5000;
+constexpr size_t _maxbptr_ = bruteExpand * 1024;
+constexpr size_t _maxgptr_ = bruteExpand * 150;
+constexpr size_t _maxvar_ = bruteExpand * 512;
+constexpr size_t _maxsymbol_ = bruteExpand * 4096;
+constexpr size_t _maxarray_ = bruteExpand * 5000;
 
 struct TScVar {
-  unsigned int *buf;
-  unsigned int *goal;
-  unsigned int *tat;   // текстовое представление констант
-  unsigned int *tvar;  // таблица переменных
-  unsigned int bptr;
-  unsigned int gptr;
-  unsigned int nosymbol;
-  unsigned int novar;  // первое свободное место в tvar
+  size_t *buf;
+  size_t *goal;
+  size_t *tat;   // текстовое представление констант
+  size_t *tvar;  // таблица переменных
+  size_t bptr;
+  size_t gptr;
+  size_t nosymbol;
+  size_t novar;  // первое свободное место в tvar
   bool right;
   bool EndOfClause;
   bool Query;
-  unsigned int exprip;   // нужна ли здесь ? !!!
-  size_t hpunkn;         // положенме анонимки в buf
-  size_t hpempty;        // положение пустого списка
+  size_t exprip;   // нужна ли здесь ? !!!
+  size_t hpunkn;   // положенме анонимки в buf
+  size_t hpempty;  // положение пустого списка
 
   TScVar();
   ~TScVar();
@@ -214,57 +240,48 @@ struct TPrSetting {
   bool Trace{ false };
 };
 
-constexpr int bruteExpand2 = 32;
+constexpr size_t bruteExpand2 = 32;
 // структуры для хранения данных - программы
-constexpr int _vmaxstack_ = bruteExpand2 * 1000;
-constexpr int _maxbf_ = bruteExpand2 * 2048;
+constexpr size_t _vmaxstack_ = bruteExpand2 * 1000;
+constexpr size_t _maxbf_ = bruteExpand2 * 2048;
 
 struct TClVar {
   PredicateState stat;
   std::string outBuff;
-  unsigned int vmaxstack;
-  unsigned int *st_con;
-  unsigned int *st_vr1;
-  unsigned int *st_vr2;
-  unsigned int *st_trail;
-  unsigned int *bf;    // массив стека унификации
-  unsigned int varqu;  // кол-во вопросов
+  size_t vmaxstack;
+  size_t *st_con;
+  size_t *st_vr1;
+  size_t *st_vr2;
+  size_t *st_trail;
+  size_t *bf;    // массив стека унификации
+  size_t varqu;  // кол-во вопросов
 
-  unsigned int newclause,                // индекс в массиве указывающий на предложения
-    nclause,                             // индекс для newclause
-    aclause,                             //           atomp
-    hclause,                             //           head
-    tclause,                             //           tryclause
-    svptr,                               //
-    oldsvptr,                            //
-    scptr,                               // вершина стека управления
-    frame2,                              // указатель к кадру с стеке переменных
-    frame1,                              //
-    parent,                              // указатель на родительскую среду в стеке управления
-    bipr,                                // указатель на функтор предиката
-    head,                                // место записи в куче об исполняемой цели
-    oldtptr,                             // вершина стека следа до исполнения
-    tptr;                                // вершина стека следа
+  size_t newclause;  // индекс в массиве указывающий на предложения
+  size_t nclause;    // индекс для newclause
+  size_t aclause;    //            atomp
+  size_t hclause;    //            head
+  size_t tclause;    //            tryclause
+  size_t svptr;      //
+  size_t oldsvptr;   //
+  size_t scptr;      // вершина стека управления
+  size_t frame2;     // указатель к кадру с стеке переменных
+  size_t frame1;     //
+  size_t parent;     // указатель на родительскую среду в стеке управления
+  size_t bipr;       // указатель на функтор предиката
+  size_t head;       // место записи в куче об исполняемой цели
+  size_t oldtptr;    // вершина стека следа до исполнения
+  size_t tptr;       // вершина стека следа
+
   ErrorCode err{ ErrorCode::NoErrors };  // ошибка
   bool ntro;
-  int atomp;  // указатель на цель
-  int tryclause;
+  size_t atomp;  // указатель на цель
+  size_t tryclause;
   bool ex, flag;
   bool quiet{ false };  // Для предиката ТИХО
 
   // для unify
-  unsigned int bp, term1, term2, fr1, fr2, numb;
-  /*
-    recordclause * pnclause;//для newclause
-    recordclause * ptclause;//для trylause
-    recordclause * phclause;//для head
-    recordclause * paclause;//ук на структ для atomp
-    unsigned int
-            * pacltarget,   //указатель на цели предложения aclause
-                                                          //(aclause-1)
-                          * ptcltarget,
-                          * pncltarget;
-  */
+  size_t bp, term1, term2, fr1, fr2, numb;
+
   recordsconst *precordsconst;
   recordvar *precordvar;
   recordinteger *precordinteger;
@@ -278,8 +295,8 @@ struct TClVar {
   recordclause *precordclause;
   recordcut *precordcut;
 
-  unsigned int *BPT;  // для вывода пролога
-  unsigned int *bpt;  // указатель в массиве BPT
+  size_t *BPT;  // для вывода пролога
+  size_t *bpt;  // указатель в массиве BPT
 
   std::unique_ptr<TPrSetting> PrSetting{};
 

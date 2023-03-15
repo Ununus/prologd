@@ -50,15 +50,15 @@ static const char *kErrorStrs[] = {
   "Слишком длинный список"                               // 44
 };
 
-const int kErrorStrCount = sizeof(kErrorStrs) / sizeof(char *);
+const auto kErrorStrCount = sizeof(kErrorStrs) / sizeof(char *);
 
 char *GetPrErrText(ErrorCode err) {
   static char ErrBuf[255];
   auto errIndex = to_underlying(err);
   if (errIndex < 0 || errIndex > kErrorStrCount) {
-    sprintf(ErrBuf, "Unknown error (code = %d)", errIndex);
+    sprintf(ErrBuf, "Unknown error (code = %zd)", errIndex);
   } else {
-    sprintf(ErrBuf, "%s (%d)", kErrorStrs[errIndex], errIndex);
+    sprintf(ErrBuf, "%s (%zd)", kErrorStrs[errIndex], errIndex);
   }
   char *p = ErrBuf;
   return p;

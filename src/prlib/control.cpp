@@ -12,7 +12,7 @@ void outerror(ErrorCode err) {
   errout(GetPrErrText(err));
 }
 
-PredicateState menegerbp(unsigned name, TScVar *ScVar, TClVar *ClVar, array *heap) {
+PredicateState menegerbp(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (name == ClVar->head || name == hpcut) {
     return argnull(name, ScVar, ClVar, heap);
   }
@@ -36,40 +36,27 @@ PredicateState menegerbp(unsigned name, TScVar *ScVar, TClVar *ClVar, array *hea
   return PredicateState::Error;  // 1;
 }
 
-void to_stac(unsigned *b, unsigned index, unsigned value) {
+void to_stac(size_t *b, size_t index, size_t value) {
   *(b + index) = value;
 }
 
-inline unsigned from_stac(unsigned *b, unsigned index) {
+size_t from_stac(size_t *b, size_t index) {
   return *(b + index);
 }
 
 int expand_stack(TClVar *ClVar) {
-  unsigned vmaxstacknew = ClVar->vmaxstack << 1;
-  unsigned *st_conN;
-  unsigned *st_vr1N;
-  unsigned *st_vr2N;
-  unsigned *st_trailN;
+  size_t vmaxstacknew = (ClVar->vmaxstack * 2);
+  size_t *st_conN;
+  size_t *st_vr1N;
+  size_t *st_vr2N;
+  size_t *st_trailN;
 
-  st_conN = new unsigned int[vmaxstacknew];
-  st_vr1N = new unsigned int[vmaxstacknew];
-  st_vr2N = new unsigned int[vmaxstacknew];
-  st_trailN = new unsigned int[vmaxstacknew];
+  st_conN = new size_t[vmaxstacknew];
+  st_vr1N = new size_t[vmaxstacknew];
+  st_vr2N = new size_t[vmaxstacknew];
+  st_trailN = new size_t[vmaxstacknew];
 
-  if (!st_conN || !st_vr1N || !st_vr2N || !st_trailN) {
-    if (st_conN)
-      delete[] st_conN;
-    if (st_vr1N)
-      delete[] st_vr1N;
-    if (st_vr2N)
-      delete[] st_vr2N;
-    if (st_trailN)
-      delete[] st_trailN;
-    return 28; /*message_no_memory|=no_memory_stac;*/  // переполнение стека программы
-  }
-
-  unsigned i;
-
+  size_t i;
   for (i = 0; i < ClVar->vmaxstack; i++) {
     st_conN[i] = ClVar->st_con[i];
     st_vr1N[i] = ClVar->st_vr1[i];
@@ -127,23 +114,22 @@ void to_control(TClVar *ClVar, array *heap) {
   }
 }
 //==========================вывод===============
-unsigned term;
-unsigned frame;
-unsigned arg;
+size_t term;
+size_t frame;
+size_t arg;
 bool flaglist;
 
 // переход по cвязи переменной на один шаг
-void bound(unsigned *t, unsigned *f, unsigned *j, TClVar *ClVar, array *heap) {
+void bound(size_t *t, size_t *f, size_t *j, TClVar *ClVar, array *heap) {
   recordvar *prv = heap->GetPrecordvar(*t);
-  //(recordvar *)&heap->heaps[*t];
   *j = *f + prv->num;                 // смещение в стеке
   *f = from_stac(ClVar->st_vr2, *j);  // новый кадр
   *t = from_stac(ClVar->st_vr1, *j);  // новый терм
 }
 
-unsigned occur_term(unsigned *TERM, unsigned *FRAME, TClVar *ClVar, array *heap) {
+size_t occur_term(size_t *TERM, size_t *FRAME, TClVar *ClVar, array *heap) {
   int argt = -1;
-  unsigned j;
+  size_t j;
   IntegerType i;  // для expression пока нет
   FloatType f;    // тоже
   do {
@@ -155,15 +141,16 @@ unsigned occur_term(unsigned *TERM, unsigned *FRAME, TClVar *ClVar, array *heap)
     case isfloat: argt = 6; break;
     case isvar: {
       bound(TERM, FRAME, &j, ClVar, heap);
-      if (*TERM == isnil)
+      if (*TERM == isnil) {
         argt = 5;
+      }
     } break;
     case issymbol: argt = 4; break;
     case islist: argt = 3; break;
     case isemptylist: argt = 2; break;
     case isunknown: argt = 1; break;
     case isexpression: {
-      unsigned char ind = calculation(*TERM, *FRAME, &i, &f, ClVar, heap);
+      auto ind = calculation(*TERM, *FRAME, &i, &f, ClVar, heap);
       switch (ind) {
       case isinteger: {
         *TERM = heap->append(recordinteger(i));
@@ -195,7 +182,7 @@ bool stac(TClVar *ClVar, array *heap) {
   } break;
   case isfunction: {
     recordfunction *pf = (recordfunction *)tp;
-    unsigned *ptrarg = heap->GetPunsigned(pf->ptrarg);
+    auto *ptrarg = heap->GetPunsigned(pf->ptrarg);
     term = ptrarg[arg - 2];
   } break;
   }
@@ -203,7 +190,7 @@ bool stac(TClVar *ClVar, array *heap) {
 }
 
 // j для печати разделителя
-bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
+bool nextarg(size_t *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto &outBuff = ClVar->outBuff;
   bool nxaex;
   do {
@@ -219,7 +206,7 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
     switch (tp->ident) {
     case isfunction: {
       recordfunction *pf = (recordfunction *)tp;
-      if (arg - 1 > (unsigned)pf->narg) {
+      if (arg > pf->narg + 1) {
         // buff[*j] = ')';
         outBuff.push_back(')');
         (*j)++;
@@ -240,10 +227,10 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
           (*j)++;
           nxaex = false;
         } else {
-          unsigned trm = term;
+          auto trm = term;
           trm = pl->link;
-          unsigned ff = frame;
-          int a = occur_term(&trm, &ff, ClVar, heap);
+          auto ff = frame;
+          auto a = occur_term(&trm, &ff, ClVar, heap);
           switch (a) {
           case 3:
             // buff[*j] = ',';
@@ -272,16 +259,14 @@ bool nextarg(unsigned *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return true;
 }
 
-// extern unsigned write_term(unsigned TERM,unsigned FRAME,unsigned w,unsigned j);//,FILE *d=NULL);
-
 // прологовский вывод
 PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto &outBuff = ClVar->outBuff;
-  unsigned k = 0;
+  size_t k = 0;
   recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
-  unsigned *ptr = heap->GetPunsigned(pf->ptrarg);
-  unsigned count = (unsigned)pf->narg;
-  for (unsigned i = 0; i < count; i++) {
+  auto *ptr = heap->GetPunsigned(pf->ptrarg);
+  size_t count = pf->narg;
+  for (size_t i = 0; i < count; i++) {
     pf = heap->GetPrecordfunction(ClVar->head);
     ptr = heap->GetPunsigned(pf->ptrarg);
     k = write_term(ptr[i], ClVar->frame2, i, k, ScVar, ClVar, heap);
@@ -298,9 +283,9 @@ PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Yes;  // 3;
 }
 
-unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVar *ScVar, TClVar *ClVar, array *heap) {
+size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto &outBuff = ClVar->outBuff;
-  unsigned i = 0;
+  size_t i = 0;
   term = TERM;
   frame = FRAME;
 
@@ -341,7 +326,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
         ClVar->precordfunction = (recordfunction *)tp;
         ClVar->precordsconst = heap->GetPrecordsconst(ClVar->precordfunction->func);
         char *name = heap->GetPchar(ClVar->precordsconst->ptrsymb);
-        for (i = 0; i < (unsigned)ClVar->precordsconst->length; i++) {
+        for (i = 0; i < ClVar->precordsconst->length; i++) {
           outBuff.push_back(*(name + i));
           ++j;
         }
@@ -391,7 +376,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       case issymbol: {
         ClVar->precordsconst = (recordsconst *)tp;
         char *name = heap->GetPchar(ClVar->precordsconst->ptrsymb);
-        for (i = 0; i < (unsigned)ClVar->precordsconst->length; i++) {
+        for (i = 0; i < ClVar->precordsconst->length; i++) {
           outBuff.push_back(*(name + i));
         }
         j += i;
@@ -433,7 +418,7 @@ unsigned write_term(unsigned TERM, unsigned FRAME, unsigned W, unsigned j, TScVa
       case isexpression:
         IntegerType ii;
         FloatType ff;
-        unsigned char ind = calculation(term, frame, &ii, &ff, ClVar, heap);
+        auto ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
           // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
@@ -505,14 +490,13 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
     // bpt=buf;//указатель на внешний buf
     //   bpt=BPT=new unsigned[maxbptr];
     //   unsigned i=0,j=0;
-    unsigned j = 0;
-    unsigned w;
+    size_t j = 0, w;
     if (!ClVar->quiet) {
-      for (unsigned k = 0; k < ClVar->varqu; k++) {
-        w = (unsigned)k;
+      for (size_t k = 0; k < ClVar->varqu; k++) {
+        w = k;
         ClVar->precordvar = heap->GetPrecordvar(ScVar->tvar[k]);
         char *name = heap->GetPchar(ClVar->precordvar->ptrsymb);
-        for (j = 0; j < (unsigned)ClVar->precordvar->length; j++) {
+        for (j = 0; j < ClVar->precordvar->length; j++) {
           outBuff.push_back(*(name + j));
         }
         // buff[j++] = '=';
@@ -531,7 +515,7 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // конец вывода
 void zero(TClVar *ClVar) {
-  for (unsigned i = ClVar->oldtptr; i < ClVar->tptr; i++) {
+  for (size_t i = ClVar->oldtptr; i < ClVar->tptr; i++) {
     to_stac(ClVar->st_vr1, from_stac(ClVar->st_trail, i), isnil);
   }
   ClVar->tptr = ClVar->oldtptr;
@@ -557,7 +541,7 @@ static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
         ClVar->stat = PredicateState::No;  // 5;  // неудача - не найдено решение
       }
     } else {
-      unsigned work = ClVar->scptr;
+      size_t work = ClVar->scptr;
       ClVar->scptr = ClVar->parent;  // зачем ?
       from_control(ClVar, heap);     // выборка родительской среды
       ClVar->scptr = work;
@@ -712,17 +696,16 @@ static void OnControl(TClVar *ClVar, array *heap) {
   heap->ptclause = NULL;
   heap->ptcltarget = NULL;
 
-  unsigned int &vmaxstack = ClVar->vmaxstack;
+  auto &vmaxstack = ClVar->vmaxstack;
 
   ClVar->err = ErrorCode::NoErrors;  // 0
-  unsigned i;
-  for (i = 0; i < ClVar->vmaxstack; i++) {
+  for (size_t i = 0; i < ClVar->vmaxstack; i++) {
     ClVar->st_con[i] = isnil;
     ClVar->st_vr1[i] = isnil;
     ClVar->st_vr2[i] = isnil;
     ClVar->st_trail[i] = isnil;
   }
-  for (i = 0; i < _maxbf_; i++) {
+  for (size_t i = 0; i < _maxbf_; i++) {
     ClVar->bf[i] = 0;
   }
   ClVar->stat = PredicateState::PrepereNewTarget;  // 2;
@@ -775,20 +758,20 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
 
 // ================ унификация =======================
 // возврат 0 ошибка,isinteger-результат целое,isfloat-результат вешещественное
-unsigned char calculation(unsigned term, unsigned frame, IntegerType *i, FloatType *f, TClVar *ClVar, array *heap) {
-  unsigned char ind = 0;  // первоначально попытка вычислить выражение с целымы
+size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClVar *ClVar, array *heap) {
+  size_t ind = 0;  // первоначально попытка вычислить выражение с целымы
 
   void *st[maxstaccalc];
   int index = 0;  // индекс в массиве st указывает на свободный эл-нт
                   //  array st(maxstaccalc);
   ClVar->precordexpression = heap->GetPrecordexpression(term);
-  unsigned char n = (unsigned char)ClVar->precordexpression->length;
+  size_t n = ClVar->precordexpression->length;
   ErrorCode err = ErrorCode::NoErrors;
   baserecord *tp;
   IntegerType oi1 = 0, oi2 = 0;                                // операнды для вычисления целых
   FloatType of1 = 0, of2 = 0;                                  // операнды для  вычисления вещественных
   for (int j = 0; j < n && err == ErrorCode::NoErrors; j++) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
-    unsigned *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
+    auto *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
     if (index == maxstaccalc) {
       err = ErrorCode::StackOverflowWhileCalculatingArithmeticsExpressions;  // 40;
       continue;
@@ -819,8 +802,9 @@ unsigned char calculation(unsigned term, unsigned frame, IntegerType *i, FloatTy
         }
       } break;
       case isvar: {
-        unsigned tr = ptr[j], fr = frame;
-        int a = occur_term(&tr, &fr, ClVar, heap);
+        auto tr = ptr[j];
+        auto fr = frame;
+        auto a = occur_term(&tr, &fr, ClVar, heap);
         switch (a) {
         case 6: {
           ClVar->precordfloat = heap->GetPrecordfloat(tr);
@@ -950,8 +934,9 @@ unsigned char calculation(unsigned term, unsigned frame, IntegerType *i, FloatTy
       } break;
       }
       st[index++] = (ind == isinteger) ? (void *)new recordinteger(oi2) : (void *)new recordfloat(of2);
-      if (!st[index - 1])
+      if (!st[index - 1]) {
         err = ErrorCode::NotEnoughFreeMemory;  // 2;
+      }
     }
   }
   *i = oi2;
@@ -993,8 +978,8 @@ void nextun(TClVar *ClVar, array *heap) {
   baserecord *tp = heap->GetPbaserecord(ClVar->term1);
   if (tp->ident == isfunction) {
     ClVar->precordfunction = (recordfunction *)tp;
-    if ((unsigned)ClVar->precordfunction->narg > ClVar->numb) {
-      unsigned *ptr = heap->GetPunsigned(ClVar->precordfunction->ptrarg);
+    if (ClVar->precordfunction->narg > ClVar->numb) {
+      auto *ptr = heap->GetPunsigned(ClVar->precordfunction->ptrarg);
       ClVar->term1 = ptr[ClVar->numb];
       ClVar->precordfunction = heap->GetPrecordfunction(ClVar->term2);
       ptr = heap->GetPunsigned(ClVar->precordfunction->ptrarg);
@@ -1042,8 +1027,7 @@ void nextun(TClVar *ClVar, array *heap) {
 }
 
 void swapints(TClVar *ClVar) {
-  unsigned c;
-  c = ClVar->term1;
+  auto c = ClVar->term1;
   ClVar->term1 = ClVar->term2;
   ClVar->term2 = c;
   c = ClVar->fr1;
@@ -1113,14 +1097,14 @@ bool unsymb(TClVar *ClVar, array *heap) {
 }
 
 // установка связи в стеке переменных
-void ocrn(unsigned bd1, unsigned tr2, TClVar *ClVar) {
+void ocrn(size_t bd1, size_t tr2, TClVar *ClVar) {
   to_stac(ClVar->st_vr1, bd1, tr2);  // и отметка в стеке следа
   to_stac(ClVar->st_trail, ClVar->tptr++, bd1);
 }
 
 bool unvar(TClVar *ClVar, array *heap) {
   bool ret = true;
-  unsigned bd1, bd2, work;
+  size_t bd1, bd2, work;
   recordvar *precordvar = heap->GetPrecordvar(ClVar->term1);
   bd1 = precordvar->num + ClVar->fr1;
   work = from_stac(ClVar->st_vr1, bd1);
@@ -1136,6 +1120,7 @@ bool unvar(TClVar *ClVar, array *heap) {
     switch (tp->ident) {
     case isfunction:
     case islist: to_stac(ClVar->st_vr2, bd1, ClVar->fr2);  // break; // пока убрал break
+    //[[fallthrough]]
     case isfloat:                                          // также как issumbol;
     case isinteger:                                        // так же как issymbol
     case isstring:
@@ -1171,7 +1156,7 @@ bool unvar(TClVar *ClVar, array *heap) {
     case isexpression:
       IntegerType a;
       FloatType af;
-      unsigned char ind = calculation(ClVar->term2, ClVar->frame2, &a, &af, ClVar, heap);
+      auto ind = calculation(ClVar->term2, ClVar->frame2, &a, &af, ClVar, heap);
       switch (ind) {
       case 0: ret = false; break;  //!!!abort_calculation;
       case isinteger: {
@@ -1223,7 +1208,7 @@ bool unint(TClVar *ClVar, array *heap) {
   case isexpression: {
     IntegerType a;
     FloatType af;
-    unsigned char ind = calculation(ClVar->term2, ClVar->frame2, &a, &af, ClVar, heap);
+    auto ind = calculation(ClVar->term2, ClVar->frame2, &a, &af, ClVar, heap);
     recordinteger *pint = heap->GetPrecordinteger(ClVar->term1);
     if (ind == isinteger && pint->value == a) {
       ret = true;
@@ -1345,7 +1330,7 @@ bool unexpr(TClVar *ClVar, array *heap) {
   case isexpression:
     IntegerType c, d;
     FloatType cf, df;
-    unsigned char ind1 = calculation(ClVar->term1, ClVar->frame1, &c, &cf, ClVar, heap), ind2 = calculation(ClVar->term2, ClVar->frame2, &d, &df, ClVar, heap);
+    auto ind1 = calculation(ClVar->term1, ClVar->frame1, &c, &cf, ClVar, heap), ind2 = calculation(ClVar->term2, ClVar->frame2, &d, &df, ClVar, heap);
     if (ind1 == ind2 && ind1 == isinteger)  //!!! сделано только для целых
       if (c == d) {
         nextun(ClVar, heap);
@@ -1358,7 +1343,7 @@ bool unexpr(TClVar *ClVar, array *heap) {
   return ret;
 }
 
-bool unify(unsigned tt1, unsigned tt2, unsigned ff1, unsigned ff2, TClVar *ClVar, array *heap) {
+bool unify(size_t tt1, size_t tt2, size_t ff1, size_t ff2, TClVar *ClVar, array *heap) {
   bool ret = true;
   ClVar->bp = NULL;
   ClVar->ex = true;
@@ -1373,7 +1358,7 @@ bool unify(unsigned tt1, unsigned tt2, unsigned ff1, unsigned ff2, TClVar *ClVar
     if (tp->ident == isfunction) {
       recordfunction *pf = (recordfunction *)tp;
       if (pf->func == hpcall) {
-        unsigned *pa = heap->GetPunsigned(pf->ptrarg);
+        auto *pa = heap->GetPunsigned(pf->ptrarg);
         ClVar->term2 = pa[0];
       }
     }

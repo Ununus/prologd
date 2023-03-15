@@ -1,6 +1,7 @@
 #pragma once
+#include <cstddef>
 
-enum class ErrorCode {
+enum class ErrorCode : size_t {
   NoErrors = 0,
   InvalidCharacter = 1,
   NotEnoughFreeMemory = 2,

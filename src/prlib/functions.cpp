@@ -16,7 +16,7 @@ const char *NamesOfPredicates[] = { "mod",    "ЛОЖЬ",      "ТРАССА",    "НЕТ_ТРА
                                     "СТРЦЕЛ", "СТРВЕЩ",    "СТРСПИС",   "ЦЕЛВЕЩ",     "БУКВА",    "ЦИФРА", "ТЕРМ",     "УДАЛЕНИЕ", "СКОЛЬКО", "ТОЧКА",
                                     "СЦЕП",   "ДОБ",       "УМНОЖЕНИЕ", "ОКРУЖНОСТЬ", "ЗАКРАСКА", "КОПИЯ", "ПРЕДЛ",    "ЛИНИЯ",    "СЛУЧ",    "СЛОЖЕНИЕ",
                                     "ЖДИ",    "div",       "int",       "float",      "ТИХО",     "ВЕРСИЯ" };
-const int MAX_BUILD_PRED = sizeof(NamesOfPredicates) / sizeof(char *);
+const size_t MAX_BUILD_PRED = sizeof(NamesOfPredicates) / sizeof(char *);
 
 const char *Build_in_Libriary[] = {
   "НЕ(x)<-ВЫП(x),!,ЛОЖЬ;",
@@ -29,16 +29,16 @@ const char *Build_in_Libriary[] = {
   "ПС<-ВВКОД(10);",
   "ДЛИНА(x,y)<-КОПИЯ(x,1,y,x);",
 };
-const int LEN_BUILD_LIBR = sizeof(Build_in_Libriary) / sizeof(char *);
+const size_t LEN_BUILD_LIBR = sizeof(Build_in_Libriary) / sizeof(char *);
 
 // подключение встроенных предикатов
 ErrorCode buildin(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-  size_t len;
-  for (int i = 0; i < MAX_BUILD_PRED; i++) {
-    auto index = heap->append<char>(0, len = strlen(NamesOfPredicates[i]));
+  for (size_t i = 0; i < MAX_BUILD_PRED; i++) {
+    size_t len = strlen(NamesOfPredicates[i]);
+    auto index = heap->append<char>(0, len);
     memcpy(heap->GetPchar(index), NamesOfPredicates[i], sizeof(char) * len);
-    ScVar->tat[i] = heap->append(recordsconst(index, (unsigned char)len));
+    ScVar->tat[i] = heap->append(recordsconst(index, len));
   }
   // freesymbol = MAX_BUILD_PRED;
   ScVar->nosymbol = MAX_BUILD_PRED;
@@ -67,15 +67,15 @@ ErrorCode FreeProlog() {
 // функции для построения элементов программы пролога
 ErrorCode tokbb(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-  unsigned int &bptr = ScVar->bptr;
-  unsigned int *buf = ScVar->buf;
-  unsigned int *goal = ScVar->goal;
-  unsigned int &gptr = ScVar->gptr;
+  auto &bptr = ScVar->bptr;
+  auto *buf = ScVar->buf;
+  auto *goal = ScVar->goal;
+  auto &gptr = ScVar->gptr;
   if (gptr == 0 || gptr >= _maxgptr_ || buf[goal[gptr - 1]] != isbbeg) {
     return ErrorCode::UnpairedBracketsInFunctionProcessing;  // 16; //нет откр скобки или не issymbol
   }
   --gptr;
-  unsigned int i = goal[gptr];  // индекс в массиве buf указывающий на (
+  auto i = goal[gptr];  // индекс в массиве buf указывающий на (
   recordsconst *ptr;
   if (buf[--i] > isbase) {
     return ErrorCode::AbsentFunctorBeforeOpenBracket;  // 17;
@@ -88,24 +88,24 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
   if ((bptr - i) % 2) {
     return ErrorCode::ErrorWhileParsingFunction;  // 38;
   }
-  unsigned int n = (bptr - i) / 2;  // число аргументов
-  unsigned int ptrargs[1024];
-  if (n > sizeof(ptrargs) / sizeof(unsigned int)) {
+  auto n = (bptr - i) / 2;  // число аргументов
+  size_t ptrargs[1024]; // TODO: do vector
+  if (n > sizeof(ptrargs) / sizeof(size_t)) {
     return ErrorCode::NotEnoughFreeMemory;  // 2;
   }
-  for (unsigned int j = 0; j < n; j++) {
+  for (size_t j = 0; j < n; j++) {
     if ((ptrargs[j] = buf[i + j * 2]) > isbase) {
       err = ErrorCode::ErrorWhileParsingFunction;  // 38;
     }
   }
   // аргументы в массив
-  auto index = heap->append<unsigned>(0, n);
-  memcpy(heap->GetPunsigned(index), ptrargs, sizeof(unsigned) * n);
+  auto index = heap->append<size_t>(0, n);
+  memcpy(heap->GetPunsigned(index), ptrargs, sizeof(size_t) * n);
   i -= 2;
   if (err != ErrorCode::NoErrors) {
     return err;
   }
-  index = heap->append(recordfunction((unsigned char)n, buf[i], index));
+  index = heap->append(recordfunction(n, buf[i], index));
   bptr = i;
   if (bptr + 1 < _maxbptr_) {
     buf[bptr++] = index;
@@ -120,10 +120,10 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   bool &Query = ScVar->Query;
   bool &EndOfClause = ScVar->EndOfClause;
-  unsigned int &gptr = ScVar->gptr;
-  unsigned int *buf = ScVar->buf;
-  unsigned int &novar = ScVar->novar;
-  unsigned char id = Query ? (unsigned char)isclauseq : (unsigned char)isclause;
+  auto &gptr = ScVar->gptr;
+  auto *buf = ScVar->buf;
+  auto &novar = ScVar->novar;
+  auto id = Query ? isclauseq : isclause;
   if (gptr != NULL) {
     err = ErrorCode::UnpairedBracketsInFunctionProcessing;  // 16;
   }
@@ -154,8 +154,7 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
       err = ErrorCode::ErrorWhileParsingSentence;  // 20;
     } else {
       tp = heap->GetPbaserecord(buf[i - 1]);
-      //(baserecord *)&heap->heaps[buf[i - 1]];
-      unsigned char ident = tp->ident;
+      auto ident = tp->ident;
       if (ident != isfunction && ident != issymbol) {
         err = ErrorCode::ErrorWhileParsingSentence;  // 20;
       }
@@ -171,15 +170,15 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
     ntarget++;
   }
   if (err == ErrorCode::NoErrors) {
-    unsigned int ptarget[1024];
-    if ((ntarget + 1) * sizeof(unsigned int) > sizeof(ptarget)) {
+    size_t ptarget[1024]; // TODO: do vector
+    if ((ntarget + 1) * sizeof(size_t) > sizeof(ptarget)) {
       return ErrorCode::NotEnoughFreeMemory;  // 2;
     }
-    auto index = heap->append<unsigned>(0, (ntarget + 1));
-    // memcpy(heap->GetPunsigned(index), ptarget, sizeof(unsigned int) * (ntarget + 1));
-    unsigned int *_ptarget = heap->GetPunsigned(index);
+    auto index = heap->append<size_t>(0, (ntarget + 1));
+    // memcpy(heap->GetPunsigned(index), ptarget, sizeof(size_t) * (ntarget + 1));
+    size_t *_ptarget = heap->GetPunsigned(index);
     recordclause *ptrpred = 0;
-    index = heap->append(recordclause(id, (unsigned int)0, novar, buf[0], index));
+    index = heap->append(recordclause(id, 0, novar, buf[0], index));
     recordclause *ptr = heap->GetPrecordclause(index);
     // теперь перенести цели
     i = 0;
@@ -238,15 +237,16 @@ ErrorCode strings(char *&p, TScVar *ScVar, array *heap) {
 ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
   // должна прийти первая цифра или знак + -
   ErrorCode err = ErrorCode::NoErrors;
-  unsigned int &bptr = ScVar->bptr;
-  unsigned int *buf = ScVar->buf;
+  auto &bptr = ScVar->bptr;
+  auto *buf = ScVar->buf;
   char bufnum[1024]{};
   FloatType valuef = 0;
   IntegerType valuei = 0;
-  int punkt = 0, e = 0;
-  int i = 0;
-  if (*p == '+' || *p == '-')
+  std::ptrdiff_t punkt = 0, e = 0;
+  std::ptrdiff_t i = 0;
+  if (*p == '+' || *p == '-') {
     bufnum[i++] = *p;
+  }
   for (; ((isdigitrus(bufnum[i] = *(p + i))) || (*(p + i) == 'e' && punkt) || (*(p + i) == 'E' && punkt) || (*(p + i) == '-' && e) || (*(p + i) == '+' && e) ||
           (*(p + i) == '.'));
        i++) {
@@ -324,9 +324,10 @@ bool isalpharus(char symb) {
   return false;
 }
 
-bool issvar(char *&p, unsigned int &len) {
-  if (isdigitrus(*p))
+bool issvar(char *&p, size_t &len) {
+  if (isdigitrus(*p)) {
     return false;  // first symbol must be no digit
+  }
   for (len = 0; *(p + len) != 0 && (isalphanumang(*(p + len)) || isalpharus(*(p + len)) || *(p + len) == '_'); len++)
     ;
   if (!len) {
@@ -346,7 +347,7 @@ bool issvar(char *&p, unsigned int &len) {
   return false;
 }
 
-bool issconst(char *&p, unsigned int &len) {
+bool issconst(char *&p, size_t &len) {
   len = 0;
   if ((*p >= '0' && *p <= '9') || *p == '-' || *p == '+') {
     return false;
@@ -387,8 +388,8 @@ ErrorCode implic(char *&p, TScVar *ScVar, array *heap) {
   return err;
 }
 //===========
-unsigned prioritet(unsigned ch) {
-  unsigned value = 0;
+size_t prioritet(size_t ch) {
+  size_t value = 0;
   switch (ch) {
   case ismod:  // остаток от деления
   case isdiv:  // целочисленное деление
@@ -406,14 +407,14 @@ unsigned prioritet(unsigned ch) {
 //=============
 ErrorCode arexpr(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-  unsigned obuf[maxlinelen];
-  unsigned stac[maxlinelen];
-  unsigned st, n, p;  // индекс в стеке,число эл,приоритет
+  size_t obuf[maxlinelen];
+  size_t stac[maxlinelen];
+  size_t st, n, p;  // индекс в стеке,число эл,приоритет
   ScVar->bptr = ScVar->exprip;
   //========проверка синтаксиса в ар выр
   int sk = 0;  // скобки
   while (ScVar->buf[ScVar->bptr] != isnil && err == ErrorCode::NoErrors) {
-    unsigned pel = ScVar->buf[ScVar->bptr - 1];  // предыдущий элемент в ар-м выр-ии
+    size_t pel = ScVar->buf[ScVar->bptr - 1];  // предыдущий элемент в ар-м выр-ии
     switch (ScVar->buf[ScVar->bptr]) {
     case isbbeg:  // '('
     {
@@ -489,17 +490,9 @@ ErrorCode arexpr(TScVar *ScVar, array *heap) {
   }
   obuf[o] = 0;
   stac[st] = 0;
-  /*
-  unsigned *ptrar = (unsigned *)calloc(o, sizeof(unsigned));
-  if (!ptrar)
-    return 2;
-  for (unsigned i = 0; i < o; *(ptrar + i) = obuf[i], i++);
-  unsigned index = heap->apend(ptrar, sizeof(unsigned) * o);
-  ::free(ptrar);
-  */
 
-  auto index = heap->append<unsigned>(0, o);
-  memcpy(heap->GetPunsigned(index), obuf, sizeof(unsigned) * o);
+  auto index = heap->append<size_t>(0, o);
+  memcpy(heap->GetPunsigned(index), obuf, sizeof(size_t) * o);
   index = heap->append(recordexpression(o, index));
   ScVar->bptr = ScVar->exprip - 1;
   ScVar->buf[ScVar->bptr++] = index;
@@ -589,7 +582,7 @@ ErrorCode list(TScVar *ScVar, array *heap) {
 
 //========
 
-ErrorCode arsgn(TScVar *ScVar, unsigned int i) {
+ErrorCode arsgn(TScVar *ScVar, size_t i) {
   ErrorCode err = ErrorCode::NoErrors;
   if (!ScVar->exprip) {
     err = ErrorCode::SignNotInArithmeticExpression;  // 18;
@@ -601,26 +594,26 @@ ErrorCode arsgn(TScVar *ScVar, unsigned int i) {
 
 //=====функции для записи ========================================
 //  это неправильно работает с предл
-ErrorCode variabletable(char *&p, unsigned int len, TScVar *ScVar, array *heap) {
-  ErrorCode err = ErrorCode::NoErrors;
+ErrorCode variabletable(char *&p, size_t len, TScVar *ScVar, array *heap) {
   recordvar *ptr;
-  unsigned int k;
-  unsigned int &novar = ScVar->novar;
-  unsigned int *tvar = ScVar->tvar;
-  unsigned int *buf = ScVar->buf;
-  unsigned int &bptr = ScVar->bptr;
+  size_t k;
+  auto &novar = ScVar->novar;
+  auto *tvar = ScVar->tvar;
+  auto *buf = ScVar->buf;
+  auto &bptr = ScVar->bptr;
   for (k = 0; k < novar; k++) {
     ptr = heap->GetPrecordvar(tvar[k]);
     char *name = heap->GetPchar(ptr->ptrsymb);
-    if (((unsigned char)len == ptr->length) && (!strncmp(name, p, len)))
+    if ((len == ptr->length) && (!strncmp(name, p, len))) {
       break;
+    }
   }
   if (k == novar)  // такой переменной нет
   {
     auto index = heap->append<char>(0, len);
     memcpy(heap->GetPchar(index), p, sizeof(char) * len);
     // номера переменных будут с 1
-    index = heap->append(recordvar(index, (unsigned char)len, novar));
+    index = heap->append(recordvar(index, len, novar));
     tvar[novar++] = index;
   }
   if (bptr + 1 < _maxbptr_) {
@@ -628,29 +621,29 @@ ErrorCode variabletable(char *&p, unsigned int len, TScVar *ScVar, array *heap) 
   } else {
     return ErrorCode::SentenceOverflow;  // 13;
   }
-  return err;
+  return ErrorCode::NoErrors;
 }
 
 // Поиск конастанты в Базе Знаний
-ErrorCode wrsconst(char *&p, unsigned int len, TScVar *ScVar, array *heap) {
+ErrorCode wrsconst(char *&p, size_t len, TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-  unsigned int &bptr = ScVar->bptr;
-  unsigned int *buf = ScVar->buf;
-  unsigned int &nosymbol = ScVar->nosymbol;
-  unsigned int *tat = ScVar->tat;
+  auto &bptr = ScVar->bptr;
+  auto *buf = ScVar->buf;
+  auto &nosymbol = ScVar->nosymbol;
+  auto *tat = ScVar->tat;
   recordsconst *ptr;
-  unsigned int k;
+  size_t k;
   for (k = 0; k < nosymbol; k++) {
     ptr = heap->GetPrecordsconst(tat[k]);
     char *name = heap->GetPchar(ptr->ptrsymb);
-    if (((unsigned char)len == ptr->length) && (!strncmp(name, p, len)))
+    if ((len == ptr->length) && (!strncmp(name, p, len)))
       break;
   }
   if (k == nosymbol)  // такой sconst нет
   {
     auto index = heap->append<char>(0, len);
     memcpy(heap->GetPchar(index), p, sizeof(char) * len);
-    index = heap->append(recordsconst(index, (unsigned char)len));
+    index = heap->append(recordsconst(index, len));
     if (nosymbol + 1 < _maxsymbol_) {
       tat[nosymbol++] = index;
     } else {
