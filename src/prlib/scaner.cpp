@@ -17,9 +17,6 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
   auto *goal = ScVar->goal;
   auto &gptr = ScVar->gptr;
   auto &novar = ScVar->novar;
-  auto *tat = ScVar->tat;
-  auto *tvar = ScVar->tvar;
-  auto &nosymbol = ScVar->nosymbol;
   bool &right = ScVar->right;
   auto &exprip = ScVar->exprip;
   EndOfClause = false;
@@ -142,7 +139,7 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
           err = wrsconst(p, len, ScVar, heap);
           p += len - 1;
         } else {  // цифры
-          if (*p >= '0' && *p <= '9' || *p == '-' || *p == '+') {
+          if ((*p >= '0' && *p <= '9') || *p == '-' || *p == '+') {
             err = num(p, ScVar, heap);
           } else {
             err = ErrorCode::InvalidCharacter;  // 1 // символ не возможно обработать

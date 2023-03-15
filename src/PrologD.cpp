@@ -162,7 +162,7 @@ void errout(const char *str) {
   std::to_chars(number, number + 8, Nstr + 1);
   emit prd->signalErrorOut(decode_cp1251_to_utf8("Строка #") + decode_cp1251_to_utf8(number) + ". " + decode_cp1251_to_utf8(str));
 }
-int InputStringFromDialog(char *buf, size_t size, const char *caption, bool splitSpace) {
+std::string InputStringFromDialog(const char *caption, bool splitSpace) {
   std::string line;
   bool sss = false;
   if (splitSpace) {
@@ -186,22 +186,14 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
       }
       if (prd->inputedStrs.empty()) {
         prd->EnableRunning = false;
-        return 1;
+        return {};
       }
       prd->curStrStream = std::stringstream(prd->inputedStrs.front());
       prd->inputedStrs.pop_front();
     }
-    return InputStringFromDialog(buf, size, caption, splitSpace);
+    return InputStringFromDialog(caption, splitSpace);
   }
-  if (line.empty() || size == 0) {
-    return 1;
-  }
-  size_t to = line.size() < size - 1 ? line.size() : size - 1;
-  for (size_t i = 0; i < to; ++i) {
-    buf[i] = line[i];
-  }
-  buf[to] = 0;
-  return 0;
+  return line;
 }
 unsigned int GetPixel(long long x, long long y) {
   // qDebug() << "GetPixel" << x << y;

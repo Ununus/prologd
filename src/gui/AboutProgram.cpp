@@ -94,11 +94,12 @@ AboutProgram::AboutProgram(QWidget *parent)
 
   QPlainTextEdit *aboutProgramTextEdit = new QPlainTextEdit;
   aboutProgramTextEdit->setPlainText(
-    "Эту реализацию Пролога-Д разработали АБВГ:\n"
+    "Эту реализацию Пролога-Д разработали АБВГД:\n"
     "Алексеев Михаил Николаевич (прораб),\n"
     "Балдин Виктор Михайлович (топкодер до 2008),\n"
     "Воронин Алексей Вячеславович (топкодер с 2017),\n"
-    "Григорьев Сергей Георгиевич (идеолог).");
+    "Григорьев Сергей Георгиевич (идеолог),\n"
+    "Данил Адисонович Ахмеров (топкодер с 2023).");
   aboutProgramTextEdit->setReadOnly(true);
   tabWidget->addTab(aboutProgramTextEdit, "О Программе");
 

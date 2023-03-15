@@ -23,6 +23,7 @@ struct baserecord {
   size_t ident;
   baserecord(size_t ident)
     : ident(ident) {}
+  virtual ~baserecord() {}
 };
 
 // строковая константа

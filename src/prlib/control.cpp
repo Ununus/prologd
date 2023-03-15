@@ -626,8 +626,6 @@ static void OnControl(TClVar *ClVar, array *heap) {
   heap->ptclause = NULL;
   heap->ptcltarget = NULL;
 
-  auto &vmaxstack = ClVar->vmaxstack;
-
   ClVar->err = ErrorCode::NoErrors;  // 0
   for (size_t i = 0; i < ClVar->vmaxstack; i++) {
     ClVar->st_con[i] = isnil;
@@ -639,13 +637,13 @@ static void OnControl(TClVar *ClVar, array *heap) {
     ClVar->bf[i] = 0;
   }
   ClVar->stat = PredicateState::PrepereNewTarget;  // 2;
-  ClVar->newclause = NULL;
+  ClVar->newclause = 0;
   ClVar->ntro = false;  // нет оптимизации хвостовой рекурсии не знаю пока что это
   ClVar->flag = true;
-  ClVar->oldtptr = ClVar->tptr = NULL;  // индекс стека следа
-  ClVar->scptr = NULL;
-  ClVar->frame1 = NULL;
-  ClVar->parent = NULL;
+  ClVar->oldtptr = ClVar->tptr = 0;  // индекс стека следа
+  ClVar->scptr = 0;
+  ClVar->frame1 = 0;
+  ClVar->parent = 0;
   // aclause = heap->last - sizeof(recordclause);                          //чего это ?
   ClVar->aclause = heap->query;
   heap->paclause = heap->GetPrecordclause(ClVar->aclause);
@@ -675,6 +673,8 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
     case PredicateState::Builtin:  // 6
       st_6(ScVar, ClVar, heap);
       break;
+    default:
+        break;
     }
     if (!*EnableRunning) {
       ClVar->err = ErrorCode::ExecutionInterrupted;  // 27;  // abort
@@ -690,46 +690,30 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
 // возврат 0 ошибка,isinteger-результат целое,isfloat-результат вешещественное
 size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClVar *ClVar, array *heap) {
   size_t ind = 0;  // первоначально попытка вычислить выражение с целымы
-
-  void *st[maxstaccalc];
-  int index = 0;  // индекс в массиве st указывает на свободный эл-нт
-                  //  array st(maxstaccalc);
+  std::vector<baserecord *> sta;
   ClVar->precordexpression = heap->GetPrecordexpression(term);
   size_t n = ClVar->precordexpression->length;
   ErrorCode err = ErrorCode::NoErrors;
   baserecord *tp;
   IntegerType oi1 = 0, oi2 = 0;                                // операнды для вычисления целых
   FloatType of1 = 0, of2 = 0;                                  // операнды для  вычисления вещественных
-  for (int j = 0; j < n && err == ErrorCode::NoErrors; j++) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
+  for (size_t j = 0; j < n && err == ErrorCode::NoErrors; ++j) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
     auto *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
-    if (index == maxstaccalc) {
-      err = ErrorCode::StackOverflowWhileCalculatingArithmeticsExpressions;  // 40;
-      continue;
-    }                     // это переход на начало цикла
-                          // и немедленное его завершение(переполнился стек)
     if (ptr[j] < isbase)  // операнд
     {
       tp = heap->GetPbaserecord(ptr[j]);
       switch (tp->ident) {
       case isinteger: {
         ClVar->precordinteger = (recordinteger *)tp;
-        st[index++] = new recordinteger(ClVar->precordinteger->value);
+        sta.push_back(new recordinteger(ClVar->precordinteger->value));
         oi2 = ClVar->precordinteger->value;
         ind = isinteger;
-        if (!st[index - 1]) {
-          err = ErrorCode::NotEnoughFreeMemory;  // 2;
-          continue;
-        }
       } break;
       case isfloat: {
         ClVar->precordfloat = (recordfloat *)tp;
-        st[index++] = new recordfloat(ClVar->precordfloat->value);
+        sta.push_back(new recordfloat(ClVar->precordfloat->value));
         of2 = ClVar->precordfloat->value;
         ind = isfloat;
-        if (!st[index - 1]) {
-          err = ErrorCode::NotEnoughFreeMemory;  // 2;
-          continue;
-        }
       } break;
       case isvar: {
         auto tr = ptr[j];
@@ -738,23 +722,15 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
         switch (a) {
         case 6: {
           ClVar->precordfloat = heap->GetPrecordfloat(tr);
-          st[index++] = new recordfloat(ClVar->precordfloat->value);
+          sta.push_back(new recordfloat(ClVar->precordfloat->value));
           of2 = ClVar->precordfloat->value;
           ind = isfloat;
-          if (!st[index - 1]) {
-            err = ErrorCode::NotEnoughFreeMemory;  // 2;
-            continue;
-          }
         } break;
         case 7: {
           ClVar->precordinteger = heap->GetPrecordinteger(tr);
-          st[index++] = new recordinteger(ClVar->precordinteger->value);
+          sta.push_back(new recordinteger(ClVar->precordinteger->value));
           oi2 = ClVar->precordinteger->value;
           ind = isinteger;
-          if (!st[index - 1]) {
-            err = ErrorCode::NotEnoughFreeMemory;  // 2;
-            continue;
-          }
         } break;
         default: {
           err = ErrorCode::ErrorInArithmeticExpression;  // 32;
@@ -767,7 +743,7 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
       }
     } else {  // знак ариафм операции
       for (int k = 0; k < 2; k++) {
-        tp = (baserecord *)st[index - 1];
+        tp = sta.back();
         switch (tp->ident)  // может быть только integer или float
         {
         case isinteger:
@@ -781,8 +757,8 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
           } else {
             of2 = (FloatType)ClVar->precordinteger->value;  // если первый вещественный
           }
-          delete st[index - 1];
-          index--;
+          delete sta.back();
+          sta.pop_back();
           break;
         case isfloat:
           ClVar->precordfloat = (recordfloat *)tp;
@@ -798,8 +774,8 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
               of1 = (FloatType)oi1;
             }
           }
-          delete st[index - 1];
-          index--;
+          delete sta.back();
+          sta.pop_back();
           break;
         }
       }  // выбраны из стека два операнда
@@ -863,9 +839,10 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
         }
       } break;
       }
-      st[index++] = (ind == isinteger) ? (void *)new recordinteger(oi2) : (void *)new recordfloat(of2);
-      if (!st[index - 1]) {
-        err = ErrorCode::NotEnoughFreeMemory;  // 2;
+      if (ind == isinteger) {
+        sta.push_back(new recordinteger(oi2));
+      } else {
+        sta.push_back(new recordfloat(of2));
       }
     }
   }
@@ -874,11 +851,12 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
   if (err != ErrorCode::NoErrors) {
     outerror(err);
   }
-  if (index != 1) {
+  if (sta.size() != 1) {
     ind = 0;
   }
-  while (index != 0) {
-    delete st[--index];
+  while (!sta.empty()) {
+    delete sta.back();
+    sta.pop_back();
   }
   return ind;
 }
@@ -1208,8 +1186,9 @@ bool unlist(TClVar *ClVar, array *heap) {
   {
     ClVar->numb = -1;
     ret = stac_un(ClVar);
-    if (ret == false)
+    if (ret == false) {
       break;
+    }
     // nextun(ClVar, heap);
   }
 
@@ -1262,21 +1241,25 @@ bool unexpr(TClVar *ClVar, array *heap) {
     IntegerType c, d;
     FloatType cf, df;
     auto ind1 = calculation(ClVar->term1, ClVar->frame1, &c, &cf, ClVar, heap), ind2 = calculation(ClVar->term2, ClVar->frame2, &d, &df, ClVar, heap);
-    if (ind1 == ind2 && ind1 == isinteger)  //!!! сделано только для целых
+    if (ind1 == ind2 && ind1 == isinteger) {
+        //!!! сделано только для целых
       if (c == d) {
         nextun(ClVar, heap);
         ret = true;
-      } else
+      } else {
         ;  // ret=false; уже присвоено
-    else
+      }
+    }
+    else {
       ;  // ret =false;//!!! нужно сообщение об ошибке периода исполнения ret=false уже
+    }
   }
   return ret;
 }
 
 bool unify(size_t tt1, size_t tt2, size_t ff1, size_t ff2, TClVar *ClVar, array *heap) {
   bool ret = true;
-  ClVar->bp = NULL;
+  ClVar->bp = 0;
   ClVar->ex = true;
   ClVar->term1 = tt1;
   ClVar->term2 = tt2;
