@@ -6,10 +6,6 @@
 #include <string.h>
 
 void TScVar::Init() {
-  buf = nullptr;
-  goal = nullptr;
-  tvar = nullptr;
-  tat = nullptr;
   bptr = 0;
   gptr = 0;
   novar = 0;
@@ -18,21 +14,17 @@ void TScVar::Init() {
   EndOfClause = false;
   Query = false;
   exprip = 0;
-  buf = new size_t[_maxbptr_];
-  goal = new size_t[_maxgptr_];
-  tvar = new size_t[_maxvar_];
-  tat = new size_t[_maxsymbol_];
+  vbuf.resize(kInitialBptr);
+  vgoal.resize(kInitialGptr);
+  vtvar.resize(kInitialVar);
+  vtat.resize(kInitialSymbol);
 }
 
 void TScVar::Clear() {
-  if (buf)
-    delete[] buf;
-  if (goal)
-    delete[] goal;
-  if (tat)
-    delete[] tat;
-  if (tvar)
-    delete[] tvar;
+  vbuf.clear();
+  vgoal.clear();
+  vtvar.clear();
+  vtat.clear();
 }
 
 TScVar::TScVar() {
@@ -44,27 +36,22 @@ TScVar::~TScVar() {
 }
 
 void TClVar::Init() {
-  vmaxstack = _vmaxstack_;
-  st_con = new size_t[_vmaxstack_];
-  st_vr1 = new size_t[_vmaxstack_];
-  st_vr2 = new size_t[_vmaxstack_];
-  st_trail = new size_t[_vmaxstack_];
-  bf = new size_t[_maxbf_];
-  BPT = new size_t[_maxbptr_];
-  bpt = BPT;
+  vmaxstack = kInitialStackSize;
+  vst_con.resize(kInitialStackSize);
+  vst_vr1.resize(kInitialStackSize);
+  vst_vr2.resize(kInitialStackSize);
+  vst_trail.resize(kInitialStackSize);
+  vbf.resize(kInitialUniBufSize);
+  vBPT.resize(kInitialBptSize);
+  ibpt = 0;
 }
 
 void TClVar::Clear() {
-  if (st_con)
-    delete[] st_con;
-  if (st_vr1)
-    delete[] st_vr1;
-  if (st_vr2)
-    delete[] st_vr2;
-  if (st_trail)
-    delete[] st_trail;
-  if (BPT)
-    delete[] BPT;
+  vst_con.clear();
+  vst_vr1.clear();
+  vst_vr2.clear();
+  vst_trail.clear();
+  vBPT.clear();
   outBuff.clear();
 }
 
@@ -78,13 +65,13 @@ TClVar::~TClVar() {
 //============array=============
 void array::clear() {
   freeheap = last = 0;
-  pnclause = nullptr;
-  ptclause = nullptr;
-  paclause = nullptr;
-  phclause = nullptr;
-  pacltarget = nullptr;
-  ptcltarget = nullptr;
-  pncltarget = nullptr;
+  ipnclause = 0;
+  iptclause = 0;
+  ipaclause = 0;
+  iphclause = 0;
+  ipacltarget = 0;
+  iptcltarget = 0;
+  ipncltarget = 0;
 }
 
 // heap->last = bakindex;
@@ -97,54 +84,21 @@ void array::cleanUp(size_t idx) {
   last = idx;
 }
 array::array(size_t SIZE) {
-  heaps = new unsigned char[SIZE];
-  size = (heaps != 0) ? SIZE : 0;
+  vheap.resize(SIZE);
   clear();
 }
 
 array::~array() {
-  if (heaps) {
-    for (size_t idx : recordintegersInHeap) {
-      // std::cout << "Int destr call " << idx << std::endl;
-      GetPrecordinteger(idx)->value.~IntegerType();
-    }
-    recordintegersInHeap.clear();
-    delete[] heaps;
+  for (size_t idx : recordintegersInHeap) {
+    // std::cout << "Int destr call " << idx << std::endl;
+    GetPrecordinteger(idx)->value.~IntegerType();
   }
-}
-
-void array::expand() {
-  size_t sizenew = size << 1;
-  unsigned char *heapsnew = new (std::nothrow) unsigned char[sizenew];
-  if (!heapsnew) {
-    throw std::runtime_error("Not enoth memory");
-  }
-  memset(heapsnew, 0, sizenew);
-  for (unsigned i = 0; i < size; i++) {
-    heapsnew[i] = heaps[i];
-  }
-  if (pnclause)
-    pnclause = (recordclause *)&heapsnew[(unsigned char *)pnclause - heaps];
-  if (ptclause)
-    ptclause = (recordclause *)&heapsnew[(unsigned char *)ptclause - heaps];
-  if (paclause)
-    paclause = (recordclause *)&heapsnew[(unsigned char *)paclause - heaps];
-  if (phclause)
-    phclause = (recordclause *)&heapsnew[(unsigned char *)phclause - heaps];
-  if (pacltarget)
-    pacltarget = (size_t *)&heapsnew[(unsigned char *)pacltarget - heaps];
-  if (ptcltarget)
-    ptcltarget = (size_t *)&heapsnew[(unsigned char *)ptcltarget - heaps];
-  if (pncltarget)
-    pncltarget = (size_t *)&heapsnew[(unsigned char *)pncltarget - heaps];
-  delete[] heaps;
-  heaps = heapsnew;
-  size = sizenew;
-  //    maxarray = size;
+  recordintegersInHeap.clear();
+  vheap.clear();
 }
 
 baserecord *array::GetPbaserecord(size_t index) {
-  return (baserecord *)&heaps[index];
+  return (baserecord *)&vheap[index];
 }
 
 recordsconst *array::GetPrecordsconst(size_t index) {
@@ -445,9 +399,9 @@ void PrintClauses(recordclause *rc, TScVar *ScVar, array *heap) {
 }
 
 void PrintProgram(TScVar *ScVar, array *heap) {
-#if 1
+#  if 1
   return;
-#else
+#  else
 
   char _Buf[1024];
   pldout(const_cast<char *>("=========================================================="));
@@ -473,6 +427,6 @@ void PrintProgram(TScVar *ScVar, array *heap) {
       PrintClauses(rc, ScVar, heap);
     }
   }
-#endif
+#  endif
 }
 #endif

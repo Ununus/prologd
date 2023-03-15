@@ -1,6 +1,7 @@
 #pragma once
 #include <type_traits>
 #include <cstddef>
+#include <limits>
 
 template<typename E>
 constexpr typename std::underlying_type<E>::type to_underlying(E e) noexcept {
@@ -25,29 +26,24 @@ constexpr size_t iscut = 12;
 constexpr size_t maxarity = 5;  // пока max арность встроенного предиката
 
 // константы для записи в массив buf
-#define isnil INT_MAX            // не значит ничего
-#define isbase INT_MAX - 17      //
-#define iscomma INT_MAX - 16     //     ,
-#define isstick INT_MAX - 15     //     |
-#define isbbeg INT_MAX - 14      //     (
-#define isbend INT_MAX - 13      //     )
-#define isimpl INT_MAX - 12      // :-  <-
-#define isend INT_MAX - 11       // . ;
-#define isexpress INT_MAX - 10   // #
-#define islbeg INT_MAX - 9       // [
-#define islend INT_MAX - 8       // ]
-#define isunitminus INT_MAX - 7  // -
-#define isminus INT_MAX - 6      // -
-#define isslash INT_MAX - 5      // /
-#define ismult INT_MAX - 4       // *
-#define isplus INT_MAX - 3       // +
-#define ismod INT_MAX - 2        // mod
-#define isdiv INT_MAX - 1        // div
-
-// длина строки редактора,и всякие промежуточные буфера
-constexpr size_t maxlinelen = 1024;
-constexpr size_t maxbf = 65536;
-constexpr size_t maxstaccalc = 3200;
+constexpr size_t isnil = std::numeric_limits<size_t>::max();  // не значит ничего
+constexpr size_t isbase = isnil - 17;                         //
+constexpr size_t iscomma = isnil - 16;                        //     ,
+constexpr size_t isstick = isnil - 15;                        //     |
+constexpr size_t isbbeg = isnil - 14;                         //     (
+constexpr size_t isbend = isnil - 13;                         //     )
+constexpr size_t isimpl = isnil - 12;                         // :-  <-
+constexpr size_t isend = isnil - 11;                          // . ;
+constexpr size_t isexpress = isnil - 10;                      // #
+constexpr size_t islbeg = isnil - 9;                          // [
+constexpr size_t islend = isnil - 8;                          // ]
+constexpr size_t isunitminus = isnil - 7;                     // -
+constexpr size_t isminus = isnil - 6;                         // -
+constexpr size_t isslash = isnil - 5;                         // /
+constexpr size_t ismult = isnil - 4;                          // *
+constexpr size_t isplus = isnil - 3;                          // +
+constexpr size_t ismod = isnil - 2;                           // mod
+constexpr size_t isdiv = isnil - 1;                           // div
 
 constexpr size_t maxgrx = 1024;  // max координата для скроллера графики X
 constexpr size_t maxgry = 768;   //                                     Y

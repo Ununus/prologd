@@ -282,7 +282,7 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) {
     std::unique_ptr<TScVar> ScVar;
     std::unique_ptr<TClVar> ClVar;
 
-    heap = std::unique_ptr<array>(new array(_maxarray_));
+    heap = std::unique_ptr<array>(new array);
     ScVar = std::unique_ptr<TScVar>(new TScVar);
     ClVar = std::unique_ptr<TClVar>(new TClVar);
     ClVar->PrSetting = std::unique_ptr<TPrSetting>(new TPrSetting);

@@ -123,7 +123,7 @@ int runProlog() {
   std::unique_ptr<TScVar> ScVar;
   std::unique_ptr<TClVar> ClVar;
   try {  // инициализация переменных, необходимых для работы интерпретатора
-    heap = std::make_unique<array>(_maxarray_);
+    heap = std::make_unique<array>();
     ScVar = std::make_unique<TScVar>();
     ClVar = std::make_unique<TClVar>();
     ClVar->PrSetting = std::make_unique<TPrSetting>();

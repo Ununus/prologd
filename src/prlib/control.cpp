@@ -36,65 +36,29 @@ PredicateState menegerbp(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap)
   return PredicateState::Error;  // 1;
 }
 
-void to_stac(size_t *b, size_t index, size_t value) {
-  *(b + index) = value;
-}
-
-size_t from_stac(size_t *b, size_t index) {
-  return *(b + index);
-}
-
 int expand_stack(TClVar *ClVar) {
-  size_t vmaxstacknew = (ClVar->vmaxstack * 2);
-  size_t *st_conN;
-  size_t *st_vr1N;
-  size_t *st_vr2N;
-  size_t *st_trailN;
-
-  st_conN = new size_t[vmaxstacknew];
-  st_vr1N = new size_t[vmaxstacknew];
-  st_vr2N = new size_t[vmaxstacknew];
-  st_trailN = new size_t[vmaxstacknew];
-
-  size_t i;
-  for (i = 0; i < ClVar->vmaxstack; i++) {
-    st_conN[i] = ClVar->st_con[i];
-    st_vr1N[i] = ClVar->st_vr1[i];
-    st_vr2N[i] = ClVar->st_vr2[i];
-    st_trailN[i] = ClVar->st_trail[i];
-  }
-  for (; i < vmaxstacknew; i++) {
-    st_conN[i] = isnil;
-    st_vr1N[i] = isnil;
-    st_vr2N[i] = isnil;
-    st_trailN[i] = isnil;
-  }
-  delete[] ClVar->st_con;
-  ClVar->st_con = st_conN;
-  delete[] ClVar->st_vr1;
-  ClVar->st_vr1 = st_vr1N;
-  delete[] ClVar->st_vr2;
-  ClVar->st_vr2 = st_vr2N;
-  delete[] ClVar->st_trail;
-  ClVar->st_trail = st_trailN;
-  ClVar->vmaxstack = vmaxstacknew;
+  ClVar->vmaxstack *= 2;
+  ClVar->vst_con.resize(ClVar->vmaxstack);
+  ClVar->vst_vr1.resize(ClVar->vmaxstack);
+  ClVar->vst_vr2.resize(ClVar->vmaxstack);
+  ClVar->vst_trail.resize(ClVar->vmaxstack);
   return 0;
 }
 
 // выборка из стека управления
 void from_control(TClVar *ClVar, array *heap) {
-  ClVar->newclause = from_stac(ClVar->st_con, --ClVar->scptr);
-  ClVar->atomp = from_stac(ClVar->st_con, --ClVar->scptr);
-  ClVar->aclause = from_stac(ClVar->st_con, --ClVar->scptr);
-  ClVar->parent = from_stac(ClVar->st_con, --ClVar->scptr);
-  ClVar->oldtptr = from_stac(ClVar->st_con, --ClVar->scptr);
-  ClVar->oldsvptr = from_stac(ClVar->st_con, --ClVar->scptr);
-  ClVar->frame2 = from_stac(ClVar->st_con, --ClVar->scptr);
-  heap->paclause = heap->GetPrecordclause(ClVar->aclause);
-  heap->pacltarget = heap->GetPunsigned(heap->paclause->ptrtarget);
+  ClVar->newclause = ClVar->vst_con[--ClVar->scptr];
+  ClVar->atomp = ClVar->vst_con[--ClVar->scptr];
+  ClVar->aclause = ClVar->vst_con[--ClVar->scptr];
+  ClVar->parent = ClVar->vst_con[--ClVar->scptr];
+  ClVar->oldtptr = ClVar->vst_con[--ClVar->scptr];
+  ClVar->oldsvptr = ClVar->vst_con[--ClVar->scptr];
+  ClVar->frame2 = ClVar->vst_con[--ClVar->scptr];
+  heap->ipaclause = ClVar->aclause;
+  heap->ipacltarget = heap->GetPrecordclause(heap->ipaclause)->ptrtarget;
   if (ClVar->newclause && ClVar->newclause != isnil) {
-    heap->pnclause = heap->GetPrecordclause(ClVar->newclause);
-    heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
+    heap->ipnclause = ClVar->newclause;
+    heap->ipncltarget = heap->GetPrecordclause(heap->ipnclause)->ptrtarget;
   }
 }
 
@@ -104,13 +68,13 @@ void to_control(TClVar *ClVar, array *heap) {
     outerror(ErrorCode::StackOverflow);  // 28
     ClVar->stat = PredicateState::No;    // 5; /*message_no_memory|=no_memory_stac;*/ // переполнение стека программы
   } else {
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->frame2);
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->oldsvptr);
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->oldtptr);
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->parent);
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->aclause);
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->atomp);
-    to_stac(ClVar->st_con, ClVar->scptr++, ClVar->newclause);
+    ClVar->vst_con[ClVar->scptr++] = ClVar->frame2;
+    ClVar->vst_con[ClVar->scptr++] = ClVar->oldsvptr;
+    ClVar->vst_con[ClVar->scptr++] = ClVar->oldtptr;
+    ClVar->vst_con[ClVar->scptr++] = ClVar->parent;
+    ClVar->vst_con[ClVar->scptr++] = ClVar->aclause;
+    ClVar->vst_con[ClVar->scptr++] = ClVar->atomp;
+    ClVar->vst_con[ClVar->scptr++] = ClVar->newclause;
   }
 }
 //==========================вывод===============
@@ -122,9 +86,9 @@ bool flaglist;
 // переход по cвязи переменной на один шаг
 void bound(size_t *t, size_t *f, size_t *j, TClVar *ClVar, array *heap) {
   recordvar *prv = heap->GetPrecordvar(*t);
-  *j = *f + prv->num;                 // смещение в стеке
-  *f = from_stac(ClVar->st_vr2, *j);  // новый кадр
-  *t = from_stac(ClVar->st_vr1, *j);  // новый терм
+  *j = *f + prv->num;       // смещение в стеке
+  *f = ClVar->vst_vr2[*j];  // новый кадр
+  *t = ClVar->vst_vr1[*j];  // новый терм
 }
 
 size_t occur_term(size_t *TERM, size_t *FRAME, TClVar *ClVar, array *heap) {
@@ -167,13 +131,16 @@ size_t occur_term(size_t *TERM, size_t *FRAME, TClVar *ClVar, array *heap) {
 }
 
 bool stac(TClVar *ClVar, array *heap) {
-  if (ClVar->bpt + 4 > &ClVar->BPT[_maxbptr_ - 1]) {
-    return false;
+  // if (ClVar->bpt + 4 > &ClVar->BPT[_maxbptr_ - 1]) {
+  //   return false;
+  // }
+  if (ClVar->ibpt + 4 >= ClVar->vBPT.size()) {
+    ClVar->vBPT.resize(ClVar->vBPT.size() * 2 + 4);
   }
-  *(ClVar->bpt++) = term;
-  *(ClVar->bpt++) = frame;
-  *(ClVar->bpt++) = arg;
-  *(ClVar->bpt++) = flaglist;
+  ClVar->vBPT[ClVar->ibpt++] = term;
+  ClVar->vBPT[ClVar->ibpt++] = frame;
+  ClVar->vBPT[ClVar->ibpt++] = arg;
+  ClVar->vBPT[ClVar->ibpt++] = flaglist;
   baserecord *tp = heap->GetPbaserecord(term);
   switch (tp->ident) {
   case islist: {
@@ -195,13 +162,14 @@ bool nextarg(size_t *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
   bool nxaex;
   do {
     nxaex = true;
-    if (ClVar->bpt == ClVar->BPT) {
+    // if (ClVar->bpt == ClVar->BPT) {
+    if (ClVar->ibpt == 0) {
       return false;
     }
-    flaglist = (bool)*(--ClVar->bpt);
-    arg = *(--ClVar->bpt) + 1;
-    frame = *(--ClVar->bpt);
-    term = *(--ClVar->bpt);
+    flaglist = (bool)ClVar->vBPT[--ClVar->ibpt];
+    arg = ClVar->vBPT[--ClVar->ibpt] + 1;
+    frame = ClVar->vBPT[--ClVar->ibpt];
+    term = ClVar->vBPT[--ClVar->ibpt];
     baserecord *tp = heap->GetPbaserecord(term);
     switch (tp->ident) {
     case isfunction: {
@@ -279,19 +247,11 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
   size_t i = 0;
   term = TERM;
   frame = FRAME;
-
-  // unsigned bpt[maxbptr];
-  //  bpt=BPT=new unsigned[maxbptr];
-  if (!ClVar->bpt) {
-    outerror(ErrorCode::NotEnoughFreeMemory);  // 2
-    return j;
-  }
   bool ex = true;
   flaglist = false;
   arg = 0;
-  while (ex) { // здесь циклический вывод терма
-    if (term == isnil || term == NULL)
-    {
+  while (ex) {  // здесь циклический вывод терма
+    if (term == isnil || term == NULL) {
       outBuff.push_back('_');
       ++j;
       std::string str = std::to_string(W);
@@ -424,15 +384,15 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (!ClVar->quiet) {
       for (size_t k = 0; k < ClVar->varqu; k++) {
         w = k;
-        ClVar->precordvar = heap->GetPrecordvar(ScVar->tvar[k]);
+        ClVar->precordvar = heap->GetPrecordvar(ScVar->vtvar[k]);
         char *name = heap->GetPchar(ClVar->precordvar->ptrsymb);
         for (j = 0; j < ClVar->precordvar->length; j++) {
           outBuff.push_back(*(name + j));
         }
         // buff[j++] = '=';
         outBuff.push_back('=');
-        frame = from_stac(ClVar->st_vr2, k);
-        term = from_stac(ClVar->st_vr1, k);
+        frame = ClVar->vst_vr2[k];
+        term = ClVar->vst_vr1[k];
         //======================================// вывод terma  пока не все
         // buff[write_term(term, frame, w, j, ScVar, ClVar, heap)] = 0;  //,//FILE *d)
         write_term(term, frame, w, j, ScVar, ClVar, heap);
@@ -446,7 +406,7 @@ void prvars(TScVar *ScVar, TClVar *ClVar, array *heap) {
 // конец вывода
 void zero(TClVar *ClVar) {
   for (size_t i = ClVar->oldtptr; i < ClVar->tptr; i++) {
-    to_stac(ClVar->st_vr1, from_stac(ClVar->st_trail, i), isnil);
+    ClVar->vst_vr1[ClVar->vst_trail[i]] = isnil;
   }
   ClVar->tptr = ClVar->oldtptr;
 }
@@ -463,8 +423,8 @@ static void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
 // удовлетворены, то из стека восстанавливается родительская среда.
 // Если родительской среды нет, то выводется ответная подстановка.
 static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (!heap->pacltarget[++ClVar->atomp])  // все цели удовлетворены
-    if (ClVar->parent == NULL)            // есть ответ на вопрос
+  if (!heap->GetPunsigned(heap->ipacltarget)[++ClVar->atomp])  // все цели удовлетворены
+    if (ClVar->parent == NULL)                                 // есть ответ на вопрос
     {
       prvars(ScVar, ClVar, heap);  // печать переменных
       if (ClVar->stat != PredicateState::Error) {
@@ -478,8 +438,8 @@ static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
       ClVar->stat = PredicateState::Yes;  // 3;
     }
   else {
-    ClVar->head = heap->pacltarget[ClVar->atomp];  // индекс новой цели
-    ClVar->stat = PredicateState::Builtin;         // 6;
+    ClVar->head = heap->GetPunsigned(heap->ipacltarget)[ClVar->atomp];  // индекс новой цели
+    ClVar->stat = PredicateState::Builtin;                              // 6;
   }
 }
 
@@ -492,22 +452,22 @@ static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
 static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto &outBuff = ClVar->outBuff;
   if (ClVar->newclause && ClVar->newclause != isnil) {  // pnclause=head->at(newclause);pncltarget=head->at(newclause-1);
-    heap->ptclause = heap->pnclause;
-    heap->ptcltarget = heap->pncltarget;
+    heap->iptclause = heap->ipnclause;
+    heap->iptcltarget = heap->ipncltarget;
     ClVar->tclause = ClVar->newclause;
     ClVar->tryclause = 0;  // ptclause->ptrtarget[tryclause] ук на голову
     // tryclause=ptclause->head; //ук на голову
     ClVar->frame1 = ClVar->oldsvptr = ClVar->svptr;
-    ClVar->svptr = ClVar->frame1 + heap->pnclause->nvars;
+    ClVar->svptr = ClVar->frame1 + heap->GetPrecordclause(heap->ipnclause)->nvars;
 #ifdef PrintVarCount
     char _buf[128];
     sprintf(_buf, "nvars:%d", ClVar->pnclause->nvars);
     out(_buf);
 #endif
-    ClVar->newclause = heap->pnclause->next;
+    ClVar->newclause = heap->GetPrecordclause(heap->ipnclause)->next;
     if (ClVar->newclause) {
-      heap->pnclause = heap->GetPrecordclause(ClVar->newclause);
-      heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
+      heap->ipnclause = ClVar->newclause;
+      heap->ipncltarget = heap->GetPrecordclause(heap->ipnclause)->ptrtarget;
     }
     if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
       ClVar->err = ErrorCode::StackOverflow;  // 28;
@@ -516,13 +476,13 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
       if (ClVar->PrSetting->Trace) {
         pldout("Согласуется с ");
         // buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap)] = 0;
-        write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap);
+        write_term(heap->GetPunsigned(heap->iptcltarget)[ClVar->tryclause], ClVar->frame1, 0, 0, ScVar, ClVar, heap);
         pldout(outBuff.c_str());
         outBuff.clear();
       }
       ClVar->oldtptr = ClVar->tptr;
-      if (unify(heap->ptcltarget[ClVar->tryclause], ClVar->head, ClVar->frame1, ClVar->frame2, ClVar, heap)) {  // удачная унификация
-        if (ClVar->newclause || heap->pacltarget[ClVar->atomp + 1]) {
+      if (unify(heap->GetPunsigned(heap->iptcltarget)[ClVar->tryclause], ClVar->head, ClVar->frame1, ClVar->frame2, ClVar, heap)) {  // удачная унификация
+        if (ClVar->newclause || heap->GetPunsigned(heap->ipacltarget)[ClVar->atomp + 1]) {
           to_control(ClVar, heap);
           ClVar->ntro = true;
         } else {
@@ -537,8 +497,8 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
           ClVar->atomp = ClVar->tryclause;
           // atomp=-1;
           ClVar->aclause = ClVar->tclause;
-          heap->paclause = heap->ptclause;
-          heap->pacltarget = heap->ptcltarget;
+          heap->ipaclause = heap->iptclause;
+          heap->ipacltarget = heap->iptcltarget;
           ClVar->stat = PredicateState::PrepereNewTarget;  // 2;
         }
       } else if (ClVar->stat != PredicateState::Error) {
@@ -552,10 +512,10 @@ static void st_4(TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   } else {
     if (ClVar->PrSetting->Trace) {
-      if (heap->ptcltarget) {
+      if (heap->iptcltarget) {
         pldout("Цель");
         // buff[write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap)] = 0;
-        write_term(heap->ptcltarget[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap);
+        write_term(heap->GetPunsigned(heap->iptcltarget)[ClVar->tryclause], ClVar->frame2, 0, 0, ScVar, ClVar, heap);
         outBuff.clear();
       }
       pldout("Неудачна ");
@@ -573,7 +533,7 @@ static void st_5(TScVar *ScVar, TClVar *ClVar, array *heap) {
   } else {
     from_control(ClVar, heap);
     zero(ClVar);
-    ClVar->head = heap->pacltarget[ClVar->atomp];
+    ClVar->head = heap->GetPunsigned(heap->ipacltarget)[ClVar->atomp];
     ClVar->svptr = ClVar->oldsvptr;
     if (ClVar->PrSetting->Trace) {
       pldout("Переделка. Цель ");
@@ -613,8 +573,8 @@ static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->precordsconst = heap->GetPrecordsconst(ClVar->bipr);
     ClVar->newclause = ClVar->precordsconst->begin;
     if (ClVar->newclause && ClVar->newclause != isnil) {
-      heap->pnclause = heap->GetPrecordclause(ClVar->newclause);
-      heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
+      heap->ipnclause = ClVar->newclause;
+      heap->ipncltarget = heap->GetPrecordclause(heap->ipnclause)->ptrtarget;
     }
     ClVar->stat = PredicateState::ControlStep;  // 4;
   }
@@ -623,19 +583,18 @@ static void st_6(TScVar *ScVar, TClVar *ClVar, array *heap) {
 // Очистить состояние
 static void OnControl(TClVar *ClVar, array *heap) {
   // add 2008/10/04
-  heap->ptclause = NULL;
-  heap->ptcltarget = NULL;
+  heap->iptclause = 0;
+  heap->iptcltarget = 0;
 
   ClVar->err = ErrorCode::NoErrors;  // 0
   for (size_t i = 0; i < ClVar->vmaxstack; i++) {
-    ClVar->st_con[i] = isnil;
-    ClVar->st_vr1[i] = isnil;
-    ClVar->st_vr2[i] = isnil;
-    ClVar->st_trail[i] = isnil;
+    ClVar->vst_con[i] = isnil;
+    ClVar->vst_vr1[i] = isnil;
+    ClVar->vst_vr2[i] = isnil;
+    ClVar->vst_trail[i] = isnil;
   }
-  for (size_t i = 0; i < _maxbf_; i++) {
-    ClVar->bf[i] = 0;
-  }
+  ClVar->vbf.clear();
+
   ClVar->stat = PredicateState::PrepereNewTarget;  // 2;
   ClVar->newclause = 0;
   ClVar->ntro = false;  // нет оптимизации хвостовой рекурсии не знаю пока что это
@@ -646,9 +605,9 @@ static void OnControl(TClVar *ClVar, array *heap) {
   ClVar->parent = 0;
   // aclause = heap->last - sizeof(recordclause);                          //чего это ?
   ClVar->aclause = heap->query;
-  heap->paclause = heap->GetPrecordclause(ClVar->aclause);
-  heap->pacltarget = heap->GetPunsigned(heap->paclause->ptrtarget);
-  ClVar->varqu = heap->paclause->nvars;
+  heap->ipaclause = ClVar->aclause;
+  heap->ipacltarget = heap->GetPrecordclause(heap->ipaclause)->ptrtarget;
+  ClVar->varqu = heap->GetPrecordclause(heap->ipaclause)->nvars;
   ClVar->svptr = ClVar->varqu;
   ClVar->atomp = -1;
   ClVar->quiet = false;
@@ -673,8 +632,7 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
     case PredicateState::Builtin:  // 6
       st_6(ScVar, ClVar, heap);
       break;
-    default:
-        break;
+    default: break;
     }
     if (!*EnableRunning) {
       ClVar->err = ErrorCode::ExecutionInterrupted;  // 27;  // abort
@@ -695,8 +653,8 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
   size_t n = ClVar->precordexpression->length;
   ErrorCode err = ErrorCode::NoErrors;
   baserecord *tp;
-  IntegerType oi1 = 0, oi2 = 0;                                // операнды для вычисления целых
-  FloatType of1 = 0, of2 = 0;                                  // операнды для  вычисления вещественных
+  IntegerType oi1 = 0, oi2 = 0;                                   // операнды для вычисления целых
+  FloatType of1 = 0, of2 = 0;                                     // операнды для  вычисления вещественных
   for (size_t j = 0; j < n && err == ErrorCode::NoErrors; ++j) {  // if (lowMemory()) return 0;//!!!сообщение о r_t_e
     auto *ptr = heap->GetPunsigned(ClVar->precordexpression->precord);
     if (ptr[j] < isbase)  // операнд
@@ -862,14 +820,14 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
 }
 
 bool stac_un(TClVar *ClVar) {
-  if (ClVar->bp + 5 > maxbf) {
-    return false;
+  while (ClVar->bp + 5 > ClVar->vbf.size()) {
+    ClVar->vbf.resize(ClVar->vbf.size() * 2 + 5);
   }
-  ClVar->bf[ClVar->bp++] = ClVar->numb;
-  ClVar->bf[ClVar->bp++] = ClVar->fr2;
-  ClVar->bf[ClVar->bp++] = ClVar->fr1;
-  ClVar->bf[ClVar->bp++] = ClVar->term2;
-  ClVar->bf[ClVar->bp++] = ClVar->term1;
+  ClVar->vbf[ClVar->bp++] = ClVar->numb;
+  ClVar->vbf[ClVar->bp++] = ClVar->fr2;
+  ClVar->vbf[ClVar->bp++] = ClVar->fr1;
+  ClVar->vbf[ClVar->bp++] = ClVar->term2;
+  ClVar->vbf[ClVar->bp++] = ClVar->term1;
   return true;
 }
 
@@ -878,11 +836,12 @@ void nextun(TClVar *ClVar, array *heap) {
     ClVar->ex = false;
     return;
   }
-  ClVar->term1 = ClVar->bf[--ClVar->bp];
-  ClVar->term2 = ClVar->bf[--ClVar->bp];
-  ClVar->fr1 = ClVar->bf[--ClVar->bp];
-  ClVar->fr2 = ClVar->bf[--ClVar->bp];
-  ClVar->numb = ++ClVar->bf[--ClVar->bp];
+  ClVar->term1 = ClVar->vbf[--ClVar->bp];
+  ClVar->term2 = ClVar->vbf[--ClVar->bp];
+  ClVar->fr1 = ClVar->vbf[--ClVar->bp];
+  ClVar->fr2 = ClVar->vbf[--ClVar->bp];
+  ClVar->numb = ++ClVar->vbf[--ClVar->bp];
+
   baserecord *tp = heap->GetPbaserecord(ClVar->term1);
   if (tp->ident == isfunction) {
     ClVar->precordfunction = (recordfunction *)tp;
@@ -1006,8 +965,8 @@ bool unsymb(TClVar *ClVar, array *heap) {
 
 // установка связи в стеке переменных
 void ocrn(size_t bd1, size_t tr2, TClVar *ClVar) {
-  to_stac(ClVar->st_vr1, bd1, tr2);  // и отметка в стеке следа
-  to_stac(ClVar->st_trail, ClVar->tptr++, bd1);
+  ClVar->vst_vr1[bd1] = tr2;  // и отметка в стеке следа
+  ClVar->vst_trail[ClVar->tptr++] = bd1;
 }
 
 bool unvar(TClVar *ClVar, array *heap) {
@@ -1015,11 +974,11 @@ bool unvar(TClVar *ClVar, array *heap) {
   size_t bd1, bd2, work;
   recordvar *precordvar = heap->GetPrecordvar(ClVar->term1);
   bd1 = precordvar->num + ClVar->fr1;
-  work = from_stac(ClVar->st_vr1, bd1);
+  work = ClVar->vst_vr1[bd1];
   if (work != isnil)  // связанная переменная
   {
     ClVar->term1 = work;
-    work = from_stac(ClVar->st_vr2, bd1);
+    work = ClVar->vst_vr2[bd1];
     if (work != isnil)
       ClVar->fr1 = work;
     //   else {ocrn(bd1,term2);nextun();}//!!!добавлено мной
@@ -1028,7 +987,7 @@ bool unvar(TClVar *ClVar, array *heap) {
     switch (tp->ident) {
     case isfunction:
     case islist:
-      to_stac(ClVar->st_vr2, bd1, ClVar->fr2);  // break; // пока убрал break
+      ClVar->vst_vr2[bd1] = ClVar->fr2;  // break; // пока убрал break
     //[[fallthrough]]
     case isfloat:    // также как issumbol;
     case isinteger:  // так же как issymbol
@@ -1044,18 +1003,18 @@ bool unvar(TClVar *ClVar, array *heap) {
       } else {
         precordvar = heap->GetPrecordvar(ClVar->term2);
         bd2 = precordvar->num + ClVar->fr2;
-        work = from_stac(ClVar->st_vr1, bd2);
+        work = ClVar->vst_vr1[bd2];
         if (work == isnil) {  // свободная переменная
           if (ClVar->term1 == ClVar->term2) {
             nextun(ClVar, heap);
           } else {
-            to_stac(ClVar->st_vr2, bd1, ClVar->fr2);
+            ClVar->vst_vr2[bd1] = ClVar->fr2;
             ocrn(bd1, ClVar->term2, ClVar);
             nextun(ClVar, heap);
           }
         } else {  // связанная переменная
           ClVar->term2 = work;
-          work = from_stac(ClVar->st_vr2, bd2);
+          work = ClVar->vst_vr2[bd2];
           if (work != isnil)
             ClVar->fr2 = work;
         }
@@ -1242,15 +1201,14 @@ bool unexpr(TClVar *ClVar, array *heap) {
     FloatType cf, df;
     auto ind1 = calculation(ClVar->term1, ClVar->frame1, &c, &cf, ClVar, heap), ind2 = calculation(ClVar->term2, ClVar->frame2, &d, &df, ClVar, heap);
     if (ind1 == ind2 && ind1 == isinteger) {
-        //!!! сделано только для целых
+      //!!! сделано только для целых
       if (c == d) {
         nextun(ClVar, heap);
         ret = true;
       } else {
         ;  // ret=false; уже присвоено
       }
-    }
-    else {
+    } else {
       ;  // ret =false;//!!! нужно сообщение об ошибке периода исполнения ret=false уже
     }
   }

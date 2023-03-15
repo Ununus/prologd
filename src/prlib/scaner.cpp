@@ -12,9 +12,7 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   bool &EndOfClause = ScVar->EndOfClause;
   bool &Query = ScVar->Query;
-  auto *buf = ScVar->buf;
   auto &bptr = ScVar->bptr;
-  auto *goal = ScVar->goal;
   auto &gptr = ScVar->gptr;
   auto &novar = ScVar->novar;
   bool &right = ScVar->right;
@@ -23,6 +21,14 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
   char *p = Str;
   while (*p && err == ErrorCode::NoErrors)  // возвратит 0 или код ошибки в конструкции
   {
+    if (ScVar->vbuf.size() < bptr + 256) {
+      ScVar->vbuf.resize(std::max(ScVar->vbuf.size() * 2, bptr + 256));
+    }
+    if (ScVar->vgoal.size() < gptr + 16) {
+      ScVar->vgoal.resize(std::max(ScVar->vgoal.size() * 2, gptr + 16));
+    }
+    auto &buf = ScVar->vbuf;
+    auto &goal = ScVar->vgoal;
     switch (*p) {
     case ',': buf[bptr++] = iscomma; break;  // запись запятой в buf
     case '|': buf[bptr++] = isstick; break;
@@ -92,21 +98,21 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
       // анонимка
       if (gptr <= 0) {
         err = ErrorCode::IncorrectUseUnderscore;  // 11;
-      } else if (bptr + 1 < _maxbptr_) {
-        buf[bptr++] = ScVar->hpunkn;
       } else {
-        // err = ErrorCode::CannotOpenGraphics;  // 22;
-        err = ErrorCode::TooManyCharacterConstants;
+        if (bptr + 1 >= buf.size()) {
+          buf.resize(std::max(buf.size() * 2, bptr + 2));
+        }
+        buf[bptr++] = ScVar->hpunkn;
       }
     } break;
     case '!':
       if (!right) {
         err = ErrorCode::IncorrectUseExclamation;  // 12;
-      } else if (bptr + 1 < _maxbptr_) {
-        buf[bptr++] = hpcut;
       } else {
-        // err = ErrorCode::CannotOpenGraphics;  // 22;
-        err = ErrorCode::TooManyCharacterConstants;
+        if (bptr + 1 >= buf.size()) {
+          buf.resize(std::max(buf.size() * 2, bptr + 2));
+        }
+        buf[bptr++] = hpcut;
       }
       break;
     case '+': {

@@ -10,10 +10,18 @@
 #include "pdefs.h"
 #include <boost/multiprecision/cpp_int.hpp>
 
+constexpr size_t kInitialBptr = 1024;
+constexpr size_t kInitialGptr = 150;
+constexpr size_t kInitialVar = 512;
+constexpr size_t kInitialSymbol = 2048;
+
+constexpr size_t kInitialHeapSize = 16384;
+constexpr size_t kInitialStackSize = 4096;
+constexpr size_t kInitialUniBufSize = 100;
+constexpr size_t kInitialBptSize = 256;
+
 using FloatType = double;
-// using IntegerType = long long;
 using IntegerType = boost::multiprecision::cpp_int;
-// using IntegerType = boost::multiprecision::int1024_t;
 
 // используется в control
 enum class PredicateState { Error = 1, PrepereNewTarget = 2, Yes = 3, ControlStep = 4, No = 5, Builtin = 6 };
@@ -142,19 +150,19 @@ struct recordclause final : public baserecord {
 // пролога описания функций в main()
 struct array {
 protected:
-  unsigned char *heaps;  // указатель на массив
+  // unsigned char *heaps;  // указатель на массив
+  std::vector<unsigned char> vheap;
+
 public:
   size_t freeheap;  // кол-во эл-тов до разбора программы
-  size_t size;      // кол-во эл-тов всего /типа size_t/
-  size_t last;      // индекс массива указывающий на первый свободный эл
-  size_t query;     // индекс предложения - вопроса.
+  size_t last;   // индекс массива указывающий на первый свободный эл
+  size_t query;  // индекс предложения - вопроса.
   template<class T>
   size_t append(const T &record, size_t count = 1);  // добавление в конец
 
-  array(size_t SIZE);
+  array(size_t SIZE = kInitialHeapSize);
   void clear();
   void cleanUp(size_t idx);
-  void expand();
   ~array();
   baserecord *GetPbaserecord(size_t index);
   recordsconst *GetPrecordsconst(size_t index);
@@ -172,29 +180,26 @@ public:
   size_t *GetPunsigned(size_t index);
   char *GetPchar(size_t index);
 
-  recordclause *pnclause;  // для newclause
-  recordclause *ptclause;  // для trylause
-  recordclause *phclause;  // для head
-  recordclause *paclause;  // ук на структ для atomp
-  size_t *pacltarget;      // указатель на цели предложения aclause
-  size_t *ptcltarget;
-  size_t *pncltarget;
+  size_t ipnclause;    // для newclause
+  size_t iptclause;    // для trylause
+  size_t iphclause;    // для head
+  size_t ipaclause;    // ук на структ для atomp
+  size_t ipacltarget;  // указатель на цели предложения aclause
+  size_t iptcltarget;
+  size_t ipncltarget;
 
   std::vector<size_t> recordintegersInHeap;
 };
 
 template<class T>
 size_t array::append(const T &record, size_t count) {
-  if (std::is_same<T, unsigned>()) {
-    throw 1;
-  }
   auto baklast = last;
   auto sz = sizeof(record) * count;
-  while (last + sz + 1 > size) {
-    expand();
+  if (last + sz + 1 > vheap.size()) {
+    vheap.resize(std::max(vheap.size() * 2, last + sz + 2));
   }
   for (size_t i = 0; i < count; ++i) {
-    new (heaps + last + i * sizeof(record)) T(record);
+    new (vheap.data() + last + i * sizeof(record)) T(record);
     if constexpr (std::is_same<T, recordinteger>()) {
       recordintegersInHeap.emplace_back(last + i * sizeof(record));
     }
@@ -204,19 +209,16 @@ size_t array::append(const T &record, size_t count) {
   // return heaps + last;
 }
 
-constexpr size_t bruteExpand = 8;
 // структура для scaner
-constexpr size_t _maxbptr_ = bruteExpand * 1024;
-constexpr size_t _maxgptr_ = bruteExpand * 150;
-constexpr size_t _maxvar_ = bruteExpand * 512;
-constexpr size_t _maxsymbol_ = bruteExpand * 4096;
-constexpr size_t _maxarray_ = bruteExpand * 5000;
-
 struct TScVar {
-  size_t *buf;
-  size_t *goal;
-  size_t *tat;   // текстовое представление констант
-  size_t *tvar;  // таблица переменных
+  // size_t *buf;
+  // size_t *goal;
+  // size_t *tat;   // текстовое представление констант
+  // size_t *tvar;  // таблица переменных
+  std::vector<size_t> vbuf;
+  std::vector<size_t> vgoal;
+  std::vector<size_t> vtat;   // текстовое представление констант
+  std::vector<size_t> vtvar;  // таблица переменных
   size_t bptr;
   size_t gptr;
   size_t nosymbol;
@@ -242,21 +244,17 @@ struct TPrSetting {
   bool Trace{ false };
 };
 
-constexpr size_t bruteExpand2 = 32;
 // структуры для хранения данных - программы
-constexpr size_t _vmaxstack_ = bruteExpand2 * 1000;
-constexpr size_t _maxbf_ = bruteExpand2 * 2048;
-
 struct TClVar {
   PredicateState stat;
   std::string outBuff;
   size_t vmaxstack;
-  size_t *st_con;
-  size_t *st_vr1;
-  size_t *st_vr2;
-  size_t *st_trail;
-  size_t *bf;    // массив стека унификации
-  size_t varqu;  // кол-во вопросов
+  std::vector<size_t> vst_con;
+  std::vector<size_t> vst_vr1;
+  std::vector<size_t> vst_vr2;
+  std::vector<size_t> vst_trail;
+  std::vector<size_t> vbf;  // массив стека унификации
+  size_t varqu;             // кол-во вопросов
 
   size_t newclause;  // индекс в массиве указывающий на предложения
   size_t nclause;    // индекс для newclause
@@ -297,8 +295,8 @@ struct TClVar {
   recordclause *precordclause;
   recordcut *precordcut;
 
-  size_t *BPT;  // для вывода пролога
-  size_t *bpt;  // указатель в массиве BPT
+  std::vector<size_t> vBPT;  // для вывода пролога
+  size_t ibpt{};             // указатель в массиве BPT
 
   std::unique_ptr<TPrSetting> PrSetting{};
 

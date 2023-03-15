@@ -38,7 +38,7 @@ ErrorCode buildin(TScVar *ScVar, array *heap) {
     size_t len = strlen(NamesOfPredicates[i]);
     auto index = heap->append<char>(0, len);
     memcpy(heap->GetPchar(index), NamesOfPredicates[i], sizeof(char) * len);
-    ScVar->tat[i] = heap->append(recordsconst(index, len));
+    ScVar->vtat[i] = heap->append(recordsconst(index, len));
   }
   // freesymbol = MAX_BUILD_PRED;
   ScVar->nosymbol = MAX_BUILD_PRED;
@@ -47,7 +47,7 @@ ErrorCode buildin(TScVar *ScVar, array *heap) {
   heap->freeheap = heap->last;
 
   // extern char*Build_in_Libriary[] ;
-  for (int i = 0; i < LEN_BUILD_LIBR && err == ErrorCode::NoErrors; i++) {
+  for (size_t i = 0; i < LEN_BUILD_LIBR && err == ErrorCode::NoErrors; ++i) {
     char *p = (char *)Build_in_Libriary[i];
     err = scaner(p, ScVar, heap);
   }
@@ -68,10 +68,10 @@ ErrorCode FreeProlog() {
 ErrorCode tokbb(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   auto &bptr = ScVar->bptr;
-  auto *buf = ScVar->buf;
-  auto *goal = ScVar->goal;
+  auto &buf = ScVar->vbuf;
+  auto &goal = ScVar->vgoal;
   auto &gptr = ScVar->gptr;
-  if (gptr == 0 || gptr >= _maxgptr_ || buf[goal[gptr - 1]] != isbbeg) {
+  if (gptr == 0 || gptr >= ScVar->vgoal.size() || buf[goal[gptr - 1]] != isbbeg) {
     return ErrorCode::UnpairedBracketsInFunctionProcessing;  // 16; //нет откр скобки или не issymbol
   }
   --gptr;
@@ -89,7 +89,7 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
     return ErrorCode::ErrorWhileParsingFunction;  // 38;
   }
   auto n = (bptr - i) / 2;  // число аргументов
-  size_t ptrargs[1024]; // TODO: do vector
+  size_t ptrargs[1024];     // TODO: do vector
   if (n > sizeof(ptrargs) / sizeof(size_t)) {
     return ErrorCode::NotEnoughFreeMemory;  // 2;
   }
@@ -107,12 +107,10 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
   }
   index = heap->append(recordfunction(n, buf[i], index));
   bptr = i;
-  if (bptr + 1 < _maxbptr_) {
-    buf[bptr++] = index;
-  } else {
-    // err = ErrorCode::CannotOpenGraphics;  // 22;
-    err = ErrorCode::TooManyCharacterConstants;
+  if (bptr + 1 >= buf.size()) {
+    buf.resize(std::max(buf.size() * 2, bptr + 2));
   }
+  buf[bptr++] = index;
   return err;
 }
 
@@ -121,7 +119,7 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
   bool &Query = ScVar->Query;
   bool &EndOfClause = ScVar->EndOfClause;
   auto &gptr = ScVar->gptr;
-  auto *buf = ScVar->buf;
+  auto &buf = ScVar->vbuf;
   auto &novar = ScVar->novar;
   auto id = Query ? isclauseq : isclause;
   if (gptr != NULL) {
@@ -170,7 +168,7 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
     ntarget++;
   }
   if (err == ErrorCode::NoErrors) {
-    size_t ptarget[1024]; // TODO: do vector
+    size_t ptarget[1024];  // TODO: do vector
     if ((ntarget + 1) * sizeof(size_t) > sizeof(ptarget)) {
       return ErrorCode::NotEnoughFreeMemory;  // 2;
     }
@@ -238,7 +236,7 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
   // должна прийти первая цифра или знак + -
   ErrorCode err = ErrorCode::NoErrors;
   auto &bptr = ScVar->bptr;
-  auto *buf = ScVar->buf;
+  auto &buf = ScVar->vbuf;
   char bufnum[1024]{};
   FloatType valuef = 0;
   IntegerType valuei = 0;
@@ -275,20 +273,16 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
     } else {
       if (punkt || e) {
         auto index = heap->append(recordfloat(valuef));
-        if (bptr + 1 < _maxbptr_) {
-          buf[bptr++] = index;
-        } else {
-          // err = ErrorCode::CannotOpenGraphics;  // 22;
-          err = ErrorCode::TooManyCharacterConstants;
+        if (bptr + 1 >= buf.size()) {
+          buf.resize(std::max(buf.size() * 2, bptr + 2));
         }
+        buf[bptr++] = index;
       } else {
         auto index = heap->append(recordinteger(valuei));
-        if (bptr + 1 < _maxbptr_) {
-          buf[bptr++] = index;
-        } else {
-          // err = ErrorCode::CannotOpenGraphics;  // 22;
-          err = ErrorCode::TooManyCharacterConstants;
+        if (bptr + 1 >= buf.size()) {
+          buf.resize(std::max(buf.size() * 2, bptr + 2));
         }
+        buf[bptr++] = index;
       }
     }
   }
@@ -383,7 +377,7 @@ ErrorCode implic(char *&p, TScVar *ScVar, array *heap) {
   } else {
     p++;
     ScVar->right = true;
-    ScVar->buf[ScVar->bptr++] = isimpl;
+    ScVar->vbuf[ScVar->bptr++] = isimpl;
   }
   return err;
 }
@@ -407,15 +401,12 @@ size_t prioritet(size_t ch) {
 //=============
 ErrorCode arexpr(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
-  size_t obuf[maxlinelen];
-  size_t stac[maxlinelen];
-  size_t st, n, p;  // индекс в стеке,число эл,приоритет
   ScVar->bptr = ScVar->exprip;
   //========проверка синтаксиса в ар выр
   int sk = 0;  // скобки
-  while (ScVar->buf[ScVar->bptr] != isnil && err == ErrorCode::NoErrors) {
-    size_t pel = ScVar->buf[ScVar->bptr - 1];  // предыдущий элемент в ар-м выр-ии
-    switch (ScVar->buf[ScVar->bptr]) {
+  while (ScVar->vbuf[ScVar->bptr] != isnil && err == ErrorCode::NoErrors) {
+    size_t pel = ScVar->vbuf[ScVar->bptr - 1];  // предыдущий элемент в ар-м выр-ии
+    switch (ScVar->vbuf[ScVar->bptr]) {
     case isbbeg:  // '('
     {
       if (pel == isexpress || pel == isbbeg || pel == ismult || pel == isslash || pel == isplus || pel == isminus || pel == ismod || pel == isdiv) {
@@ -443,7 +434,7 @@ ErrorCode arexpr(TScVar *ScVar, array *heap) {
       }
     } break;
     default:
-      if (ScVar->buf[ScVar->bptr] < isbase &&
+      if (ScVar->vbuf[ScVar->bptr] < isbase &&
           (pel == isbbeg || pel == ismult || pel == isslash || pel == isplus || pel == isminus || pel == ismod || pel == isdiv))
         break;
       else {
@@ -456,46 +447,46 @@ ErrorCode arexpr(TScVar *ScVar, array *heap) {
     err = ErrorCode::ErrorInArithmeticExpression;  // 32;
   }
   ScVar->bptr = ScVar->exprip;
-  stac[st = 0] = 0;
-  st++;
-  stac[st++] = ScVar->buf[ScVar->bptr++];
-  size_t o = 0;
-  n = 0;
-  while (ScVar->buf[ScVar->bptr] != isnil && err == ErrorCode::NoErrors) {
-    if (ScVar->buf[ScVar->bptr] == isbend && stac[st - 1] == isbbeg) {
-      st--;
+  std::vector<size_t> vobuf;
+  std::vector<size_t> vstac;
+  vstac.push_back(0);
+  vstac.push_back(ScVar->vbuf[ScVar->bptr++]);
+  size_t n = 0, p;  // число эл, приоритет
+  while (ScVar->vbuf[ScVar->bptr] != isnil && err == ErrorCode::NoErrors) {
+    if (ScVar->vbuf[ScVar->bptr] == isbend && vstac.back() == isbbeg) {
+      vstac.pop_back();
       ScVar->bptr++;
       continue;
     }  // избавимся от лишних скобок
-    if ((p = prioritet(ScVar->buf[ScVar->bptr])) == 0) {
-      obuf[o++] = ScVar->buf[ScVar->bptr++];
+    if ((p = prioritet(ScVar->vbuf[ScVar->bptr])) == 0) {
+      vobuf.push_back(ScVar->vbuf[ScVar->bptr++]);
       n++;
     } else {
-      if (p <= prioritet(stac[st - 1]) && p > 1) {
-        while (n > 1 && p <= prioritet(stac[st - 1]) && stac[st - 1]) {
-          obuf[o++] = stac[--st];
+      if (p <= prioritet(vstac.back()) && p > 1) {
+        while (n > 1 && p <= prioritet(vstac.back()) && vstac.back()) {
+          vobuf.push_back(vstac.back());
+          vstac.pop_back();
           n--;
         }
-        if (p == 2 && stac[st - 1] == isbbeg) {
-          st--;
+        if (p == 2 && vstac.back() == isbbeg) {
+          vstac.pop_back();
           ScVar->bptr++;
-        } else
-          stac[st++] = ScVar->buf[ScVar->bptr++];
-      } else
-        stac[st++] = ScVar->buf[ScVar->bptr++];
+        } else {
+          vstac.push_back(ScVar->vbuf[ScVar->bptr++]);
+        }
+      } else {
+        vstac.push_back(ScVar->vbuf[ScVar->bptr++]);
+      }
     }
   }
   if (err != ErrorCode::NoErrors) {
     return err;
   }
-  obuf[o] = 0;
-  stac[st] = 0;
-
-  auto index = heap->append<size_t>(0, o);
-  memcpy(heap->GetPunsigned(index), obuf, sizeof(size_t) * o);
-  index = heap->append(recordexpression(o, index));
+  auto index = heap->append<size_t>(0, vobuf.size());
+  memcpy(heap->GetPunsigned(index), vobuf.data(), sizeof(size_t) * vobuf.size());
+  index = heap->append(recordexpression(vobuf.size(), index));
   ScVar->bptr = ScVar->exprip - 1;
-  ScVar->buf[ScVar->bptr++] = index;
+  ScVar->vbuf[ScVar->bptr++] = index;
   return err;
 }
 
@@ -503,11 +494,11 @@ ErrorCode arexpr(TScVar *ScVar, array *heap) {
 ErrorCode expbeg(TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;  // выражение заключается в скоики
   if (!ScVar->exprip) {
-    ScVar->buf[ScVar->bptr++] = isexpress;
-    ScVar->buf[ScVar->exprip = ScVar->bptr++] = isbbeg;
+    ScVar->vbuf[ScVar->bptr++] = isexpress;
+    ScVar->vbuf[ScVar->exprip = ScVar->bptr++] = isbbeg;
   } else {
-    ScVar->buf[ScVar->bptr++] = isbend;
-    ScVar->buf[ScVar->bptr] = isnil;
+    ScVar->vbuf[ScVar->bptr++] = isbend;
+    ScVar->vbuf[ScVar->bptr] = isnil;
     err = arexpr(ScVar, heap);
     ScVar->exprip = 0;
   }
@@ -520,16 +511,14 @@ ErrorCode lbeg(char *&p, TScVar *ScVar, array *heap) {
     err = ErrorCode::IncorrectUseListAsPredicate;  // 9;
   } else {
     if (*(p + 1) == ']') {
-      if (ScVar->bptr + 1 < _maxbptr_) {
-        ScVar->buf[ScVar->bptr++] = ScVar->hpempty;
-      } else {
-        // err = ErrorCode::CannotOpenGraphics;  // 22;
-        err = ErrorCode::TooManyCharacterConstants;
+      if (ScVar->bptr + 1 >= ScVar->vbuf.size()) {
+        ScVar->vbuf.resize(std::max(ScVar->vbuf.size() * 2, ScVar->bptr + 2));
       }
+      ScVar->vbuf[ScVar->bptr++] = ScVar->hpempty;
       p++;
     } else {
-      ScVar->goal[ScVar->gptr++] = ScVar->bptr;
-      ScVar->buf[ScVar->bptr++] = islbeg;
+      ScVar->vgoal[ScVar->gptr++] = ScVar->bptr;
+      ScVar->vbuf[ScVar->bptr++] = islbeg;
     }
   }
   return err;
@@ -542,21 +531,21 @@ ErrorCode list(TScVar *ScVar, array *heap) {
   size_t indexlast;
   recordlist *ptr;
   ScVar->gptr--;
-  if (ScVar->gptr <= 0 || ScVar->gptr >= _maxgptr_ || ScVar->buf[ScVar->goal[ScVar->gptr]] != islbeg) {
+  if (ScVar->gptr <= 0 || ScVar->gptr >= ScVar->vgoal.size() || ScVar->vbuf[ScVar->vgoal[ScVar->gptr]] != islbeg) {
     err = ErrorCode::UnpairedBracketsInListProcessing;  // 14;
   } else {
-    ScVar->bptr = ScVar->goal[ScVar->gptr];
-    ScVar->buf[ScVar->bptr] = heap->last;
+    ScVar->bptr = ScVar->vgoal[ScVar->gptr];
+    ScVar->vbuf[ScVar->bptr] = heap->last;
     do {
-      if (ScVar->buf[++ScVar->bptr] > isbase) {
+      if (ScVar->vbuf[++ScVar->bptr] > isbase) {
         err = ErrorCode::WrongList;  // 15;  //не правильный список
       }
-      recordlist pl(ScVar->buf[ScVar->bptr],
+      recordlist pl(ScVar->vbuf[ScVar->bptr],
                     heap->last + sizeof(recordlist));  //!!! это не доделано
       index = heap->append(pl);
-    } while (ScVar->buf[++ScVar->bptr] == iscomma && err == ErrorCode::NoErrors);
+    } while (ScVar->vbuf[++ScVar->bptr] == iscomma && err == ErrorCode::NoErrors);
     if (err == ErrorCode::NoErrors) {
-      switch (ScVar->buf[ScVar->bptr]) {
+      switch (ScVar->vbuf[ScVar->bptr]) {
       case islend: {
         indexlast = index;
         index = heap->append(recordemptylist());
@@ -564,19 +553,19 @@ ErrorCode list(TScVar *ScVar, array *heap) {
         prl->link = index;
       } break;
       case isstick:
-        if (ScVar->buf[++ScVar->bptr] > isbase || ScVar->buf[ScVar->bptr + 1] != islend) {
+        if (ScVar->vbuf[++ScVar->bptr] > isbase || ScVar->vbuf[ScVar->bptr + 1] != islend) {
           err = ErrorCode::WrongList;  // 15;  // не верный синтаксис списка
         } else {
           ptr = heap->GetPrecordlist(index);
           // recordlist prl(ScVar->buf[ScVar->bptr], ScVar->hpempty);
           // index = heap->apend(&prl, sizeof(recordlist));
-          ptr->link = ScVar->buf[ScVar->bptr];
+          ptr->link = ScVar->vbuf[ScVar->bptr];
         }
         break;
       }
     }
   }
-  ScVar->bptr = ScVar->goal[ScVar->gptr] + 1;
+  ScVar->bptr = ScVar->vgoal[ScVar->gptr] + 1;
   return err;
 }
 
@@ -587,7 +576,7 @@ ErrorCode arsgn(TScVar *ScVar, size_t i) {
   if (!ScVar->exprip) {
     err = ErrorCode::SignNotInArithmeticExpression;  // 18;
   } else {
-    ScVar->buf[ScVar->bptr++] = i;
+    ScVar->vbuf[ScVar->bptr++] = i;
   }
   return err;
 }
@@ -598,8 +587,8 @@ ErrorCode variabletable(char *&p, size_t len, TScVar *ScVar, array *heap) {
   recordvar *ptr;
   size_t k;
   auto &novar = ScVar->novar;
-  auto *tvar = ScVar->tvar;
-  auto *buf = ScVar->buf;
+  auto &tvar = ScVar->vtvar;
+  auto &buf = ScVar->vbuf;
   auto &bptr = ScVar->bptr;
   for (k = 0; k < novar; k++) {
     ptr = heap->GetPrecordvar(tvar[k]);
@@ -616,11 +605,10 @@ ErrorCode variabletable(char *&p, size_t len, TScVar *ScVar, array *heap) {
     index = heap->append(recordvar(index, len, novar));
     tvar[novar++] = index;
   }
-  if (bptr + 1 < _maxbptr_) {
-    buf[bptr++] = tvar[k];
-  } else {
-    return ErrorCode::SentenceOverflow;  // 13;
+  if (bptr + 1 >= buf.size()) {
+    buf.resize(std::max(buf.size() * 2, bptr + 2));
   }
+  buf[bptr++] = tvar[k];
   return ErrorCode::NoErrors;
 }
 
@@ -628,9 +616,9 @@ ErrorCode variabletable(char *&p, size_t len, TScVar *ScVar, array *heap) {
 ErrorCode wrsconst(char *&p, size_t len, TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   auto &bptr = ScVar->bptr;
-  auto *buf = ScVar->buf;
+  auto &buf = ScVar->vbuf;
   auto &nosymbol = ScVar->nosymbol;
-  auto *tat = ScVar->tat;
+  auto &tat = ScVar->vtat;
   recordsconst *ptr;
   size_t k;
   for (k = 0; k < nosymbol; k++) {
@@ -644,19 +632,16 @@ ErrorCode wrsconst(char *&p, size_t len, TScVar *ScVar, array *heap) {
     auto index = heap->append<char>(0, len);
     memcpy(heap->GetPchar(index), p, sizeof(char) * len);
     index = heap->append(recordsconst(index, len));
-    if (nosymbol + 1 < _maxsymbol_) {
-      tat[nosymbol++] = index;
-    } else {
-      err = ErrorCode::TooManyCharacterConstants;  // 23;
+    if (nosymbol + 1 >= tat.size()) {
+      tat.resize(std::max(tat.size() * 2, nosymbol + 2));
     }
+    tat[nosymbol++] = index;
   }
   if (err == ErrorCode::NoErrors) {
-    if (bptr + 1 < _maxbptr_) {
-      buf[bptr++] = (tat[k] == hpmod) ? ismod : (tat[k] == hpdiv) ? isdiv : tat[k];
-    } else {
-      // err = ErrorCode::CannotOpenGraphics;  // 22;
-      err = ErrorCode::TooManyCharacterConstants;
+    if (bptr + 1 >= buf.size()) {
+      buf.resize(std::max(buf.size() * 2, bptr + 2));
     }
+    buf[bptr++] = (tat[k] == hpmod) ? ismod : (tat[k] == hpdiv) ? isdiv : tat[k];
   }
   return err;
 }

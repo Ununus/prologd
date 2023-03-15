@@ -22,7 +22,7 @@ PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->scptr = ClVar->parent;  //"!"
     //   zero();
     if (ClVar->parent) {
-      to_stac(ClVar->st_con, ClVar->parent - 1, isnil);
+      ClVar->vst_con[ClVar->parent - 1] = isnil;
     }
     break;
   case hpquiet: ClVar->quiet = true; break;
@@ -40,9 +40,9 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
     pf = heap->GetPrecordfunction(h);
     ptr = heap->GetPunsigned(pf->ptrarg);
     term = ptr[i];
-    ScVar->goal[i] = occur_term(&term, &frame, ClVar, heap);
-    ScVar->goal[maxarity + i] = term;
-    ScVar->goal[maxarity * 2 + i] = frame;
+    ScVar->vgoal[i] = occur_term(&term, &frame, ClVar, heap);
+    ScVar->vgoal[maxarity + i] = term;
+    ScVar->vgoal[maxarity * 2 + i] = frame;
   }
 }
 //====================================содрано=============
@@ -50,7 +50,7 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // получение строки связанной с переменной
  char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char *ad;
-  recordstring *ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
+  recordstring *ps = heap->GetPrecordstring(ScVar->vgoal[maxarity + x]);
   ad = heap->GetPchar(ps->ptrsymb);
   for (x = 0; x < static_cast<int>(ps->length); x++) {
     *(lnwr + x) = *(ad + x);
@@ -62,7 +62,7 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 std::string occ_line(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
   std::string rs; // TODO: string_view
-  recordstring *ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
+  recordstring *ps = heap->GetPrecordstring(ScVar->vgoal[maxarity + x]);
   char *ad = heap->GetPchar(ps->ptrsymb);
   std::copy(ad, ad + ps->length, std::back_inserter(rs));
   return rs;
@@ -73,11 +73,11 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   size_t w;
   switch (sw) {
   case 8: {
-    recordfunction *p = heap->GetPrecordfunction(ScVar->goal[maxarity]);
+    recordfunction *p = heap->GetPrecordfunction(ScVar->vgoal[maxarity]);
     w = p->func;
   } break;
   case 4:
-    w = ScVar->goal[maxarity];  // symbol
+    w = ScVar->vgoal[maxarity];  // symbol
     break;
 
   default: {
@@ -90,8 +90,8 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       outerror(ErrorCode::UnknownError);  // 24
       return PredicateState::Error;       // 1; // r_t_e(41);
     }
-    ClVar->head = ScVar->goal[maxarity];
-    ClVar->frame2 = ScVar->goal[2 * maxarity];
+    ClVar->head = ScVar->vgoal[maxarity];
+    ClVar->frame2 = ScVar->vgoal[2 * maxarity];
     return PredicateState::Builtin;  // 6;  // встроенный предикат
   }
 
@@ -100,8 +100,8 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (ps->begin && ps->begin != isnil) {
     ClVar->newclause = ps->begin;
     if (ClVar->newclause) {
-      heap->pnclause = heap->GetPrecordclause(ClVar->newclause);
-      heap->pncltarget = heap->GetPunsigned(heap->pnclause->ptrtarget);
+      heap->ipnclause = ClVar->newclause;
+      heap->ipncltarget = heap->GetPrecordclause(heap->ipnclause)->ptrtarget;
     }
     return PredicateState::ControlStep;  // 4;
   } else {
@@ -287,13 +287,13 @@ PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // получение целого связанного с переменной
 IntegerType occ(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  recordinteger *pint = heap->GetPrecordinteger(ScVar->goal[maxarity + x]);
+  recordinteger *pint = heap->GetPrecordinteger(ScVar->vgoal[maxarity + x]);
   return pint->value;
 }
 
 // получение вещесв связанного с переменной
 FloatType occf(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  recordfloat *pf = heap->GetPrecordfloat(ScVar->goal[maxarity + x]);
+  recordfloat *pf = heap->GetPrecordfloat(ScVar->vgoal[maxarity + x]);
   return pf->value;
 }
 
@@ -619,7 +619,7 @@ PredicateState prwait(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 PredicateState argone(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(1, ClVar->head, ScVar, ClVar, heap);
-  size_t sw = ScVar->goal[0];
+  size_t sw = ScVar->vgoal[0];
   switch (name) {
   case hpcall: return prcall(sw, ScVar, ClVar, heap);                                  // ВЫП
   case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);                                // ВВОДСИМВ
@@ -648,7 +648,7 @@ PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   int ind = 0;
   FloatType af[2];
   for (int i = 0; i < 2; i++) {
-    switch (ScVar->goal[i]) {
+    switch (ScVar->vgoal[i]) {
     case 7:
       ind += 1 * (i + 1);
       a[i] = occ(i, ScVar, ClVar, heap);
@@ -726,7 +726,7 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 53:  // isvar list
   case 52:  // isvar []
   {
-    tp = heap->GetPbaserecord(ScVar->goal[maxarity + 1]);
+    tp = heap->GetPbaserecord(ScVar->vgoal[maxarity + 1]);
     std::string str1 = GetStrFromList(tp, ScVar, ClVar, heap);
     if (str1.empty()) {
       return PredicateState::Error;
@@ -903,7 +903,7 @@ PredicateState whatisit(size_t sw, bool (*f)(char), size_t i, TScVar *ScVar, TCl
 // СКОЛЬКО
 PredicateState prskol(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   int i = 0;
-  recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
+  recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
   if (ps->begin != NULL && ps->begin != isnil) {
     recordclause *pcl = heap->GetPrecordclause(ps->begin);
     i++;
@@ -932,7 +932,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 43:
   case 93:
   case 53: {
-    tp = heap->GetPbaserecord(ScVar->goal[maxarity + 1]);
+    tp = heap->GetPbaserecord(ScVar->vgoal[maxarity + 1]);
     if (tp->ident == islist) {
       plist = (recordlist *)tp;
       baserecord *test = heap->GetPbaserecord(plist->head);
@@ -964,7 +964,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     size_t n = i - 1;  // число целей в новой функции
     auto index = heap->append<size_t>(0, n);
     auto *ptrargs = heap->GetPunsigned(index);
-    plist = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
+    plist = heap->GetPrecordlist(ScVar->vgoal[maxarity + 1]);
     auto funcsymb = plist->head;
     i = 0;
     plist = heap->GetPrecordlist(plist->link);
@@ -984,7 +984,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   case 85:  // func var
   {         // func -> list
-    recordfunction *rf = heap->GetPrecordfunction(ScVar->goal[maxarity]);
+    recordfunction *rf = heap->GetPrecordfunction(ScVar->vgoal[maxarity]);
     size_t narg = 0;  // rf->narg;
     auto oldindex = heap->last;
     recordlist pl(rf->func, oldindex + sizeof(recordlist));
@@ -1005,7 +1005,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 45:  // str var -над этим надо подумать ??
   {         // symb -> list
     auto oldindex = heap->last;
-    recordlist pl(ScVar->goal[maxarity], oldindex + sizeof(recordlist));
+    recordlist pl(ScVar->vgoal[maxarity], oldindex + sizeof(recordlist));
     auto tlist = heap->append(pl);
     heap->append(recordemptylist());
     recordfunction *rf = heap->GetPrecordfunction(ClVar->head);
@@ -1023,7 +1023,7 @@ PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Error;       // 1; // r_t_e
   }
   IntegerType i = occ(1, ScVar, ClVar, heap);
-  recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
+  recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
   if (ps->begin == isnil || ps->begin == NULL) {
     return PredicateState::No;  // 5;  // нет предложения
   }
@@ -1050,7 +1050,7 @@ PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 PredicateState argtwo(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(2, ClVar->head, ScVar, ClVar, heap);
-  size_t sw = ScVar->goal[0] * 10 + ScVar->goal[1];
+  size_t sw = ScVar->vgoal[0] * 10 + ScVar->vgoal[1];
   switch (name) {
   case hpgt: return prgt(ScVar, ClVar, heap);                         // БОЛЬШЕ
   case hpstint: return prstint(sw, ScVar, ClVar, heap);               // СТРЦЕЛ
@@ -1120,7 +1120,6 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // СЦЕП
 PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  // char wrln1[maxlinelen], wrln2[maxlinelen];
   switch (sw) {
   case 444:
   case 449:
@@ -1270,7 +1269,7 @@ size_t prepare_target_from_var(size_t term, TScVar *ScVar, TClVar *ClVar, array 
   }
   case issymbol:
   case isfunction: {
-    ClVar->bpt[target_number++] = term;
+    ClVar->vBPT[ClVar->ibpt + target_number++] = term;
   } break;
   default: {
     return 1;
@@ -1308,7 +1307,7 @@ size_t prepare_target_from_list(size_t term, TScVar *ScVar, TClVar *ClVar, array
     }
     case issymbol:
     case isfunction: {
-      ClVar->bpt[target_number++] = pl->head;
+      ClVar->vBPT[ClVar->ibpt + target_number++] = pl->head;
       break;
     }
     default: return 1;
@@ -1323,9 +1322,9 @@ size_t prepare_target(size_t term, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return 1;
   }
   baserecord *pt = heap->GetPbaserecord(term);
-  if (!ClVar->bpt) {
-    return 1;
-  }
+  //if (!ClVar->bpt) {
+  //  return 1;
+  //}
   target_number = 0;
   switch (pt->ident) {
   case islist: return prepare_target_from_list(term, ScVar, ClVar, heap);
@@ -1592,7 +1591,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 827:  // _,[],int  //рассматриваем предложение как факт
              // в новом предолжении переменных не может быть
   {
-    tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
+    tp = heap->GetPbaserecord(ScVar->vgoal[maxarity]);
     if (tp->ident != isfunction)  // может быть либо функцией или переменной,конкретизированной функцией возможно что
                                   // нужно поискать функцию
     {
@@ -1618,7 +1617,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 937:
   case 837:  //_,list,int
   {
-    tp = heap->GetPbaserecord(ScVar->goal[maxarity + 1]);
+    tp = heap->GetPbaserecord(ScVar->vgoal[maxarity + 1]);
     // нужно подсчитать число переменных
     count_var = 0;
     if (VarOnList(tp, ScVar, ClVar, heap) != 0)  // подсчет числа переменных в новом предложении
@@ -1626,7 +1625,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
       return PredicateState::Error;  // 1;
     }
-    error = prepare_target(ScVar->goal[maxarity + 1], ScVar, ClVar, heap);
+    error = prepare_target(ScVar->vgoal[maxarity + 1], ScVar, ClVar, heap);
     if (error) {
       pldout(const_cast<char *>("Ошибка при поиске целей для ДОБ"));
       return PredicateState::Error;  // 1;
@@ -1637,9 +1636,9 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
     // auto *pl = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
     int i = 0;
-    ptarget[i++] = ScVar->goal[maxarity];  // head
+    ptarget[i++] = ScVar->vgoal[maxarity];  // head
     while (i < (int)ntarget) {
-      ptarget[i] = ClVar->bpt[i - 1];
+      ptarget[i] = ClVar->vBPT[ClVar->ibpt + i - 1];
       i++;
     }
     ptarget[i] = NULL;
@@ -1678,7 +1677,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     index = heap->append<size_t>(0, ntarget + 1);
     memcpy(heap->GetPunsigned(index), ptarget, sizeof(size_t) * (ntarget + 1));
     delete[] ptarget;  // TODO: move it into the heap
-    recordclause rc(isclause, 0, 5, ScVar->goal[maxarity], index);
+    recordclause rc(isclause, 0, 5, ScVar->vgoal[maxarity], index);
     int Count = GetVarCountFromClause(&rc, ScVar, ClVar, heap);
     if (Count < 0) {
       pldout(const_cast<char *>("Var count calculation in new clause failure"));
@@ -1702,7 +1701,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // включим в цепочку предложений
   IntegerType number = occ(2, ScVar, ClVar, heap);  // куда следует воткнуть новое
   // поищем первое предложение
-  tp = heap->GetPbaserecord(ScVar->goal[maxarity]);
+  tp = heap->GetPbaserecord(ScVar->vgoal[maxarity]);
   if (tp->ident == issymbol) {
     ps = (recordsconst *)tp;
   } else {
@@ -1749,12 +1748,12 @@ PredicateState pradd(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType f[4];
   bool fl = false;  // если будет true то обработка вещ иначе целых
   for (size_t i = 0; i < 3; ++i) {
-    if (ScVar->goal[i] == 6) {
+    if (ScVar->vgoal[i] == 6) {
       fl = true;
     }
   }
   for (size_t i = 0; i < 3; ++i) {
-    switch (ScVar->goal[i]) {
+    switch (ScVar->vgoal[i]) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
@@ -1789,12 +1788,12 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType f[3];
   bool fl = false;  // если будет true то обработка вещ иначе целых
   for (size_t i = 0; i < 3; ++i) {
-    if (ScVar->goal[i] == 6) {
+    if (ScVar->vgoal[i] == 6) {
       fl = true;
     }
   }
   for (size_t i = 0; i < 3; i++) {
-    switch (ScVar->goal[i]) {
+    switch (ScVar->vgoal[i]) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
@@ -1849,7 +1848,7 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 PredicateState argthree(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(3, ClVar->head, ScVar, ClVar, heap);
-  size_t sw = 100 * ScVar->goal[0] + 10 * ScVar->goal[1] + ScVar->goal[2];
+  size_t sw = 100 * ScVar->vgoal[0] + 10 * ScVar->vgoal[1] + ScVar->vgoal[2];
   switch (name) {
   case hpmul: return prmul3(sw, ScVar, ClVar, heap);     // УМНОЖЕНИЕ
   case hpset: return prset(sw, ScVar, ClVar, heap);      // ТОЧКА
@@ -1868,12 +1867,12 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType f[4];
   bool fl = false;  // если будет true то обработка вещ иначе целых
   for (size_t i = 0; i < 4; i++) {
-    if (ScVar->goal[i] == 6) {
+    if (ScVar->vgoal[i] == 6) {
       fl = true;
     }
   }
   for (size_t i = 0; i < 4; i++) {
-    switch (ScVar->goal[i]) {
+    switch (ScVar->vgoal[i]) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
@@ -2153,7 +2152,7 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
   // поищем заданное предложение
   IntegerType i = occ(1, ScVar, ClVar, heap);  // номер заданного предл
-  recordsconst *ps = heap->GetPrecordsconst(ScVar->goal[maxarity]);
+  recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
   if (ps->begin == isnil || ps->begin == NULL) {
     return PredicateState::No;  // 5;  // нет предложения
   }
@@ -2239,7 +2238,7 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 PredicateState argfour(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(4, ClVar->head, ScVar, ClVar, heap);
-  size_t sw = ScVar->goal[0] * 1000 + ScVar->goal[1] * 100 + ScVar->goal[2] * 10 + ScVar->goal[3];
+  size_t sw = ScVar->vgoal[0] * 1000 + ScVar->vgoal[1] * 100 + ScVar->vgoal[2] * 10 + ScVar->vgoal[3];
   switch (name) {
   case hpmul: return prmul(sw, ScVar, ClVar, heap);      // УМНОЖЕНИЕ
   case hpcircl: return prcircl(sw, ScVar, ClVar, heap);  // ОКРУЖНОСТЬ
@@ -2352,7 +2351,7 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 PredicateState argfive(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(5, ClVar->head, ScVar, ClVar, heap);
-  size_t sw = 10000 * ScVar->goal[0] + 1000 * ScVar->goal[1] + 100 * ScVar->goal[2] + 10 * ScVar->goal[3] + ScVar->goal[4];
+  size_t sw = 10000 * ScVar->vgoal[0] + 1000 * ScVar->vgoal[1] + 100 * ScVar->vgoal[2] + 10 * ScVar->vgoal[3] + ScVar->vgoal[4];
   switch (name) {
   case hpline: return prger(sw, ScVar, ClVar, heap);  // ЛИНИЯ
   }
