@@ -204,6 +204,7 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
         errout("Недостаточно входных данных");
         return 1;
       }
+      decode_utf8_to_cp1251(line);
       cur_str_stream = std::stringstream(line);
     }
     return InputStringFromDialog(buf, size, caption, splitSpace);
