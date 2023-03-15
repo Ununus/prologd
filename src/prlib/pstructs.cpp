@@ -98,7 +98,7 @@ array::~array() {
 }
 
 baserecord *array::GetPbaserecord(size_t index) {
-  return (baserecord *)&vheap[index];
+  return (baserecord *)&vheap.at(index);
 }
 
 recordsconst *array::GetPrecordsconst(size_t index) {
