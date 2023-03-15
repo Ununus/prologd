@@ -23,7 +23,7 @@ PredicateState zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScV
 // унификация float num с arg аргументом предиката
 PredicateState zap1f(FloatType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap);
 // запись строки и унификация его с arg
-PredicateState zap3(const char *str, int arg, TScVar *ScVar, TClVar *ClVar, array *heap);
+PredicateState zap3(std::string str, int arg, TScVar *ScVar, TClVar *ClVar, array *heap);
 
 // ВЫП
 PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
@@ -88,12 +88,13 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 // ЛИНИЯ
 PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 //=========== функции ввода ==============
-int Inputstring(char *buf, size_t size, char *caption = 0);
-int Inputline(char *buf, size_t size, char *caption = 0);
+std::string Inputstring(const char *caption = nullptr);
+std::string Inputline(const char *caption = nullptr);
 int InputSymbol(char *buf);
 int InputInt(IntegerType *n, const char *caption);
 int InputFloat(FloatType *n, const char *caption);
 
-// out for debug
+#ifdef PROLOG_DEBUG
 void PrintTerm(baserecord *pbr, int Level, TScVar *ScVar, TClVar *ClVar, array *heap);
 void PrintList(recordlist *pl, int Level, TScVar *ScVar, TClVar *ClVar, array *heap);
+#endif

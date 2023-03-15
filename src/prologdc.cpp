@@ -183,7 +183,7 @@ int runProlog() {
   return 0;
 }
 
-int InputStringFromDialog(char *buf, size_t size, const char *caption, bool splitSpace) {
+std::string InputStringFromDialog(const char *caption, bool splitSpace) {
   std::string line;
   bool sss = false;
   if (splitSpace) {
@@ -202,25 +202,17 @@ int InputStringFromDialog(char *buf, size_t size, const char *caption, bool spli
     } else {
       if (!std::getline(*input_stream, line)) {
         errout("Недостаточно входных данных");
-        return 1;
+        return {};
       }
       decode_utf8_to_cp1251(line);
       cur_str_stream = std::stringstream(line);
     }
-    return InputStringFromDialog(buf, size, caption, splitSpace);
-  }
-  if (line.empty() || size == 0) {
-    return 1;
+    return InputStringFromDialog(caption, splitSpace);
   }
   if (out_questions) {
     pldout(caption);
   }
-  size_t to = line.size() < size - 1 ? line.size() : size - 1;
-  for (size_t i = 0; i < to; ++i) {
-    buf[i] = line[i];
-  }
-  buf[to] = 0;
-  return 0;
+  return line;
 }
 
 void Rectangle(long long, long long, long long, long long, unsigned) {}

@@ -13,7 +13,7 @@ void Ellipse(long long x1, long long y1, long long x2, long long y2, unsigned co
 void SetPixel(long long x, long long y, unsigned color);
 unsigned GetPixel(long long x, long long y);
 // Ввод
-int InputStringFromDialog(char *buf, size_t size, const char *caption, bool splitSpace);
+std::string InputStringFromDialog(const char *caption, bool splitSpace);
 // Вывод предиката (ДА, НЕТ)
 void prdout(bool value);
 // Пользовательский вывод (предикатом ВЫВОД)

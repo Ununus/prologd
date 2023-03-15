@@ -9,7 +9,7 @@
 // #include <charconv>
 
 void outerror(ErrorCode err) {
-  errout(GetPrErrText(err));
+  errout(GetPrErrText(err).c_str());
 }
 
 PredicateState menegerbp(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
@@ -207,12 +207,10 @@ bool nextarg(size_t *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case isfunction: {
       recordfunction *pf = (recordfunction *)tp;
       if (arg > pf->narg + 1) {
-        // buff[*j] = ')';
         outBuff.push_back(')');
         (*j)++;
         nxaex = false;
       } else {
-        // buff[*j] = ',';
         outBuff.push_back(',');
         (*j)++;
         nxaex = stac(ClVar, heap);
@@ -222,7 +220,6 @@ bool nextarg(size_t *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
       recordlist *pl = (recordlist *)tp;
       {
         if (arg == 2) {
-          // buff[*j] = ']';
           outBuff.push_back(']');
           (*j)++;
           nxaex = false;
@@ -233,17 +230,14 @@ bool nextarg(size_t *j, TScVar *ScVar, TClVar *ClVar, array *heap) {
           auto a = occur_term(&trm, &ff, ClVar, heap);
           switch (a) {
           case 3:
-            // buff[*j] = ',';
             outBuff.push_back(',');
             (*j)++;
             break;
           case 2:
-            // buff[*j] = ']';
             outBuff.push_back(']');
             (*j)++;
             break;
           default:
-            // buff[*j] = '|';
             outBuff.push_back('|');
             (*j)++;
             // term=trm;
@@ -271,12 +265,9 @@ PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
     ptr = heap->GetPunsigned(pf->ptrarg);
     k = write_term(ptr[i], ClVar->frame2, i, k, ScVar, ClVar, heap);
   }
-  // buff[k] = 0;
   if (ClVar->PrSetting->out.is_open()) {
-    // ClVar->PrSetting->out << buff;
-    ClVar->PrSetting->out << outBuff.c_str();
+    ClVar->PrSetting->out << outBuff;
   } else {
-    // usrout(buff);
     usrout(outBuff.c_str());
   }
   outBuff.clear();
@@ -298,26 +289,14 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
   bool ex = true;
   flaglist = false;
   arg = 0;
-  while (ex) {                          // здесь цикл8ический вывод терма
-    if (term == isnil || term == NULL)  // || !term)
+  while (ex) { // здесь циклический вывод терма
+    if (term == isnil || term == NULL)
     {
-      // buff[j++] = '_';
       outBuff.push_back('_');
       ++j;
-      // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), W);
-      // j = ptr - buff;
-
-      // Заменено на to_chars, но не поверено
-      //_itoa(W, (char*)&buff[j], 10);
-      // for (; (j < sizeof(buff) - 1 && buff[j]); j++);
-
-      std::string res = std::to_string(W);
-      for (size_t q = 0; q < res.size(); ++q) {
-        // buff[j] = res[q];
-        outBuff.push_back(res[q]);
-        ++j;
-      }
-
+      std::string str = std::to_string(W);
+      outBuff += str;
+      j += str.size();
       ex = nextarg(&j, ScVar, ClVar, heap);
     } else {
       baserecord *tp = heap->GetPbaserecord(term);
@@ -330,7 +309,6 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
           outBuff.push_back(*(name + i));
           ++j;
         }
-        // buff[j++] = '(';
         outBuff.push_back('(');
         ++j;
         arg = 2;
@@ -340,32 +318,16 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
       } break;  // ok
       case isinteger: {
         ClVar->precordinteger = (recordinteger *)tp;
-        // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ClVar->precordinteger->value);
-        // j = ptr - buff;
-
-        // Заменено на to_chars, но не поверено
-        //_ltoa(ClVar->precordinteger->value, (char*)&buff[j], 10);
-        // for (; j < sizeof(buff) - 1 && buff[j]; j++);
-
-        // std::string res = std::to_string(ClVar->precordinteger->value);
-        std::string res = ClVar->precordinteger->value.str();
-        for (size_t q = 0; q < res.size(); ++q) {
-          // buff[j] = res[q];
-          outBuff.push_back(res[q]);
-          ++j;
-        }
-
+        std::string str = ClVar->precordinteger->value.str();
+        outBuff += str;
+        j += str.size();
         ex = nextarg(&j, ScVar, ClVar, heap);
       } break;  // ok
       case isfloat: {
         ClVar->precordfloat = (recordfloat *)tp;
-        char string[40];
-        sprintf(string, "%g", ClVar->precordfloat->value);
-        for (i = 0; /* j < sizeof(buff) - 1 && */ string[i]; ++i) {
-          outBuff.push_back(string[i]);
-          ++j;
-        }
-        // buff[j] = 0;
+        std::string str = toString(ClVar->precordfloat->value);
+        outBuff += str;
+        j += str.size();
         i = 0;
         ex = nextarg(&j, ScVar, ClVar, heap);  // ok
       } break;
@@ -386,7 +348,6 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
       case islist: {
         if (!(arg && flaglist))  // список встретился
         {
-          // buff[j++] = '[';
           outBuff.push_back('[');
           ++j;
           flaglist = true;
@@ -396,21 +357,17 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
       } break;
       case isemptylist: {
         if (arg != 1) {
-          // buff[j++] = '[';
-          // buff[j++] = ']';
           outBuff += "[]";
           j += 2;
         }
         ex = nextarg(&j, ScVar, ClVar, heap);
       } break;
       case iscut: {
-        // buff[j++] = '!';
         outBuff.push_back('!');
         ++j;
         ex = nextarg(&j, ScVar, ClVar, heap);
       } break;
       case isunknown:
-        // buff[j++] = '_';
         outBuff.push_back('_');
         ++j;
         ex = nextarg(&j, ScVar, ClVar, heap);
@@ -421,44 +378,17 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
         auto ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
-          // auto [ptr, ec] = std::to_chars(buff + j, buff + sizeof(buff), ii);
-          // j = ptr - buff;
-
-          // Заменено на to_chars, но не поверено
-          //_ltoa(ii, (char*)&buff[j], 10);
-          // for (; j < sizeof(buff) - 1 && buff[j]; j++);
-
-          // std::string res = std::to_string(ii);
-          std::string res = ii.str();
-          for (size_t q = 0; q < res.size(); ++q) {
-            // buff[j] = res[q];
-            outBuff.push_back(res[q]);
-            ++j;
-          }
-
+          std::string str = ii.str();
+          outBuff += str;
+          j += str.size();
         } break;
-        case isfloat:
-          char string[40];
-          sprintf(string, "%g", ff);
-          for (i = 0; /* j < sizeof(buff) - 1 && */ string[i]; ++i) {
-            outBuff.push_back(string[i]);
-            ++j;
-          }
-          // buff[j] = 0;
+        case isfloat: {
+          std::string str = toString(ff);
+          outBuff += str;
+          j += str.size();
           i = 0;
           break;
-        /*                   case isfloat  :    заменено но не проверено
-                                 int dec, sign, ndig = 5;
-                                 char string[200];
-                                 char *p=&string[0];
-                                 p=fcvt(precordfloat->value,ndig, &dec, &sign);
-                                 if (sign) buff[j++]='-';
-                                 for(i=0;((i<dec) && (i+j<200));buff[j+i]=p[i],i++);
-                                 buff[j+i]='.';j++;
-                                 for(;((i+j)<200 && p[i]);buff[i+j]=p[i],i++);
-                                 j+=i;i=0;
-                                 break;
-        */
+        }
         default:
           char *s = const_cast<char *>("#_?_#");
           for (i = 0; i < 5 /* && i + j < sizeof(buff) - 1 */; i++) {
@@ -1119,10 +1049,11 @@ bool unvar(TClVar *ClVar, array *heap) {
     baserecord *tp = heap->GetPbaserecord(ClVar->term2);
     switch (tp->ident) {
     case isfunction:
-    case islist: to_stac(ClVar->st_vr2, bd1, ClVar->fr2);  // break; // пока убрал break
+    case islist:
+      to_stac(ClVar->st_vr2, bd1, ClVar->fr2);  // break; // пока убрал break
     //[[fallthrough]]
-    case isfloat:                                          // также как issumbol;
-    case isinteger:                                        // так же как issymbol
+    case isfloat:    // также как issumbol;
+    case isinteger:  // так же как issymbol
     case isstring:
     case isemptylist:  // ret=false;break; было так но не сработала  стрспис
     case issymbol:

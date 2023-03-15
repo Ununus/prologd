@@ -6,8 +6,10 @@
 #include <limits.h>
 #include <stdio.h>
 
-ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {  // функция синтаксического разбора строки
-  ErrorCode err = ErrorCode::NoErrors;                     // вызывает функции записи в таблицы
+// функция синтаксического разбора строки
+// вызывает функции записи в таблицы
+ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
+  ErrorCode err = ErrorCode::NoErrors;
   bool &EndOfClause = ScVar->EndOfClause;
   bool &Query = ScVar->Query;
   auto *buf = ScVar->buf;
@@ -154,11 +156,8 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {  // функция синтаксиче
     }       // на последний обработанный символ
   }
   if (err != ErrorCode::NoErrors) {
-    char Mess[1024];
-    // sprintf(Mess, "Ошибка при разборе строки: %s", Str);
-    sprintf(Mess, "Ошибка при разборе: %s", Str);
-    // out(Mess);
-    errout(const_cast<const char *>(Mess));
+    std::string Mess = "Ошибка при разборе: " + std::string(Str);
+    errout(Mess.c_str());
   }
   return err;
 }

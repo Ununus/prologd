@@ -52,14 +52,10 @@ static const char *kErrorStrs[] = {
 
 const auto kErrorStrCount = sizeof(kErrorStrs) / sizeof(char *);
 
-char *GetPrErrText(ErrorCode err) {
-  static char ErrBuf[255];
+std::string GetPrErrText(ErrorCode err) {
   auto errIndex = to_underlying(err);
-  if (errIndex < 0 || errIndex > kErrorStrCount) {
-    sprintf(ErrBuf, "Unknown error (code = %zd)", errIndex);
-  } else {
-    sprintf(ErrBuf, "%s (%zd)", kErrorStrs[errIndex], errIndex);
+  if (errIndex >= kErrorStrCount) {
+    return "Unknown error (" + std::to_string(errIndex) + ")";
   }
-  char *p = ErrBuf;
-  return p;
+  return kErrorStrs[errIndex] + (" (" + std::to_string(errIndex) + ")");
 }

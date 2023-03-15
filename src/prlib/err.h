@@ -1,5 +1,6 @@
 #pragma once
 #include <cstddef>
+#include <string>
 
 enum class ErrorCode : size_t {
   NoErrors = 0,
@@ -49,4 +50,4 @@ enum class ErrorCode : size_t {
   TooLongList = 44
 };
 
-char *GetPrErrText(ErrorCode err);
+std::string GetPrErrText(ErrorCode err);

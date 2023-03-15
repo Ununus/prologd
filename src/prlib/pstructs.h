@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <memory>
 #include <vector>
+#include <string>
 #include <type_traits>
 #include "err.h"
 #include "pdefs.h"
@@ -306,13 +307,13 @@ struct TClVar {
   void Clear();
 };
 
-//-----------------------------------------
-void PrintProgram(TScVar *ScVar, array *heap);
-
-struct options {
-  unsigned optionsout;
-  unsigned optionsrun;
-};
+inline std::string toString(const FloatType &value) {
+  auto str = std::to_string(value);
+  while (str.size() > 1 && str[str.size() - 2] != '.' && str.back() == '0') {
+    str.pop_back();
+  }
+  return str;
+}
 
 // индексы в массиве heap   указатели на фреймы переменных
 

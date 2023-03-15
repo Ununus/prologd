@@ -48,7 +48,7 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
 //====================================содрано=============
 
 // получение строки связанной с переменной
-char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
+ char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char *ad;
   recordstring *ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
   ad = heap->GetPchar(ps->ptrsymb);
@@ -58,6 +58,14 @@ char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
   *(lnwr + x) = 0;
 
   return lnwr;
+}
+
+std::string occ_line(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  std::string rs; // TODO: string_view
+  recordstring *ps = heap->GetPrecordstring(ScVar->goal[maxarity + x]);
+  char *ad = heap->GetPchar(ps->ptrsymb);
+  std::copy(ad, ad + ps->length, std::back_inserter(rs));
+  return rs;
 }
 
 // ВЫП
@@ -104,16 +112,11 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 // запись строки и унификация его с arg
-PredicateState zap3(const char *str, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  if (!str) {
-    outerror(ErrorCode::UnknownError);  // 45
-    return PredicateState::No;          // 5;
-  }
-  auto len = strlen(str);
+PredicateState zap3(std::string str, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto bakindex = heap->last;
-  auto index = heap->append<char>(0, len);
-  memcpy(heap->GetPchar(index), str, sizeof(char) * len);
-  index = heap->append(recordstring(index, len));
+  auto index = heap->append<char>(0, str.size());
+  memcpy(heap->GetPchar(index), str.c_str(), sizeof(char) * str.size());
+  index = heap->append(recordstring(index, str.size()));
   recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
   auto *ptr = heap->GetPunsigned(pfunction->ptrarg);
   if (unify(index, ptr[arg - 1], ClVar->frame2, ClVar->frame2, ClVar, heap)) {
@@ -219,20 +222,17 @@ bool mytell( void ){ return false; };
 
 // ЗАПИСЬ_В
 PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char str[129];
-
   switch (sw) {
   case 9:
   case 4:  // char const
-    occ_line(0, str, ScVar, ClVar, heap);
+  {
+    auto str = occ_line(0, ScVar, ClVar, heap);
     ClVar->PrSetting->out.close();
     ClVar->PrSetting->name_out_file.clear();
-    if (str[0] == 0) {
+    if (str.empty()) {
       return PredicateState::Yes;  // 3;
     }
-
-    // если con:
-    if (strcmp(str, "con:") == 0) {
+    if (str == "con:") {
       return PredicateState::Yes;  // 3;
     }
 
@@ -242,10 +242,11 @@ PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
       return PredicateState::No;                                // 5; // r_t_e_(не могу открыть файл)
     }
-    ClVar->PrSetting->name_out_file = std::string(str);
+    ClVar->PrSetting->name_out_file = str;
     return PredicateState::Yes;  // 3;
+  }
   case 5:                        // char* ps=newStr(namefileout);
-    return zap3(ClVar->PrSetting->name_out_file.c_str(), 1, ScVar, ClVar, heap);
+    return zap3(ClVar->PrSetting->name_out_file, 1, ScVar, ClVar, heap);
 
   default: return PredicateState::Error;  // 1  // r_t_e(45); ошибка при открытии файла
   }
@@ -254,19 +255,17 @@ PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // ЧТЕНИЕ_ИЗ
 PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char str[129];
-
   switch (sw) {
   case 9:
   case 4:  // char const
-    occ_line(0, str, ScVar, ClVar, heap);
+  {
+    auto str = occ_line(0, ScVar, ClVar, heap);
     ClVar->PrSetting->in.close();
     ClVar->PrSetting->name_in_file.clear();
-    if (str[0] == 0) {
+    if (str.empty()) {
       break;
     }
-
-    if (strcmp(str, "con:") == 0) {
+    if (str == "con:") {
       return PredicateState::Yes;  // 3;
     }
 
@@ -275,11 +274,11 @@ PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
       return PredicateState::No;                                // 5; // r_t_e_(не могу открыть файл)
     }
-    ClVar->PrSetting->name_in_file = std::string(str);
+    ClVar->PrSetting->name_in_file = str;
     return PredicateState::Yes;  // 3;
-
+  }
   case 5:  // char* ps=newStr(namefilein);
-    return zap3(ClVar->PrSetting->name_in_file.c_str(), 1, ScVar, ClVar, heap);
+    return zap3(ClVar->PrSetting->name_in_file, 1, ScVar, ClVar, heap);
 
   default: return PredicateState::Error;  // 1;  // r_t_e(45); ошибка при открытии файла
   }
@@ -338,7 +337,6 @@ PredicateState priocod(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // ВВОДЦЕЛ
 PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType w{};
-  char str0[129]{};
   const char *caption = "Введите целое";
 
   switch (sw) {
@@ -352,8 +350,8 @@ PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
     } else {
       if (sw == 74 || sw == 79) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (InputInt(&w, str0)) {
+        auto str = occ_line(1, ScVar, ClVar, heap);
+        if (InputInt(&w, str.c_str())) {
           return PredicateState::No;  // 5;
         }
       } else {
@@ -377,8 +375,8 @@ PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
     } else {
       if (sw == 54 || sw == 59 || sw == 14 || sw == 19) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (InputInt(&w, str0)) {
+        auto str = occ_line(1, ScVar, ClVar, heap);
+        if (InputInt(&w, str.c_str())) {
           return PredicateState::No;  // 5;
         }
       } else {
@@ -398,7 +396,6 @@ PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // ВВОДВЕЩ
 PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType w{};
-  char str0[129]{};
   const char *caption = "Введите вещественное";
 
   switch (sw) {
@@ -413,8 +410,8 @@ PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
     } else {
       if (sw == 64 || sw == 69) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (InputFloat(&w, str0)) {
+        auto str = occ_line(1, ScVar, ClVar, heap);
+        if (InputFloat(&w, str.c_str())) {
           return PredicateState::No;  // 5;
         }
       } else {
@@ -438,8 +435,8 @@ PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
     } else {
       if (sw == 54 || sw == 59 || sw == 14 || sw == 19) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (InputFloat(&w, str0)) {
+        auto str = occ_line(1, ScVar, ClVar, heap);
+        if (InputFloat(&w, str.c_str())) {
           return PredicateState::No;  // 5;
         }
       } else {
@@ -458,7 +455,7 @@ PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // ВВОДСИМВ
 PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char str0[255]{}, str1[255]{}, str2[255]{};
+  std::string str2;
   switch (sw) {
   case 9:
   case 4:
@@ -467,48 +464,30 @@ PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 49:
   case 44: {
     if (ClVar->PrSetting->in.is_open()) {
-      ClVar->PrSetting->in.get(str2, 255);
-      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
-        ClVar->PrSetting->in.get();
-      }
-      if (!(str2[0])) {
+      if (!(ClVar->PrSetting->in >> str2)) {
         break;
       }
     } else {
       if (sw == 99 || sw == 94 || sw == 49 || sw == 44) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputstring(occ_line(1, ScVar, ClVar, heap).c_str());
       } else {
-        if (Inputstring(str2, sizeof(str2))) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputstring();
       }
     }
-    return (strcmp(occ_line(0, str1, ScVar, ClVar, heap), str2)) ? PredicateState::No : PredicateState::Yes;  // 5 : 3;
+    return (occ_line(0, ScVar, ClVar, heap) == str2) ? PredicateState::Yes : PredicateState::No;
   }
   case 5:
   case 59:
   case 54: {
     if (ClVar->PrSetting->in.is_open()) {
-      ClVar->PrSetting->in.get(str2, 255);
-      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
-        ClVar->PrSetting->in.get();
-      }
-      if (!(str2[0])) {
+      if (!(ClVar->PrSetting->in >> str2)) {
         break;
       }
     } else {
       if (sw == 59 || sw == 54) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputstring(occ_line(1, ScVar, ClVar, heap).c_str());
       } else {
-        if (Inputstring(str2, sizeof(str2))) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputstring();
       }
     }
     return zap3(str2, 1, ScVar, ClVar, heap);
@@ -517,23 +496,14 @@ PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 19:
   case 14: {
     if (ClVar->PrSetting->in.is_open()) {
-      ClVar->PrSetting->in.get(str2, 255);
-      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
-        ch = ClVar->PrSetting->in.get();
-      }
-      if (!(str2[0])) {
+      if (!(ClVar->PrSetting->in >> str2)) {
         break;
       }
     } else {
       if (sw == 19 || sw == 14) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputstring(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputstring(occ_line(1, ScVar, ClVar, heap).c_str());
       } else {
-        if (Inputstring(str2, sizeof(str2))) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputstring();
       }
     }
     return PredicateState::Yes;  // 3;
@@ -549,7 +519,7 @@ PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // TODO ВВОДСТР почти тоже самое что и ВВОДСИМВ
 // ВВОДСТР
 PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char str0[255]{}, str1[255]{}, str2[255]{};
+  std::string str2;
   switch (sw) {
   case 9:
   case 4:
@@ -558,48 +528,30 @@ PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 49:
   case 44: {
     if (ClVar->PrSetting->in.is_open()) {
-      ClVar->PrSetting->in.get(str2, 255);
-      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
-        ClVar->PrSetting->in.get();
-      }
-      if (!(str2[0])) {
+      if (!std::getline(ClVar->PrSetting->in, str2)) {
         break;
       }
     } else {
       if (sw == 99 || sw == 94 || sw == 49 || sw == 44) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputline(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputline(occ_line(1, ScVar, ClVar, heap).c_str());
       } else {
-        if (Inputline(str2, sizeof(str2))) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputline();
       }
     }
-    return (strcmp(occ_line(0, str1, ScVar, ClVar, heap), str2)) ? PredicateState::No : PredicateState::Yes;  // 5 : 3;
+    return (occ_line(0, ScVar, ClVar, heap) == str2) ? PredicateState::Yes : PredicateState::No;
   }
   case 5:
   case 59:
   case 54: {
     if (ClVar->PrSetting->in.is_open()) {
-      ClVar->PrSetting->in.get(str2, 255);
-      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
-        ClVar->PrSetting->in.get();
-      }
-      if (!(str2[0])) {
+      if (!std::getline(ClVar->PrSetting->in, str2)) {
         break;
       }
     } else {
       if (sw == 59 || sw == 54) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputline(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputline(occ_line(1, ScVar, ClVar, heap).c_str());
       } else {
-        if (Inputline(str2, sizeof(str2))) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputline();
       }
     }
     return zap3(str2, 1, ScVar, ClVar, heap);
@@ -608,23 +560,14 @@ PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 19:
   case 14: {
     if (ClVar->PrSetting->in.is_open()) {
-      ClVar->PrSetting->in.get(str2, 255);
-      for (auto ch = ClVar->PrSetting->in.peek(); ch == 10 || ch == 13; ch = ClVar->PrSetting->in.peek()) {
-        ch = ClVar->PrSetting->in.get();
-      }
-      if (!(str2[0])) {
+      if (!std::getline(ClVar->PrSetting->in, str2)) {
         break;
       }
     } else {
       if (sw == 19 || sw == 14) {
-        occ_line(1, str0, ScVar, ClVar, heap);
-        if (Inputline(str2, sizeof(str2), str0)) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputline(occ_line(1, ScVar, ClVar, heap).c_str());
       } else {
-        if (Inputline(str2, sizeof(str2))) {  // по cancel вернет 1;
-          break;
-        }
+        str2 = Inputline();
       }
     }
     return PredicateState::Yes;  // 3;
@@ -729,10 +672,10 @@ PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
 }
+
 // составить строку символов из элементов tp - tp должен быть list
-size_t GetStrFromList(char *Buf, size_t BufSize, baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char *p = Buf;
-  size_t len = 0;
+std::string GetStrFromList(baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  std::string res;
   baserecord *pb;
   recordlist *plist;
   while (tp->ident == islist) {
@@ -745,55 +688,33 @@ size_t GetStrFromList(char *Buf, size_t BufSize, baserecord *tp, TScVar *ScVar, 
       auto a = occur_term(&_Term, &_Frame, ClVar, heap);
       pb = heap->GetPbaserecord(_Term);
       if (pb->ident == islist) {
-        auto _len = GetStrFromList(p, BufSize - len, pb, ScVar, ClVar, heap);
-        if (_len == std::string::npos) {
-          return std::string::npos;
-        }
-        len += _len;
-        p += _len;
+        res += GetStrFromList(pb, ScVar, ClVar, heap);
       }
       if (pb->ident == isinteger) {
-        if (BufSize < len + 1) {
-          outerror(ErrorCode::TooLongList);  // 44
-          return std::string::npos;
-        }
         recordinteger *pint = (recordinteger *)pb;
-        *(p + len) = (char)pint->value;
-        len++;
+        res.push_back(pint->value.convert_to<char>());
       }
     } break;
     case isemptylist: break;
     case islist: {
-      auto _len = GetStrFromList(p, BufSize - len, pb, ScVar, ClVar, heap);
-      if (_len == std::string::npos) {
-        return std::string::npos;
-      }
-      len += _len;
-      p += _len;
+      res += GetStrFromList(pb, ScVar, ClVar, heap);
     } break;
     case isinteger: {
-      if (BufSize < len + 1) {
-        outerror(ErrorCode::TooLongList);  // 44
-        return std::string::npos;
-      }
       recordinteger *pint = (recordinteger *)pb;
-      *(p + len) = (char)pint->value;
-      len++;
+      res.push_back(pint->value.convert_to<char>());
     } break;
     default: {
       outerror(ErrorCode::WrongList);  // 15
-      return std::string::npos;
+      return {};
     }  // R_t_e последний не []
     }
     tp = heap->GetPbaserecord(plist->link);
   }
-  *(p + len) = 0;
-  return len;
+  return res;
 }
 
 // СТРСПИС
 PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char lnwr[maxlinelen];
   baserecord *tp = 0;
   // recordlist* plist;
   // recordinteger* pint;
@@ -806,73 +727,35 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 52:  // isvar []
   {
     tp = heap->GetPbaserecord(ScVar->goal[maxarity + 1]);
-    auto len = GetStrFromList(lnwr, sizeof(lnwr), tp, ScVar, ClVar, heap);
-    /*
-    while (tp->ident == islist)
-    {
-      plist = (recordlist *)tp;
-      pvar = heap->GetPrecordvar(plist->head);
-      pint = heap->GetPrecordinteger(plist->head);
-            //(recordinteger *)&heap->heaps[plist->head];
-      if (pvar->ident == isvar)
-      {	unsigned _Term = plist->head;
-            unsigned _Frame = ClVar->frame2;
-            unsigned a = occur_term(&_Term, &_Frame,
-              ClVar, heap);
-            pint = heap->GetPrecordinteger(_Term);
-            if (a == 7)
-            {
-              pint = heap->GetPrecordinteger(_Term);
-            }
-      }
-      if (pint->ident != isinteger)
-      {
-            outerror(24);
-            return 1;
-      }//r_t_e нельзя преобразовать
-      lnwr[i++] = (char)pint->value;
-      tp = heap->GetPbaserecord(plist->link);
-            //(baserecord *)&heap->heaps[plist->link];
+    std::string str1 = GetStrFromList(tp, ScVar, ClVar, heap);
+    if (str1.empty()) {
+      return PredicateState::Error;
     }
-    if (tp->ident != isemptylist)
-    {
-      outerror(24);
-      return 1;
-    }//R_t_e последний не []
-    */
-    if (len == std::string::npos) {
-      return PredicateState::Error;  // 1;
-    }
-    lnwr[len] = 0;
-    // char *str=newStr(lnwr);
-    // char * str = lnwr;
-    // if (!str)
-    //	break;
     switch (sw) {
-    case 53:  // heap->insert(str);
-      return zap3(lnwr, 1, ScVar, ClVar, heap);
+    case 53:
+      return zap3(str1, 1, ScVar, ClVar, heap);
     case 43:
     case 93:
-      char str[maxlinelen]{};
-      occ_line(0, lnwr, ScVar, ClVar, heap);
-      auto k = strncmp(str, lnwr, strlen(str));
-      return (k == NULL) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+      if (occ_line(0, ScVar, ClVar, heap) == str1) {
+        return PredicateState::Yes;
+      } else  {
+        return PredicateState::No;
+      }
     }
   }
   case 95:  //   str/sym var
   case 45: {
-    occ_line(0, lnwr, ScVar, ClVar, heap);
-    auto k = strlen(lnwr);
+    auto lnwr = occ_line(0, ScVar, ClVar, heap);
     recordfunction *pfunction = heap->GetPrecordfunction(ClVar->head);
     auto *ptr = heap->GetPunsigned(pfunction->ptrarg);
-    if (!k) {
+    if (lnwr.empty()) {
       auto index = heap->append(recordemptylist());
       unify(index, ptr[1], ClVar->frame2, ClVar->frame2, ClVar, heap);
       return PredicateState::Yes;  // 3;
     } else {
       // строка не пустая
       size_t j = heap->last, index1, index2;
-      for (int i = 0; i < k; i++) {  // 2006/10/17
+      for (size_t i = 0; i < lnwr.size(); i++) {
         index1 = heap->append(recordinteger(lnwr[i]));
         index2 = heap->append(recordlist(index1, heap->last + sizeof(recordinteger) + sizeof(recordlist)));
       }
@@ -893,23 +776,15 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // СТРЦЕЛ
 PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  IntegerType w{};
-  char lnwr[maxlinelen]{};
   switch (sw) {
   case 97:  // str int
   case 95:  // str var
   case 47:  // symb int
   case 45:  // symb var
   {
-    occ_line(0, lnwr, ScVar, ClVar, heap);
-    // auto [ptr, erc] = std::from_chars(lnwr, lnwr + sizeof(lnwr), w);
-    // if (erc != std::errc{}) {
-    //   return PredicateState::No;
-    // }
-
+    IntegerType w;
     try {
-      // здесь лучше from_chars или atoll
-      w = std::stoll(std::string(lnwr));
+      w = IntegerType(occ_line(0, ScVar, ClVar, heap));
     } catch (...) {
       return PredicateState::No;
     }
@@ -919,37 +794,11 @@ PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return (w == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
-  case 57:  // var int  возможно нужно var float
-  {
-    // std::to_chars(lnwr, lnwr + maxlinelen, occ(1, ScVar, ClVar, heap));
-    //  Заменено на to_chars, но не поверено
-    //_ltoa(occ(1, ScVar, ClVar, heap), lnwr, 10);
-    //  char *str=newStr(lnwr);
-
-    sprintf(lnwr, "%s", occ(1, ScVar, ClVar, heap).str().c_str());
-
-    return zap3(lnwr, 1, ScVar, ClVar, heap);
+  case 57: {
+    return zap3(occ(1, ScVar, ClVar, heap).str(), 1, ScVar, ClVar, heap);
   }
   case 56: {
-    FloatType value = occf(1, ScVar, ClVar, heap);
-    sprintf(lnwr, "%lf", value);
-    //  std::to_chars(lnwr, lnwr + maxlinelen, value); // в gcc не реализовано
-    //   Заменено на, но не поверено
-    //  int dec, sign, ndig = 5;
-    //  char* p = lnwr;
-    //  p = _fcvt(value, ndig, &dec, &sign);
-    //  int j = 0, i;
-    //  if (sign)
-    //    lnwr[j++] = '-';
-    //  for (i = 0; (i < dec && i + j < maxlinelen);
-    //    lnwr[j + i] = p[i], i++);
-    //  lnwr[j + i] = '.';
-    //  j++;
-    //  for (; (i + j < maxlinelen && p[i]); lnwr[i + j] = p[i], i++);
-    //  lnwr[j + i] = NULL;
-
-    // str=newStr(lnwr);
-    return zap3(lnwr, 1, ScVar, ClVar, heap);
+    return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -961,19 +810,15 @@ PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // СТРВЕЩ
 PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  FloatType w{};
-  char lnwr[maxlinelen]{};
   switch (sw) {
   case 96:  // str float
   case 95:  // str var
   case 46:  // symb float
   case 45:  // symb var
   {
-    occ_line(0, lnwr, ScVar, ClVar, heap);
-
+    FloatType w;
     try {
-      // здесь лучше std::from_chars(lnwr, lnwr + sizeof(lnwr), w) или atof;
-      w = std::stod(std::string(lnwr));
+      w = std::stod(occ_line(0, ScVar, ClVar, heap));
     } catch (...) {
       return PredicateState::No;
     }
@@ -983,9 +828,7 @@ PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return (w == occf(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 56: {
-    FloatType value = occf(1, ScVar, ClVar, heap);
-    sprintf(lnwr, "%f", value);
-    return zap3(lnwr, 1, ScVar, ClVar, heap);
+    return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
@@ -994,6 +837,7 @@ PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   return PredicateState::Error;
 }
+
 // ЦЕЛВЕЩ
 PredicateState printfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType int_val = 0;
@@ -1032,26 +876,27 @@ bool letter(char a) {
 
 // БУКВА; ЦИФРА
 PredicateState whatisit(size_t sw, bool (*f)(char), size_t i, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char lnwr[maxlinelen];
-  IntegerType w;
-  occ_line(0, lnwr, ScVar, ClVar, heap);
-  auto len = strlen(lnwr);
+  auto lnwr = occ_line(0, ScVar, ClVar, heap);
   switch (sw) {
   case 97:  // str int
-  case 47:
-    w = occ(1, ScVar, ClVar, heap);
-    if (w && len >= w) {
-      w -= 1;
-      return (*f)(lnwr[w.convert_to<size_t>()]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+  case 47: {
+    size_t w = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    if (w > 0 && w <= lnwr.size()) {
+      return (*f)(lnwr[w - 1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
     }
     break;
+  }
   case 95:  // str var
-  case 45:
-    for (w = 0; w < len && !(*f)(lnwr[w.convert_to<size_t>()]); w++)
+  case 45: {
+    size_t w = 0;
+    for (; w < lnwr.size() && !(*f)(lnwr[w]); ++w) {
       ;
-    if (w < len)
+    }
+    if (w < lnwr.size()) {
       return zap1(w + 1, 2, ScVar, ClVar, heap);
+    }
     break;
+  }
   default: return PredicateState::Error;  // (i == i) ? 1 : 1;  // r_t_e w код ошибки (обработка цифры или буквы)
   }                                       // i использовать для r_t_e
   return PredicateState::No;              // 5;
@@ -1277,7 +1122,7 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // СЦЕП
 PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char wrln1[maxlinelen], wrln2[maxlinelen];
+  // char wrln1[maxlinelen], wrln2[maxlinelen];
   switch (sw) {
   case 444:
   case 449:
@@ -1292,33 +1137,22 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 945:
   case 995:  // str str var
   {
-    occ_line(0, wrln1, ScVar, ClVar, heap);
-    occ_line(1, wrln2, ScVar, ClVar, heap);
-    strcat(wrln1, wrln2);
-    auto w = strlen(wrln1);
-    if (w >= maxlinelen) {
-      outerror(ErrorCode::UnknownError);  // 24
-      return PredicateState::Error;       // 1;
-    }
+    auto res = occ_line(0, ScVar, ClVar, heap) + occ_line(1, ScVar, ClVar, heap);
     if (sw == 445 || sw == 495 || sw == 945 || sw == 995) {
       // если переменная
-      return zap3(wrln1, 3, ScVar, ClVar, heap);
+      return zap3(res, 3, ScVar, ClVar, heap);
     }
-    occ_line(2, wrln2, ScVar, ClVar, heap);
-    return (!strncmp(wrln1, wrln2, strlen(wrln1))) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+    return (res == occ_line(2, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 454:
   case 459:
   case 954:  // str var str
   case 959: {
-    occ_line(0, wrln1, ScVar, ClVar, heap);
-    occ_line(2, wrln2, ScVar, ClVar, heap);
-    auto w = strlen(wrln1);
-    auto i = strlen(wrln2);
-    // если lnwr1 входит в lnwr2 и причем спереди
-    if (w <= i && !strncmp(wrln1, wrln2, w))  // 2006/10/17
-    {
-      return zap3(&wrln2[w], 2, ScVar, ClVar, heap);
+    auto str0 = occ_line(0, ScVar, ClVar, heap);
+    auto str2 = occ_line(2, ScVar, ClVar, heap);
+    // если str0 входит в str2 и причем спереди
+    if (str0.size() <= str2.size() && str0 == str2.substr(0, str0.size())) {
+      return zap3(str2.substr(str0.size()), 2, ScVar, ClVar, heap);
     }
     break;
   }
@@ -1326,13 +1160,11 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 549:
   case 594:  // var str str
   case 599: {
-    occ_line(1, wrln1, ScVar, ClVar, heap);
-    occ_line(2, wrln2, ScVar, ClVar, heap);
-    auto w = strlen(wrln1);
-    auto i = strlen(wrln2);
-    if (i > w && !strncmp(wrln1, &wrln2[i - w], w)) {
-      wrln2[i - w] = NULL;
-      return zap3((char *)wrln2, 1, ScVar, ClVar, heap);
+    auto str1 = occ_line(1, ScVar, ClVar, heap);
+    auto str2 = occ_line(2, ScVar, ClVar, heap);
+    // если str1 входит в str2 и причем сзади
+    if (str2.size() > str1.size() && str2.substr(str2.size() - str1.size()) == str1) {
+      return zap3(str2.substr(0, str2.size() - str1.size()), 1, ScVar, ClVar, heap);
     }
     break;
   }
@@ -1511,6 +1343,7 @@ size_t prepare_target(size_t term, TScVar *ScVar, TClVar *ClVar, array *heap) {
   */
 }
 
+#ifdef PROLOG_DEBUG
 // 2006/10/24
 void PrintFunction(recordfunction *prf, int Level, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char pBuf[255];
@@ -1601,6 +1434,8 @@ void PrintList(recordlist *pl, int Level, TScVar *ScVar, TClVar *ClVar, array *h
     pl = heap->GetPrecordlist(pl->link);
   }
 }
+#endif
+
 recordfunction *FindFuncFromFunc(baserecord *pbr) {
   recordfunction *rf = (recordfunction *)0;
   return rf;
@@ -1690,10 +1525,9 @@ int GetVarsFromFunction(recordvar *Vars[], int VarCount, recordfunction *pf, TSc
               break;
       */
     default:
-      char _Buf[255];
-      sprintf(_Buf, "GetVarCountFromFunction: unknown term %zd", tp->ident);
-      pldout(_Buf);
-      return -1;
+      throw std::runtime_error("GetVarCountFromFunction: unknown term: " + std::to_string(tp->ident));
+      // раньше был pldout
+      // return -1;
     }
   }
   return Count;
@@ -1702,8 +1536,9 @@ int GetVarsFromFunction(recordvar *Vars[], int VarCount, recordfunction *pf, TSc
 int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array *heap) {
   int VarCount = 0;
   if (rc->ident != isclause) {
-    pldout(const_cast<char *>("No clause in func GetVarCountFromCluse"));
-    return -1;
+    throw std::runtime_error(std::runtime_error("No clause in func GetVarCountFromCluse"));
+    // раньше был pldout
+    // return -1;
   }
 
   auto *target = heap->GetPunsigned(rc->ptrtarget);
@@ -1721,10 +1556,9 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
       VarCount += Count;
     } break;
     default:
-      char _Buf[255];
-      sprintf(_Buf, "GetVarCountFromClause: unknown term %zd", br->ident);
-      pldout(_Buf);
-      return -1;
+      throw std::runtime_error("GetVarCountFromClause: unknown term: " + std::to_string(br->ident));
+      // раньше был pldout
+      // return -1;
     }
     i++;
   }
@@ -1755,7 +1589,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordclause *pfirstclause;  // первое предложение данного типа
   recordclause *pclause;       // предложение на место которого вставиться требуемое
   size_t index;
-  size_t *ptarget;    // указатель на массив с целями
+  size_t *ptarget;  // указатель на массив с целями
   size_t nvar = 0;  // число переменных в предложении(глоб перем)
 
   size_t ntarget = 1;  // число целей в новом предложении
@@ -1858,7 +1692,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     index = heap->append<size_t>(0, ntarget + 1);
     memcpy(heap->GetPunsigned(index), ptarget, sizeof(size_t) * (ntarget + 1));
-    delete[] ptarget; // TODO: move it into the heap
+    delete[] ptarget;  // TODO: move it into the heap
     recordclause rc(isclause, NULL, 5, ScVar->goal[maxarity], index);
     int Count = GetVarCountFromClause(&rc, ScVar, ClVar, heap);
     if (Count < 0) {
@@ -2213,89 +2047,89 @@ PredicateState prpaint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // КОПИЯ
 PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  char str1[maxlinelen], str2[maxlinelen];
-  IntegerType i1, i2, i3, i4;
   switch (sw) {
   case 4775:
   case 9775:  // str int int var
-    occ_line(0, str1, ScVar, ClVar, heap);
-    i1 = occ(1, ScVar, ClVar, heap);
-    i2 = occ(2, ScVar, ClVar, heap);
-    i3 = strlen(str1);
-    if (i1 > 0 && i2 >= 0 && i3 >= i1 + i2 - 1) {
-      str1[(i1 + i2 - 1).convert_to<size_t>()] = NULL;
-      // char *s=newStr(&str1[i1-1]);
-      return zap3(&str1[(i1 - 1).convert_to<size_t>()], 4, ScVar, ClVar, heap);
+  {
+    auto str0 = occ_line(0, ScVar, ClVar, heap);
+    size_t i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    size_t i2 = occ(2, ScVar, ClVar, heap).convert_to<size_t>();
+    if (i1 > 0 && i2 >= 0 && i1 + i2 <= str0.size() + 1) {
+      return zap3(str0.substr(i1 - 1, i2), 4, ScVar, ClVar, heap);
     }
     break;
+  }
   case 4774:
   case 4779:
   case 9774:
   case 9779:  // str int int str
-    occ_line(0, str1, ScVar, ClVar, heap);
-    occ_line(3, str2, ScVar, ClVar, heap);
-    i1 = occ(1, ScVar, ClVar, heap);
-    i2 = occ(2, ScVar, ClVar, heap);
-    i3 = strlen(str1);
-    i4 = strlen(str2);
-    return (i1 > 0 && i2 >= 0 && i2 == i4 && i3 >= i1 + i4 - 1 && !strncmp(&str1[(i1 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>()))
-           ? PredicateState::Yes
-           : PredicateState::No;  // 3 : 5;
-
+  {
+    auto str0 = occ_line(0, ScVar, ClVar, heap);
+    auto str3 = occ_line(3, ScVar, ClVar, heap);
+    size_t i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    size_t i2 = occ(2, ScVar, ClVar, heap).convert_to<size_t>();
+    if (i1 > 0 && i2 >= 0 && i1 + i2 <= str0.size() + 1 && i2 == str3.size() && str0.substr(i1 - 1, i2) == str3) {
+      return PredicateState::Yes;
+    } else {
+      return PredicateState::No;
+    }
+  }
   case 4574:
   case 4579:
   case 9574:
   case 9579:  // str var int str
-    occ_line(0, str1, ScVar, ClVar, heap);
-    occ_line(3, str2, ScVar, ClVar, heap);
-    i1 = occ(2, ScVar, ClVar, heap);
-    i2 = strlen(str1);
-    i3 = strlen(str2);
-    if (i1 >= 0 && i2 >= i1 + i3 - 1 && i3 == i1) {
-      for (i4 = i2 - i3; i4 >= 0 && strncmp(&str1[i4.convert_to<size_t>()], str2, i3.convert_to<size_t>()); i4--) {
-        ;
+  {
+    auto str0 = occ_line(0, ScVar, ClVar, heap);
+    auto str3 = occ_line(3, ScVar, ClVar, heap);
+    size_t i2 = occ(2, ScVar, ClVar, heap).convert_to<size_t>();
+    if (i2 == str3.size() && str0.size() >= str3.size()) {
+      if (i2 == 0) {
+        return zap1(1, 2, ScVar, ClVar, heap);
       }
-      if (i4 >= 0) {
-        return zap1(i4 + 1, 2, ScVar, ClVar, heap);
+      size_t idx = str0.find(str3);
+      if (idx < str0.size()) {
+        return zap1(idx + 1, 2, ScVar, ClVar, heap);
       }
     }
-    break;
+    return PredicateState::No;
+  }
   case 4554:
   case 4559:
   case 9554:
   case 9559:  // str var var str
-    occ_line(0, str1, ScVar, ClVar, heap);
-    occ_line(3, str2, ScVar, ClVar, heap);
-    i1 = strlen(str1);
-    i2 = strlen(str2);
-    if (i1 >= i2) {
-      int result = 1;
-      for (i3 = i1 - i2; i3 >= 0 && result != 0; i3--)
-        result = strncmp(&str1[i3.convert_to<size_t>()], str2, i2.convert_to<size_t>());
-      if (!result) {
-        return zap2(i3 + 2, i2, 2, 3, ScVar, ClVar, heap);
+  {
+    auto str0 = occ_line(0, ScVar, ClVar, heap);
+    auto str3 = occ_line(3, ScVar, ClVar, heap);
+    if (str0.size() >= str3.size()) {
+      if (str3.empty()) {
+        return zap2(1, 0, 2, 3, ScVar, ClVar, heap);
+      }
+      size_t idx = str0.rfind(str3);
+      if (idx < str0.size()) {
+        return zap2(idx + 1, str3.size(), 2, 3, ScVar, ClVar, heap);
       }
     }
-    break;
+    return PredicateState::No;
+  }
   case 4754:
   case 4759:
   case 9754:
   case 9759:  // str int var str
-    occ_line(0, str1, ScVar, ClVar, heap);
-    occ_line(3, str2, ScVar, ClVar, heap);
-    i1 = strlen(str1);
-    i2 = strlen(str2);
-    i3 = occ(1, ScVar, ClVar, heap);
-    if ((i3 > 0) && (i1 >= i2 + i3 - 1) && (!strncmp(&str1[(i3 - 1).convert_to<size_t>()], str2, i2.convert_to<size_t>()))) {
-      return zap1(i2, 3, ScVar, ClVar, heap);
+  {
+    auto str0 = occ_line(0, ScVar, ClVar, heap);
+    size_t i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    auto str3 = occ_line(3, ScVar, ClVar, heap);
+    if (i1 > 0 && i1 + str3.size() <= str0.size() + 1 && str0.substr(i1 - 1, str3.size()) == str3) {
+      return zap1(str3.size(), 3, ScVar, ClVar, heap);
     }
-    break;
+    return PredicateState::No;
+  }
   default: {
     outerror(ErrorCode::UnknownError);  // 24
     return PredicateState::Error;       // 1;                           // r_t_e
   }
   }
-  return PredicateState::No;  // 5;
+  return PredicateState::No;
 }
 
 // ПРЕДЛ
@@ -2304,9 +2138,9 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   size_t err = 0;
   size_t index = 0;
   // типы аргументов каждого по отдельности
-  size_t sw1;    // первый
-  size_t sw2;    // второй
-  size_t sw3;    // третий
+  size_t sw1;  // первый
+  size_t sw2;  // второй
+  size_t sw3;  // третий
   size_t sw4 = sw;
 
   // разбор типов аргументов
@@ -2596,70 +2430,56 @@ bool bpred(size_t name, size_t narg) {
 }
 
 //=========== функции ввода ==============
-int Inputstring(char *buf, size_t size, char *caption) {
-  int err = 0;
-  char *pCaption = const_cast<char *>("Введите строку");
+std::string Inputstring(const char *caption) {
+  const char *pCaption = "Введите строку";
   if (caption) {
     pCaption = caption;
   }
-  int _err = InputStringFromDialog(buf, size, pCaption, true);
-  if (!_err) {
-    // pldout(buf);
-  } else {
-    err = 1;
+  std::string res = InputStringFromDialog(pCaption, true);
+  if (res.empty()) {
+    throw std::runtime_error("Can't read");
   }
-  return err;
+  return res;
 }
 
-int Inputline(char *buf, size_t size, char *caption) {
-  int err = 0;
-  char *pCaption = const_cast<char *>("Введите строку");
+std::string Inputline(const char *caption) {
+  const char *pCaption = "Введите строку";
   if (caption) {
     pCaption = caption;
   }
-  int _err = InputStringFromDialog(buf, size, pCaption, false);
-  if (!_err) {
-    // pldout(buf);
-  } else {
-    err = 1;
+  std::string res = InputStringFromDialog(pCaption, false);
+  if (res.empty()) {
+    throw std::runtime_error("Can't read");
   }
-  return err;
+  return res;
 }
 
 int InputSymbol(char *c) {
-  int err = 0;
   char *pCaption = const_cast<char *>("Введите символ");
-  char Buf[2];
-  err = InputStringFromDialog(Buf, sizeof(Buf), pCaption, true);
-  if (!err) {
-    Buf[1] = 0;
-    *c = Buf[0];
-    // pldout(Buf);
-    return 0;
+  auto buf = InputStringFromDialog(pCaption, true);
+  if (buf.size() != 1) {
+    throw std::runtime_error("Can't read");
   }
-  return 1;
+  *c = buf[0];
+  return 0;
 }
 
 int InputInt(IntegerType *n, const char *caption) {
-  char Buf[255]{};
-  int err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
+  std::string Buf = InputStringFromDialog(caption, true);
   try {
-    // здесь лучше from_chars или atoll
     *n = std::stoll(std::string(Buf));
   } catch (...) {
-    err = 1;
+    return 1;
   }
-  return err;
+  return 0;
 }
 
 int InputFloat(FloatType *n, const char *caption) {
-  char Buf[255]{};
-  int err = InputStringFromDialog(Buf, sizeof(Buf), const_cast<char *>(caption), true);
+  std::string Buf = InputStringFromDialog(caption, true);
   try {
-    // здесь лучше from_chars или atof
     *n = std::stod(std::string(Buf));
   } catch (...) {
-    err = 1;
+    return 1;
   }
-  return err;
+  return 0;
 }

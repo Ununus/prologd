@@ -205,6 +205,7 @@ char *array::GetPchar(size_t index) {
 
 //============конец array========
 
+#ifdef PROLOG_DEBUG
 void PrintSconst(char **Buf, size_t *BufSize, recordsconst *rsc, TScVar *ScVar, array *heap);
 void PrintVar(char **Buf, size_t *BufSize, recordvar *pbr, TScVar *ScVar, array *heap);
 void PrintInteger(char **Buf, size_t *BufSize, recordinteger *pri, TScVar *ScVar, array *heap);
@@ -474,3 +475,4 @@ void PrintProgram(TScVar *ScVar, array *heap) {
   }
 #endif
 }
+#endif
