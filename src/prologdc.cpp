@@ -172,9 +172,12 @@ int runProlog() {
         err = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
         ScVar->Query = ScVar->EndOfClause = false;  // на выполнение
       }
+    } catch (const std::bad_alloc &er) {
+      errout(er.what());
+    } catch (const std::runtime_error &er) {
+      errout(er.what());
     } catch (...) {
-      errout("Runtime error");
-      return 1;
+      errout("Prolog failure");
     }
   }
   if (err != ErrorCode::NoErrors) {

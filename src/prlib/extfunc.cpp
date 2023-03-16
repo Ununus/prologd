@@ -48,7 +48,7 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
 //====================================содрано=============
 
 // получение строки связанной с переменной
- char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
+char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char *ad;
   recordstring *ps = heap->GetPrecordstring(ScVar->vgoal[maxarity + x]);
   ad = heap->GetPchar(ps->ptrsymb);
@@ -61,7 +61,7 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
 }
 
 std::string occ_line(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  std::string rs; // TODO: string_view
+  std::string rs;  // TODO: string_view
   recordstring *ps = heap->GetPrecordstring(ScVar->vgoal[maxarity + x]);
   char *ad = heap->GetPchar(ps->ptrsymb);
   std::copy(ad, ad + ps->length, std::back_inserter(rs));
@@ -245,7 +245,7 @@ PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->PrSetting->name_out_file = str;
     return PredicateState::Yes;  // 3;
   }
-  case 5:                        // char* ps=newStr(namefileout);
+  case 5:  // char* ps=newStr(namefileout);
     return zap3(ClVar->PrSetting->name_out_file, 1, ScVar, ClVar, heap);
 
   default: return PredicateState::Error;  // 1  // r_t_e(45); ошибка при открытии файла
@@ -732,13 +732,12 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       return PredicateState::Error;
     }
     switch (sw) {
-    case 53:
-      return zap3(str1, 1, ScVar, ClVar, heap);
+    case 53: return zap3(str1, 1, ScVar, ClVar, heap);
     case 43:
     case 93:
       if (occ_line(0, ScVar, ClVar, heap) == str1) {
         return PredicateState::Yes;
-      } else  {
+      } else {
         return PredicateState::No;
       }
     }
@@ -840,7 +839,6 @@ PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 // ЦЕЛВЕЩ
 PredicateState printfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-
   switch (sw) {
   case 76:                                                                                                                       // int float
     return (occ(0, ScVar, ClVar, heap) == (IntegerType)occf(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
@@ -1322,9 +1320,9 @@ size_t prepare_target(size_t term, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return 1;
   }
   baserecord *pt = heap->GetPbaserecord(term);
-  //if (!ClVar->bpt) {
-  //  return 1;
-  //}
+  // if (!ClVar->bpt) {
+  //   return 1;
+  // }
   target_number = 0;
   switch (pt->ident) {
   case islist: return prepare_target_from_list(term, ScVar, ClVar, heap);
@@ -1496,7 +1494,7 @@ size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap) {
   } while (1);
 }
 
-int GetVarsFromFunction(recordvar *Vars[], int VarCount, recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array *heap) {
+int GetVarsFromFunction(recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array *heap /*,std::vector<recordvar *> &Vars*/) {
   if (pf->ident != isfunction) {
     return -1;  // ошибка
   }
@@ -1505,21 +1503,35 @@ int GetVarsFromFunction(recordvar *Vars[], int VarCount, recordfunction *pf, TSc
   for (size_t i = 0; i < pf->narg; i++) {
     baserecord *tp = heap->GetPbaserecord(ptrarg[i]);
     switch (tp->ident) {
-    case isvar: Vars[VarCount + Count++] = (recordvar *)tp; break;
+    case isvar: 
+        // Vars.push_back((recordvar *)tp); Пока убрал, т.к. не используется
+        ++Count;
+        //Vars[VarCount + Count++] = (recordvar *)tp; break;
+    case issymbol:
     case isinteger:
+    case isfloat:
+    case isexpression:
+    case isunknown:
+    case isemptylist: break;
+    case isfunction: {
+      count_var = 0;
+      if (VarOnFunc(tp, ScVar, ClVar, heap)) {
+        return -1;
+      }
+      Count += count_var;
       break;
-      /*
-      case isfunction:
-              if (VarOnFunc((baserecord*)tp))
-                      return 1;//ошибка
-              break;
-      case islist:
-              if (VarOnList((baserecord*)tp))
-                      return 1;//ошибка
-              break;
-      */
+    }
+    case islist: {
+      count_var = 0;
+      if (VarOnList(tp, ScVar, ClVar, heap)) {
+        return -1;
+      }
+      Count += count_var;
+      break;
+    }
     default:
-      throw std::runtime_error("GetVarCountFromFunction: unknown term: " + std::to_string(tp->ident));
+      throw std::runtime_error(std::string("ДОБ: ЦЕЛЬ содержит недопустимый терм: ") + tp->name());
+      // throw std::runtime_error("GetVarCountFromFunction: unknown term: " + std::to_string(tp->ident));
       // раньше был pldout
       // return -1;
     }
@@ -1537,20 +1549,22 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
 
   auto *target = heap->GetPunsigned(rc->ptrtarget);
   size_t i = 0;
-  recordvar *Vars[128];
+  //std::vector<recordvar *> Vars;
   while (*(target + i)) {
     int Count = 0;
     baserecord *br = heap->GetPbaserecord(*(target + i));
     switch (br->ident) {
     case isfunction: {
-      Count = GetVarsFromFunction(Vars, VarCount, (recordfunction *)br, ScVar, ClVar, heap);
+      Count = GetVarsFromFunction((recordfunction *)br, ScVar, ClVar, heap /*,Vars*/);
       if (Count < 0) {
         return -1;
       }
       VarCount += Count;
     } break;
     default:
-      throw std::runtime_error("GetVarCountFromClause: unknown term: " + std::to_string(br->ident));
+      break;
+      // throw std::runtime_error(std::string("ДОБ: ЦЕЛЬ должна быть функцией, получено: ") + br->name());
+      // throw std::runtime_error("GetVarCountFromClause: unknown term: " + std::to_string(br->ident));
       // раньше был pldout
       // return -1;
     }
@@ -1595,8 +1609,8 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (tp->ident != isfunction)  // может быть либо функцией или переменной,конкретизированной функцией возможно что
                                   // нужно поискать функцию
     {
-      pldout(const_cast<char *>("предикт 'ДОБ': АРГ1 не функция"));
-      return PredicateState::Error;  // 1;
+      throw std::runtime_error("ДОБ: АРГ1 не функция");
+      // return PredicateState::Error;  // 1;
     }
     recordfunction *prf = (recordfunction *)tp;
     auto ArgIndex = heap->append<size_t>(0, prf->narg);
@@ -1632,71 +1646,69 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
 
     ntarget = target_number + 1;
-    ptarget = new size_t[ntarget + 1]{};
+    std::vector<size_t> ptarget(ntarget + 1);
 
     // auto *pl = heap->GetPrecordlist(ScVar->goal[maxarity + 1]);
-    int i = 0;
+    size_t i = 0;
     ptarget[i++] = ScVar->vgoal[maxarity];  // head
-    while (i < (int)ntarget) {
+    while (i < ntarget) {
       ptarget[i] = ClVar->vBPT[ClVar->ibpt + i - 1];
       i++;
     }
-    ptarget[i] = NULL;
-    i = 0;
-    while (ptarget[i]) {
+    ptarget[i] = 0;
+    for (i = 0; ptarget[i]; ++i) {
+      if (heap->GetPbaserecord(ptarget[i])->ident != isfunction) {
+        continue;
+        // throw std::runtime_error("ДОБ: ЦЕЛЬ " + std::to_string(i) + " не является функцией, получаю: " + heap->GetPbaserecord(ptarget[i])->name());
+      }
       recordfunction *prf = heap->GetPrecordfunction(ptarget[i]);
       auto ArgIndex = heap->append<size_t>(0, prf->narg);
       auto *arg = heap->GetPunsigned(ArgIndex);
       auto *prf_arg = heap->GetPunsigned(prf->ptrarg);
       for (size_t j = 0; j < prf->narg; ++j) {
+        arg[j] = *(prf_arg + j);
+
         // достать константы из агрументов функции.
-        auto Arg = GetConstTerm(*(prf_arg + j), ClVar->frame2, ClVar, heap);
-        Arg = 0;
-        if (Arg) { /*
-                           recordvar * prv = (recordvar *)&heap->heaps[Arg];
-                           if (prv->ident == isvar)
-                           {
-                                   recordvar newvar(prv->ptrsymb, prv->length,
-                                                                                                           prv->num);
-                                   unsigned vindex = heap->apend(&newvar, sizeof(recordvar));
-                                   arg[j] = vindex;
-                           }
-                           else
-                           */
-          arg[j] = Arg;
-        } else {
-          arg[j] = *(prf_arg + j);
-        }
+        // auto Arg = GetConstTerm(*(prf_arg + j), ClVar->frame2, ClVar, heap);
+        // // Arg = 0;
+        // if (Arg) { /*
+        //                    recordvar * prv = (recordvar *)&heap->heaps[Arg];
+        //                    if (prv->ident == isvar)
+        //                    {
+        //                            recordvar newvar(prv->ptrsymb, prv->length,
+        //                                                                                                    prv->num);
+        //                            unsigned vindex = heap->apend(&newvar, sizeof(recordvar));
+        //                            arg[j] = vindex;
+        //                    }
+        //                    else
+        //                    */
+        //   arg[j] = Arg;
+        // } else {
+        //   arg[j] = *(prf_arg + j);
+        // }
       }
       auto findex = heap->append(recordfunction(prf->narg, prf->func, ArgIndex));
       // if (!unify(ptarget[i], findex, frame2, frame2))
       //     return 1;
       ptarget[i] = findex;
-      i++;
     }
     index = heap->append<size_t>(0, ntarget + 1);
-    memcpy(heap->GetPunsigned(index), ptarget, sizeof(size_t) * (ntarget + 1));
-    delete[] ptarget;  // TODO: move it into the heap
+    memcpy(heap->GetPunsigned(index), ptarget.data(), sizeof(size_t) * (ntarget + 1));
+    // delete[] ptarget;  // TODO: move it into the heap
     recordclause rc(isclause, 0, 5, ScVar->vgoal[maxarity], index);
     int Count = GetVarCountFromClause(&rc, ScVar, ClVar, heap);
     if (Count < 0) {
-      pldout(const_cast<char *>("Var count calculation in new clause failure"));
-      return PredicateState::No;  // 5;
+      throw std::runtime_error("ДОБ: Ошибка при подсчёте числа переменных в новом правиле");
+      // throw std::runtime_error("Var count calculation in new clause failure");
+      // return PredicateState::No;
     }
     rc.nvars = Count;
     index = heap->append(rc);
     break;
   }
   default: {
-    pldout(const_cast<char *>("Недопустимый тип аргументов в 'ДОБ'"));
-    return PredicateState::Error;  // 1;
+    throw std::runtime_error("ДОБ: Недопустимый тип аргументов");
   }
-  }
-  if (!index) {
-    // heap->last = old_index;
-    heap->cleanUp(old_index);
-    outerror(ErrorCode::TooLongList);  // 44
-    return PredicateState::No;         // 5;
   }
   // включим в цепочку предложений
   IntegerType number = occ(2, ScVar, ClVar, heap);  // куда следует воткнуть новое

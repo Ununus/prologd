@@ -31,6 +31,24 @@ struct baserecord {
   size_t ident;
   baserecord(size_t ident)
     : ident(ident) {}
+  const char *name() {
+    switch (ident) {
+    case isvar: return "ПЕРМЕННАЯ";
+    case issymbol: return "СИМВ. КОНСТАНТА";
+    case isinteger: return "ЦЕЛОЕ";
+    case isfloat: return "ВЕЩЕСТВЕННОЕ";
+    case isexpression: return "ВЫРАЖЕНИЕ";
+    case isunknown: return "АНОНИМКА";
+    case isemptylist: return "[]";
+    case islist: return "СПИСОК";
+    case isfunction: return "ФУНКЦИЯ";
+    case isstring: return "СТРОКА";
+    case isclause: return "ПРАВИЛО";
+    case isclauseq: return "ПРАВИЛО_";
+    case iscut: return "CUT";
+    default: return "НЕИЗВЕСТНЫЙ";
+    }
+  }
   virtual ~baserecord() {}
 };
 
@@ -155,8 +173,8 @@ protected:
 
 public:
   size_t freeheap;  // кол-во эл-тов до разбора программы
-  size_t last;   // индекс массива указывающий на первый свободный эл
-  size_t query;  // индекс предложения - вопроса.
+  size_t last;      // индекс массива указывающий на первый свободный эл
+  size_t query;     // индекс предложения - вопроса.
   template<class T>
   size_t append(const T &record, size_t count = 1);  // добавление в конец
 
