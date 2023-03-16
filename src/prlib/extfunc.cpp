@@ -11,7 +11,7 @@
 // #include <charconv>
 
 // TODO: автоматически менять
-const char *kPrologVersion = "15 марта 2023";
+const char *kPrologVersion = "16 марта 2023";
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
@@ -81,8 +81,7 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
 
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e(41); // невыполнимая функция
+    throw std::runtime_error("ВЫП: Недопустимый тип аргументов");
   }
   }
   if (w < heap->freeheap) {
@@ -199,17 +198,14 @@ PredicateState prrandom(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 577:  // переменная: получить новое значение
     n = occ(1, ScVar, ClVar, heap);
     m = occ(2, ScVar, ClVar, heap);
-    if (n > m) {
-      // TODO: it is known error
-      outerror(ErrorCode::UnknownError);  // 24
-      return PredicateState::Error;       // 1;
+    if (n >= m) {
+      throw std::runtime_error("СЛУЧ: АРГ2 >= АРГ3");
     }
     // dst = std::uniform_int_distribution<IntegerType>(n, m);
     dst = std::uniform_int_distribution<long long>(n.convert_to<long long>(), m.convert_to<long long>());
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; //!!!r_t_e(71);
+    throw std::runtime_error("СЛУЧ: Недопустимый тип аргументов");
   }
   }
 }
@@ -248,7 +244,9 @@ PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 5:  // char* ps=newStr(namefileout);
     return zap3(ClVar->PrSetting->name_out_file, 1, ScVar, ClVar, heap);
 
-  default: return PredicateState::Error;  // 1  // r_t_e(45); ошибка при открытии файла
+  default: {
+    throw std::runtime_error("ЗАПИСЬ_В: Недопустимый тип аргументов");
+  }
   }
   return PredicateState::Error;  // 1
 }
@@ -280,7 +278,9 @@ PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 5:  // char* ps=newStr(namefilein);
     return zap3(ClVar->PrSetting->name_in_file, 1, ScVar, ClVar, heap);
 
-  default: return PredicateState::Error;  // 1;  // r_t_e(45); ошибка при открытии файла
+  default: {
+    throw std::runtime_error("ЧТЕНИЕ_ИЗ: Недопустимый тип аргументов");
+  }
   }
   return PredicateState::Error;  // 1;
 }
@@ -327,8 +327,7 @@ PredicateState priocod(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     //      fgetc(ClVar->PrSetting->fin);//сдвинуть указатель файла ???
     //    return 3;
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e(44);
+    throw std::runtime_error("ВВКОД: Недопустимый тип аргументов");
   }
   }
   return PredicateState::Error;  // 1;
@@ -387,7 +386,9 @@ PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return zap1(w, 1, ScVar, ClVar, heap);
   }
-  default: break;
+  default: {
+    throw std::runtime_error("ВВОДЦЕЛ: Недопустимый тип аргументов");
+  }
   }
   outerror(ErrorCode::UnknownError);  // 24
   return PredicateState::Error;       // 1; // rte
@@ -447,7 +448,9 @@ PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return zap1f(w, 1, ScVar, ClVar, heap);
   }
-  default: break;
+  default: {
+    throw std::runtime_error("ВВОДВЕЩ: Недопустимый тип аргументов");
+  }
   }
   outerror(ErrorCode::UnknownError);  // 24
   return PredicateState::Error;       // 1; // rte
@@ -509,8 +512,7 @@ PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Yes;  // 3;
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e
+    throw std::runtime_error("ВВОДСИМВ: Недопустимый тип аргументов");
   }
   }
   return PredicateState::No;  // 5;
@@ -573,8 +575,7 @@ PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Yes;  // 3;
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e
+    throw std::runtime_error("ВВОДСТР: Недопустимый тип аргументов");
   }
   }
   return PredicateState::No;  // 5;
@@ -605,9 +606,7 @@ PredicateState prwait(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: break;
   default: {
-    // TODO: It is known error
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1;
+    throw std::runtime_error("ЖДИ: Недопустимый тип аргументов");
   }
   }
   IntegerType n = occ(0, ScVar, ClVar, heap);
@@ -666,8 +665,7 @@ PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 5: af[1] = (FloatType)a[1]; break;
   case 9: break;
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e(51)//в больше не число
+    throw std::runtime_error("БОЛЬШЕ: Недопустимый тип аргументов");
   }
   }
   return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
@@ -766,8 +764,7 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // R_t_e
+    throw std::runtime_error("СТРСПИС: Недопустимый тип аргументов");
   }
   }
   return PredicateState::No;  // 5;  //!!! посмотреть на код возврата
@@ -800,11 +797,10 @@ PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // R_t_e
+    throw std::runtime_error("СТРЦЕЛ: Недопустимый тип аргументов");
   }
-  }                              // outerror(2);
-  return PredicateState::Error;  // 1; //R_T_e нет памяти
+  }
+  return PredicateState::Error;
 }
 
 // СТРВЕЩ
@@ -830,8 +826,7 @@ PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1;
+    throw std::runtime_error("СТРВЕЩ: Недопустимый тип аргументов");
   }
   }
   return PredicateState::Error;
@@ -855,8 +850,7 @@ PredicateState printfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
     return zap1(int_val, 1, ScVar, ClVar, heap);
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1;
+    throw std::runtime_error("ЦЕЛВЕЩ: Недопустимый тип аргументов");
   }
   }
   return PredicateState::Error;
@@ -893,9 +887,12 @@ PredicateState whatisit(size_t sw, bool (*f)(char), size_t i, TScVar *ScVar, TCl
     }
     break;
   }
-  default: return PredicateState::Error;  // (i == i) ? 1 : 1;  // r_t_e w код ошибки (обработка цифры или буквы)
-  }                                       // i использовать для r_t_e
-  return PredicateState::No;              // 5;
+  default: {
+    // i использовать для r_t_e
+    throw std::runtime_error("БУКВА|ЦИФРА: Недопустимый тип аргументов");
+  }
+  }                                       
+  return PredicateState::No;
 }
 
 // СКОЛЬКО
@@ -915,6 +912,7 @@ PredicateState prskol(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap1(i, 2, ScVar, ClVar, heap);
   case 47:                                                                                // str int
     return (i == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+  default: throw std::runtime_error("СКОЛЬКО: Недопустимый тип аргументов");
   }
   outerror(ErrorCode::UnknownError);  // 24
   return PredicateState::Error;       // 1; // r_t_e
@@ -945,8 +943,8 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       i++;  // число элементов в списке
     }
     if (tp->ident != isemptylist) {
-      outerror(ErrorCode::UnknownError);  // 24
-      return PredicateState::Error;       // 1; // R_t_e последний не []
+      outerror(ErrorCode::WrongList);  // 15
+      return PredicateState::Error;
     }
     if (i == 1) {
       recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
@@ -1010,6 +1008,9 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     auto *ptrarg = heap->GetPunsigned(rf->ptrarg);
     return (unify(ptrarg[1], tlist, ClVar->frame2, ClVar->frame2, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
+  default:{
+    break;
+  }
   }
   return PredicateState::No;  // 5;
 }
@@ -1017,8 +1018,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // УДАЛ
 PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw != 47) {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e
+    throw std::runtime_error("УДАЛ: Недопустимый тип аргументов");
   }
   IntegerType i = occ(1, ScVar, ClVar, heap);
   recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
@@ -1109,9 +1109,8 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClearView(color.convert_to<unsigned>());
   } break;
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1;
-  }                                     // r_t_e(не вып предик точка
+    throw std::runtime_error("ТОЧКА: Недопустимый тип аргументов");
+  }
   }
   return PredicateState::Yes;  // 3;
 }
@@ -1164,8 +1163,7 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e
+    throw std::runtime_error("СЦЕП: Недопустимый тип аргументов");
   }
   }
   return PredicateState::No;  // 5;
@@ -1507,6 +1505,7 @@ int GetVarsFromFunction(recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array 
         // Vars.push_back((recordvar *)tp); Пока убрал, т.к. не используется
         ++Count;
         //Vars[VarCount + Count++] = (recordvar *)tp; break;
+        break;
     case issymbol:
     case isinteger:
     case isfloat:
@@ -2020,8 +2019,7 @@ PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClearView(color.convert_to<unsigned>());
   } break;
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e
+    throw std::runtime_error("ОКРУЖНОСТЬ: Недопустимый тип аргументов");
   }
   }
   return PredicateState::Yes;  // 3;
@@ -2121,8 +2119,7 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::No;
   }
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1;                           // r_t_e
+    throw std::runtime_error("КОПИЯ: Недопустимый тип аргументов");
   }
   }
   return PredicateState::No;
@@ -2354,8 +2351,7 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
              occ(4, ScVar, ClVar, heap).convert_to<long long>());
   } break;
   default: {
-    outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // R_T_E
+    throw std::runtime_error("ЛИНИЯ: Недопустимый тип аргументов");
   }
   }
   return PredicateState::Yes;  // 3;
