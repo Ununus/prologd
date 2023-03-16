@@ -89,10 +89,7 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
     return ErrorCode::ErrorWhileParsingFunction;  // 38;
   }
   auto n = (bptr - i) / 2;  // число аргументов
-  size_t ptrargs[1024];     // TODO: do vector
-  if (n > sizeof(ptrargs) / sizeof(size_t)) {
-    return ErrorCode::NotEnoughFreeMemory;  // 2;
-  }
+  std::vector<size_t> ptrargs(n);
   for (size_t j = 0; j < n; j++) {
     if ((ptrargs[j] = buf[i + j * 2]) > isbase) {
       err = ErrorCode::ErrorWhileParsingFunction;  // 38;
@@ -100,7 +97,7 @@ ErrorCode tokbb(TScVar *ScVar, array *heap) {
   }
   // аргументы в массив
   auto index = heap->append<size_t>(0, n);
-  memcpy(heap->GetPunsigned(index), ptrargs, sizeof(size_t) * n);
+  memcpy(heap->GetPunsigned(index), ptrargs.data(), sizeof(size_t) * n);
   i -= 2;
   if (err != ErrorCode::NoErrors) {
     return err;
@@ -168,12 +165,7 @@ ErrorCode clause(TScVar *ScVar, array *heap) {
     ntarget++;
   }
   if (err == ErrorCode::NoErrors) {
-    size_t ptarget[1024];  // TODO: do vector
-    if ((ntarget + 1) * sizeof(size_t) > sizeof(ptarget)) {
-      return ErrorCode::NotEnoughFreeMemory;  // 2;
-    }
     auto index = heap->append<size_t>(0, (ntarget + 1));
-    // memcpy(heap->GetPunsigned(index), ptarget, sizeof(size_t) * (ntarget + 1));
     size_t *_ptarget = heap->GetPunsigned(index);
     recordclause *ptrpred = 0;
     index = heap->append(recordclause(id, 0, novar, buf[0], index));
@@ -237,17 +229,21 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
   ErrorCode err = ErrorCode::NoErrors;
   auto &bptr = ScVar->bptr;
   auto &buf = ScVar->vbuf;
-  char bufnum[1024]{};
+  // char bufnum[1024]{};
+  std::string bufnum;
   FloatType valuef = 0;
   IntegerType valuei = 0;
   std::ptrdiff_t punkt = 0, e = 0;
   std::ptrdiff_t i = 0;
   if (*p == '+' || *p == '-') {
-    bufnum[i++] = *p;
+    //bufnum[i++] = *p;
+    bufnum.push_back(*p);
+    ++i;
   }
-  for (; ((isdigitrus(bufnum[i] = *(p + i))) || (*(p + i) == 'e' && punkt) || (*(p + i) == 'E' && punkt) || (*(p + i) == '-' && e) || (*(p + i) == '+' && e) ||
+  for (; ((isdigitrus(*(p + i))) || (*(p + i) == 'e' && punkt) || (*(p + i) == 'E' && punkt) || (*(p + i) == '-' && e) || (*(p + i) == '+' && e) ||
           (*(p + i) == '.'));
        i++) {
+    bufnum.push_back(*(p + i));
     if ((*(p + i) == 'e' || *(p + i) == 'E') && punkt) {
       e++;
     }
@@ -259,10 +255,10 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
     err = ErrorCode::InvalidNumberFormat;  // 4;
   }
   if (err == ErrorCode::NoErrors) {
-    bufnum[i] = 0;
+    //bufnum[i] = 0;
     if (punkt || e) {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuef); // в gcc не реализовано
-      valuef = atof(bufnum);
+      valuef = stod(bufnum);
     } else {
       // std::from_chars(bufnum, bufnum + sizeof(bufnum), valuei);
       // valuei = atoll(bufnum);
