@@ -38,10 +38,10 @@ PredicateState menegerbp(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap)
 
 int expand_stack(TClVar *ClVar) {
   ClVar->vmaxstack *= 2;
-  ClVar->vst_con.resize(ClVar->vmaxstack);
-  ClVar->vst_vr1.resize(ClVar->vmaxstack);
-  ClVar->vst_vr2.resize(ClVar->vmaxstack);
-  ClVar->vst_trail.resize(ClVar->vmaxstack);
+  ClVar->vst_con.resize(ClVar->vmaxstack, isnil);
+  ClVar->vst_vr1.resize(ClVar->vmaxstack, isnil);
+  ClVar->vst_vr2.resize(ClVar->vmaxstack, isnil);
+  ClVar->vst_trail.resize(ClVar->vmaxstack, isnil);
   return 0;
 }
 
