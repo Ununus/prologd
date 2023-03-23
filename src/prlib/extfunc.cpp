@@ -2046,8 +2046,11 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 9775:  // str int int var
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
-    size_t i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
-    size_t i2 = occ(2, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i2 = occ(2, ScVar, ClVar, heap).convert_to<long long>();
+    if (i2 < 0) {
+      i2 = -i2;
+    }
     if (i1 > 0 && i1 + i2 <= str0.size() + 1) {
       return zap3(str0.substr(i1 - 1, i2), 4, ScVar, ClVar, heap);
     }
@@ -2060,8 +2063,11 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
     auto str3 = occ_line(3, ScVar, ClVar, heap);
-    size_t i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
-    size_t i2 = occ(2, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i2 = occ(2, ScVar, ClVar, heap).convert_to<long long>();
+    if (i2 < 0) {
+      i2 = -i2;
+    }
     if (i1 > 0 && i1 + i2 <= str0.size() + 1 && i2 == str3.size() && str0.substr(i1 - 1, i2) == str3) {
       return PredicateState::Yes;
     } else {
@@ -2075,12 +2081,17 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
     auto str3 = occ_line(3, ScVar, ClVar, heap);
-    size_t i2 = occ(2, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i2 = occ(2, ScVar, ClVar, heap).convert_to<long long>();
+    bool neg = false;
+    if (i2 < 0) {
+      i2 = -i2;
+      neg = true;
+    }
     if (i2 == str3.size() && str0.size() >= str3.size()) {
       if (i2 == 0) {
         return zap1(1, 2, ScVar, ClVar, heap);
       }
-      size_t idx = str0.find(str3);
+      size_t idx = (neg ? str0.rfind(str3) : str0.find(str3));
       if (idx < str0.size()) {
         return zap1(idx + 1, 2, ScVar, ClVar, heap);
       }
@@ -2098,7 +2109,7 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       if (str3.empty()) {
         return zap2(1, 0, 2, 3, ScVar, ClVar, heap);
       }
-      size_t idx = str0.rfind(str3);
+      size_t idx = str0.find(str3);
       if (idx < str0.size()) {
         return zap2(idx + 1, str3.size(), 2, 3, ScVar, ClVar, heap);
       }
@@ -2111,7 +2122,7 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 9759:  // str int var str
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
-    size_t i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
     auto str3 = occ_line(3, ScVar, ClVar, heap);
     if (i1 > 0 && i1 + str3.size() <= str0.size() + 1 && str0.substr(i1 - 1, str3.size()) == str3) {
       return zap1(str3.size(), 3, ScVar, ClVar, heap);
