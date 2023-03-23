@@ -16,16 +16,16 @@ xmlns="http://www.w3.org/TR/REC-html40">
   <o:Author>Учетная запись Майкрософт</o:Author>
   <o:Template>Normal</o:Template>
   <o:LastAuthor>Учетная запись Майкрософт</o:LastAuthor>
-  <o:Revision>46</o:Revision>
-  <o:TotalTime>539</o:TotalTime>
+  <o:Revision>47</o:Revision>
+  <o:TotalTime>547</o:TotalTime>
   <o:Created>2023-02-04T15:42:00Z</o:Created>
-  <o:LastSaved>2023-02-24T16:20:00Z</o:LastSaved>
+  <o:LastSaved>2023-03-23T17:01:00Z</o:LastSaved>
   <o:Pages>78</o:Pages>
-  <o:Words>7018</o:Words>
-  <o:Characters>40007</o:Characters>
-  <o:Lines>333</o:Lines>
-  <o:Paragraphs>93</o:Paragraphs>
-  <o:CharactersWithSpaces>46932</o:CharactersWithSpaces>
+  <o:Words>7083</o:Words>
+  <o:Characters>40377</o:Characters>
+  <o:Lines>336</o:Lines>
+  <o:Paragraphs>94</o:Paragraphs>
+  <o:CharactersWithSpaces>47366</o:CharactersWithSpaces>
   <o:Version>15.00</o:Version>
  </o:DocumentProperties>
  <o:OfficeDocumentSettings>
@@ -37,7 +37,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <!--[if gte mso 9]><xml>
  <w:WordDocument>
   <w:View>Print</w:View>
-  <w:Zoom>180</w:Zoom>
+  <w:Zoom>128</w:Zoom>
   <w:SpellingState>Clean</w:SpellingState>
   <w:GrammarState>Clean</w:GrammarState>
   <w:TrackMoves>false</w:TrackMoves>
@@ -831,7 +831,7 @@ div.WordSection1
 <meta name=AUTHOR content="Michael Alexeev">
 <meta name=CREATED content="20010508;13140000">
 <meta name=CHANGEDBY content="Алексей Воронин">
-<meta name=CHANGED content="20230221;4520438">
+<meta name=CHANGED content="20230323;4520438">
 <meta name=SDFOOTNOTE content=";;;;P">
 <!--[if gte mso 9]><xml>
  <o:shapedefaults v:ext="edit" spidmax="1026"/>
@@ -851,7 +851,7 @@ margin-left:0cm'><b><span style='font-size:16.0pt;font-family:"Arial","sans-seri
 mso-ansi-language:EN-US'>Windows</span></b><b><span style='font-size:16.0pt;
 font-family:"Arial","sans-serif"'><span style='mso-tab-count:1'>       </span></span></b><span
 style='font-size:8.0pt;font-family:"Arial","sans-serif";mso-bidi-font-weight:
-bold'>26.02.2023</span><b><span style='font-size:16.0pt;font-family:"Arial","sans-serif"'><o:p></o:p></span></b></p>
+bold'>23.03.2023</span><b><span style='font-size:16.0pt;font-family:"Arial","sans-serif"'><o:p></o:p></span></b></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'><a
@@ -956,8 +956,7 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Список ::=
 [Аргумент{,Аргумент}*] | [] | [<span class=SpellE>Начало|Остаток</span>]</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:5.75pt;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Начало ::=
-Аргумент{,Аргумент}*</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Начало ::= Аргумент{,Аргумент}*</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:5.75pt;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Остаток ::=
@@ -1219,11 +1218,9 @@ style='font-family:"Arial","sans-serif"'>= Цифра[Цифра]*</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Диапазон
-допустимых значений целых от
--9&nbsp;223&nbsp;372&nbsp;036&nbsp;854&nbsp;775&nbsp;808 до
-9&nbsp;223&nbsp;372&nbsp;036&nbsp;854&nbsp;775&nbsp;807 (8 байтов). Допускается
-только десятичная запись. Переполнение в целых числах не регистрируется. В
-качестве целого допускается использование арифметического выражения.</span></p>
+допустимых значений целых не ограничен (длинная арифметика). Допускается
+только десятичная запись. Переполнение в целых числах не регистрируется. В качестве
+целого допускается использование арифметического выражения.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><o:p>&nbsp;</o:p></p>
@@ -1246,8 +1243,8 @@ style='font-family:"Arial","sans-serif"'>Число::</span></span><span
 style='font-family:"Arial","sans-serif"'>= Цифра[Цифра]*</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Диапазон допустимых
-значений целых от 1.7*(10<sup>-308</sup>) до 1.7*(10<sup>+308</sup>).
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Диапазон
+допустимых значений вещественных от 1.7*10<sup>-308</sup> до 1.7*10<sup>+308</sup> (double).
 Допускается только десятичная запись. Переполнение в вещественных числах не
 регистрируется. В качестве вещественного допускается использование
 арифметического выражения.</span></p>
@@ -1304,8 +1301,8 @@ style='font-family:"Arial","sans-serif"'>= Цел ¦ (Выражение), гд�
 или переменная, конкретизированная целым.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Результатом
-вычислений арифметического выражения является целое или вещественное.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Результатом вычислений
+арифметического выражения является целое или вещественное.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><o:p>&nbsp;</o:p></p>
@@ -2199,8 +2196,8 @@ font-family:"Arial","sans-serif";mso-fareast-font-family:"Times New Roman"'><o:p
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтаксис: ЛОЖЬ</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
-предикат ЛОЖЬ не имеет аргументов. Он считается всегда ложным.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный предикат
+ЛОЖЬ не имеет аргументов. Он считается всегда ложным.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример: перебор
@@ -2252,10 +2249,10 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 ВЫП(Арг1)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Этот предикат
-имеет один аргумент. Происходит попытка выполнить предикат Арг1. Если этим
-аргументом оказывается не предикат, то выполнение программы прекратится и
-появится сообщение об ошибке: &quot;Невыполнимый предикат ВЫП&quot;.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Этот предикат имеет
+один аргумент. Происходит попытка выполнить предикат Арг1. Если этим аргументом
+оказывается не предикат, то выполнение программы прекратится и появится
+сообщение об ошибке: &quot;Невыполнимый предикат ВЫП&quot;.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ВЫП истинен,
@@ -2387,10 +2384,10 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Аргумент
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат ИЛИ
 истинен тогда и только тогда, когда хотя бы один из аргументов истинен.
-Процедурно он означает попытаться выполнить цель1. Если цель1 выполнена
-успешно, то предикат ИЛИ истинен, а цель2 не выполняется, в противном случае
-происходит попытка выполнить цель2. Если цель2 выполнена успешно, то предикат
-истинен, иначе ложен.</span></p>
+Процедурно он означает попытаться выполнить цель1. Если цель1 выполнена успешно,
+то предикат ИЛИ истинен, а цель2 не выполняется, в противном случае происходит
+попытка выполнить цель2. Если цель2 выполнена успешно, то предикат истинен,
+иначе ложен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример:</span></p>
@@ -2453,11 +2450,11 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 БОЛЬШЕ(Арг<span class=GramE>1,Арг</span>2)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный предикат
-БОЛЬШЕ имеет два аргумента: целых или переменных, конкретизированных целыми.
-Оба аргумента к моменту выполнения должны быть определены. Если эти требования
-не имеют места, то выполнение программы прекратится и появится сообщение об
-ошибке: &quot;Невыполнимый предикат БОЛЬШЕ&quot;.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
+предикат БОЛЬШЕ имеет два аргумента: целых или переменных, конкретизированных
+целыми. Оба аргумента к моменту выполнения должны быть определены. Если эти
+требования не имеют места, то выполнение программы прекратится и появится
+сообщение об ошибке: &quot;Невыполнимый предикат БОЛЬШЕ&quot;.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Этот предикат
@@ -2543,8 +2540,8 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Процедур
 РАВНО(Арг<span class=GramE>1,Арг</span>2) означает: унифицировать Арг1 и Арг2.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример:
-неравно(<span class=SpellE><span class=GramE>x,y</span></span>) &lt;- НЕ(РАВНО(<span
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример: неравно(<span
+class=SpellE><span class=GramE>x,y</span></span>) &lt;- НЕ(РАВНО(<span
 class=SpellE>x,y</span>));.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
@@ -2566,8 +2563,8 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
-предикат УМНОЖЕНИЕ имеет четыре аргумента: целых, переменных, конкретизированных
-целыми, и может быть одной <span class=SpellE>неконкретизированной</span>
+предикат УМНОЖЕНИЕ имеет четыре аргумента: целых, переменных,
+конкретизированных целыми, и может быть одной <span class=SpellE>неконкретизированной</span>
 переменной. Ниже приведены результаты выполнения предиката в зависимости от
 типа аргументов.</span></p>
 
@@ -2645,8 +2642,8 @@ class=GramE>3:=</span>ц4 <span class=SpellE>mod</span> ц2, предикат и
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Во всех
-остальных случаях выполнение программы прекращается и выводится сообщение об
-ошибке: &quot;Невыполнимый предикат УМНОЖЕНИЕ&quot;.</span></p>
+остальных случаях выполнение программы прекращается и выводится сообщение об ошибке:
+&quot;Невыполнимый предикат УМНОЖЕНИЕ&quot;.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример:
@@ -2696,8 +2693,8 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенн
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат
-обратим, но два аргумента должны быть либо числами (целыми или вещественными), либо
-конкретизированы числами. Если это условие не имеет место, то выполнение
+обратим, но два аргумента должны быть либо числами (целыми или вещественными),
+либо конкретизированы числами. Если это условие не имеет место, то выполнение
 программы прекратится и появится сообщение об ошибке: &quot;Невыполнимый
 предикат СЛОЖЕНИЕ&quot;. Естественно, деление на 0 также приводит к ошибке.</span></p>
 
@@ -2736,15 +2733,15 @@ margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>СЛОЖЕН�
 class=SpellE><span class=GramE>x,y</span>,z</span>) &lt;- УМНОЖЕНИЕ(1,x,y,z);</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Предикат обратим,
-но два аргумента должны быть либо числами (целыми или вещественными), либо
-конкретизированы числами. Если это условие не имеет место, то выполнение
+margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Предикат
+обратим, но два аргумента должны быть либо числами (целыми или вещественными),
+либо конкретизированы числами. Если это условие не имеет место, то выполнение
 программы прекратится и появится сообщение об ошибке: &quot;Невыполнимый
 предикат СЛОЖЕНИЕ&quot;.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример: реализация
-вычитания x=y-z.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример:
+реализация вычитания x=y-z.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>ВЫЧИТАНИЕ(<span
@@ -2788,8 +2785,8 @@ margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>СЛУЧ(П1)
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:36.0pt'><span class=GramE><span style='font-family:"Arial","sans-serif"'>СЛУЧ(</span></span><span
 style='font-family:"Arial","sans-serif"'>П1, ц1, ц2) П1 - <span class=SpellE>неконкретизированнная</span>
-переменная, ц1 и ц2 — целые. П1 конкретизируется псевдослучайным целым числом из
-диапазона От ц1 до ц2 включительно. Предикат истинен.</span></p>
+переменная, ц1 и ц2 — целые. П1 конкретизируется псевдослучайным целым числом
+из диапазона От ц1 до ц2 включительно. Предикат истинен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><o:p>&nbsp;</o:p></p>
@@ -2815,8 +2812,8 @@ margin-left:0cm;text-indent:36.0pt'><span style='font-family:"Arial","sans-serif
 class=SpellE>имя_файла</span>)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Закрывается ранее
-открытый для чтения файл. Открывается файл для чтения с именем <span
+margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Закрывается
+ранее открытый для чтения файл. Открывается файл для чтения с именем <span
 class=SpellE>имя_файла</span>. Если это действие выполнено успешно, то предикат
 истинен, иначе предикат ложен и выдается соответствующее сообщение об ошибке.</span></p>
 
@@ -2883,8 +2880,7 @@ font-family:"Arial","sans-serif";mso-fareast-font-family:"Times New Roman"'>Вс
 mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></h1>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтаксис:
-ЗАПИСЬ_В(Арг1)</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтаксис: ЗАПИСЬ_В(Арг1)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
@@ -2906,9 +2902,9 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЗАПИСЬ_В(
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Переменная
-конкретизируется строкой, являющейся именем файла для записи, открытого предыдущим
-предикатом ЧТЕНИЕ_ИЗ. Предикат истинен. Во всех остальных случаях выводится
-сообщение об ошибке: &quot;Невыполнимый предикат ЗАПИСЬ_В&quot;.</span></p>
+конкретизируется строкой, являющейся именем файла для записи, открытого
+предыдущим предикатом ЧТЕНИЕ_ИЗ. Предикат истинен. Во всех остальных случаях
+выводится сообщение об ошибке: &quot;Невыполнимый предикат ЗАПИСЬ_В&quot;.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><o:p>&nbsp;</o:p></p>
@@ -2948,8 +2944,8 @@ style='font-family:"Arial","sans-serif";mso-ansi-language:EN-US'>txt</span><span
 style='font-family:"Arial","sans-serif"'>&quot;)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Закрыть предыдущий
-файл для записи, открыть файл с именем </span><span lang=EN-US
+margin-left:36.0pt'><span style='font-family:"Arial","sans-serif"'>Закрыть
+предыдущий файл для записи, открыть файл с именем </span><span lang=EN-US
 style='font-family:"Arial","sans-serif";mso-ansi-language:EN-US'>input</span><span
 style='font-family:"Arial","sans-serif"'>.</span><span lang=EN-US
 style='font-family:"Arial","sans-serif";mso-ansi-language:EN-US'>txt</span><span
@@ -2977,8 +2973,8 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 ВВКОД(Арг1)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный предикат
-ВВКОД имеет один аргумент. Аргумент должен быть <span class=SpellE>неконкретизированной</span>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
+предикат ВВКОД имеет один аргумент. Аргумент должен быть <span class=SpellE>неконкретизированной</span>
 переменной, целым или переменной, конкретизированной целым. Ниже приведены
 результаты выполнения предиката в зависимости от типа аргумента.</span></p>
 
@@ -3191,8 +3187,8 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Если вво�
 текстом приглашения или пояснения.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Обычно ввод заканчивается
-пробелом, концом строки, нажатием клавиши. </span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Обычно ввод
+заканчивается пробелом, концом строки, нажатием клавиши. </span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Результаты
@@ -3235,10 +3231,10 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 ВВОДСТР(Арг1<span class=GramE>[,Арг</span>2])</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
-предикат ВВОДСТР имеет один или два аргумента. Процедурно он обозначает ввод
-символьной константы, возможно, содержащией пробелы, из файла, открытого для
-чтения, до конца строки.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный предикат
+ВВОДСТР имеет один или два аргумента. Процедурно он обозначает ввод символьной
+константы, возможно, содержащией пробелы, из файла, открытого для чтения, до
+конца строки.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Если ввод
@@ -3292,13 +3288,13 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 class=GramE>ВЫВОД(</span>Аргумент [,Аргумент]*)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
-предикат ВЫВОД может иметь произвольное число аргументов. Процедурно он
-обозначает вывод аргументов в текстовом формате в файл, открытый для вывода.
-Аргументы могут быть произвольного типа. Вывод происходит в одну строку. Для
-перевода строки можно использовать встроенный предикат ПС. Предикат истинен,
-если вывод прошел успешно, иначе предикат ложен, и появляется соответствующее
-сообщение об ошибке.<o:p></o:p></span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный предикат
+ВЫВОД может иметь произвольное число аргументов. Процедурно он обозначает вывод
+аргументов в текстовом формате в файл, открытый для вывода. Аргументы могут
+быть произвольного типа. Вывод происходит в одну строку. Для перевода строки
+можно использовать встроенный предикат ПС. Предикат истинен, если вывод прошел
+успешно, иначе предикат ложен, и появляется соответствующее сообщение об
+ошибке.<o:p></o:p></span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'><o:p>&nbsp;</o:p></span></p>
@@ -3378,9 +3374,9 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат
 один аргумент. Аргумент должен быть целым. Этот предикат всегда истинен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЖДИ(ц1) - блокирует
-выполнение по крайней мере на указанное значение ц1 в миллисекундах. Эта
-функция может заблокировать выполнение больше, чем ц1 из-за задержек
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЖДИ(ц1) -
+блокирует выполнение по крайней мере на указанное значение ц1 в миллисекундах.
+Эта функция может заблокировать выполнение больше, чем ц1 из-за задержек
 планировщика ОС. </span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
@@ -3482,9 +3478,9 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат имеет
 два аргумента: первый должен быть строкой или переменной, конкретизированной
-строкой, а второй - <span class=SpellE>неконкретизированной</span> переменной,
-целым или переменной, конкретизированной целым. Результаты выполнения предиката
-в зависимости от типа второго аргумента приведены ниже:</span></p>
+строкой, а второй - <span class=SpellE>неконкретизированной</span> переменной, целым
+или переменной, конкретизированной целым. Результаты выполнения предиката в
+зависимости от типа второго аргумента приведены ниже:</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>БУКВА(с<span
@@ -3599,13 +3595,13 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 СЦЕП(Арг<span class=GramE>1,Арг</span>2,Арг3)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат имеет
-три аргумента. Результаты выполнения предиката представлены ниже:</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат имеет три
+аргумента. Результаты выполнения предиката представлены ниже:</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>СЦЕП(с<span
-class=GramE>1,с</span>2,П3) Переменная П конкретизируется строкой, которая является
-результатом конкатенации строк с1, с2. Предикат истинен.</span></p>
+class=GramE>1,с</span>2,П3) Переменная П конкретизируется строкой, которая
+является результатом конкатенации строк с1, с2. Предикат истинен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>СЦЕП(с<span
@@ -3625,8 +3621,9 @@ class=GramE>1,с</span>2,с3) Если с3 является результато
 и с2, то предикат истинен, иначе ложен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Во всех остальных
-случаях выполнение программы прекращается и выводится сообщение об ошибке:</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Во всех
+остальных случаях выполнение программы прекращается и выводится сообщение об
+ошибке:</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>&quot;Невыполнимый
@@ -3674,8 +3671,11 @@ class=GramE>1,ц</span>2,ц3,с4) Если выделенная из строк�
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>КОПИЯ(с<span
-class=GramE>1,П</span>2,ц3,с4) Если длина строки с4 равна ц3 и строка с4 входит
-в строку с1 с некоторой позиции X, то П2:= X, предикат истинен, иначе ложен.</span></p>
+class=GramE>1,П</span>2,ц3,с4) Если длина строки с4 равна модулю ц3 и строка с4
+входит в строку с1 с некоторой позиции X, то П2:= X, предикат истинен, иначе
+ложен. При ц3&gt;0 поиск подстроки с4 производится с начала строки слева
+направо. При ц3&lt;0 поиск подстроки с4 производится с конца строки справа налево.
+</span><o:p></o:p></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>КОПИЯ(с<span
@@ -3697,12 +3697,29 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>&quot;Невып
 предикат КОПИЯ&quot;</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Пример<span
-class=GramE>: ?КОПИЯ</span>(&quot;<span class=SpellE>ПРОЛОГ&quot;,x,y,&quot;ЛОГ</span>&quot;);</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Примеры: <o:p></o:p></span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Ответ: x=3 y=3
-ДА.</span></p>
+margin-left:0cm'><span class=GramE><span style='font-family:"Arial","sans-serif"'>?КОПИЯ</span></span><span
+style='font-family:"Arial","sans-serif"'>(&quot;ПРОЛОГ&quot;,Х,У,&quot;ЛОГ&quot;);</span></p>
+
+<p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Ответ: Х=3 У=3
+ДА.<o:p></o:p></span></p>
+
+<p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
+margin-left:0cm'><span class=GramE><span style='font-family:"Arial","sans-serif"'>?КОПИЯ</span></span><span
+style='font-family:"Arial","sans-serif"'>(&quot;ПРОЛОГ&quot;,Х,1,&quot;О&quot;);</span><o:p></o:p></p>
+
+<p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Ответ: Х=3 ДА.<o:p></o:p></span></p>
+
+<p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
+margin-left:0cm'><span class=GramE><span style='font-family:"Arial","sans-serif"'>?КОПИЯ</span></span><span
+style='font-family:"Arial","sans-serif"'>(&quot;ПРОЛОГ&quot;,Х,-1,&quot;О&quot;);</span><o:p></o:p></p>
+
+<p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Ответ: Х=5 ДА.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><o:p>&nbsp;</o:p></p>
@@ -3810,8 +3827,7 @@ style='font-size:13.5pt;font-family:"Arial","sans-serif";mso-fareast-font-family
 font-family:"Arial","sans-serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></h1>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтаксис:
-ВЕЩ(Арг1)</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтаксис: ВЕЩ(Арг1)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат имеет
@@ -3840,9 +3856,10 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат
 один аргумент, который может быть любого типа.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат истинен,
-если аргументом является символьная или строковая константа или переменная,
-конкретизированная символьной или строковой константой, иначе предикат ложен.<o:p></o:p></span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат
+истинен, если аргументом является символьная или строковая константа или
+переменная, конкретизированная символьной или строковой константой, иначе
+предикат ложен.<o:p></o:p></span></p>
 
 <p class=MsoNormal style='margin-bottom:4.0pt'><span style='font-family:"Arial","sans-serif"'><o:p>&nbsp;</o:p></span></p>
 
@@ -4086,14 +4103,14 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 ЦЕЛВЕЩ(Арг<span class=GramE>1,Арг</span>2)</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат имеет
-два аргумента. Ниже приведены результаты выполнения предиката в зависимости от
-типа аргументов.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Предикат имеет два
+аргумента. Ниже приведены результаты выполнения предиката в зависимости от типа
+аргументов.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЦЕЛВЕЩ (ц<span
-class=GramE>1,П</span>2) Если ц1 - целое, то переменная конкретизируется соответствующим
-вещественным с нулевой дробной частью. Предикат истинен.</span></p>
+class=GramE>1,П</span>2) Если ц1 - целое, то переменная конкретизируется
+соответствующим вещественным с нулевой дробной частью. Предикат истинен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЦЕЛВЕЩ(П<span
@@ -4222,9 +4239,9 @@ class=GramE>1,ц</span>2,т3,П4) Если в базе знаний сущест
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ПРЕДЛ(т<span
 class=GramE>1,ц</span>2,П3,сп4) Если в базе знаний существуют предложения
-головы, которых имеют имя т1 и среди этих предложений есть предложение с номером
-ц2 и список целей этого предложения можно представить списком сп4, то П3 :=
-голова предложения, предикат истинен, иначе ложен.</span></p>
+головы, которых имеют имя т1 и среди этих предложений есть предложение с
+номером ц2 и список целей этого предложения можно представить списком сп4, то
+П3 := голова предложения, предикат истинен, иначе ложен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ПРЕДЛ(т<span
@@ -4338,9 +4355,9 @@ class=GramE>1,сп</span>2) Делается попытка создать те�
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ТЕРМ(т<span
-class=GramE>1,П</span>2) Делается попытка преобразовать пр1 в список в
-соответствии с приведенными выше правилами. Если список создан, то П<span
-class=GramE>2:=</span> список, предикат истинен, иначе ложен.</span></p>
+class=GramE>1,П</span>2) Делается попытка преобразовать пр1 в список в соответствии
+с приведенными выше правилами. Если список создан, то П<span class=GramE>2:=</span>
+список, предикат истинен, иначе ложен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ТЕРМ(т<span
@@ -4348,9 +4365,9 @@ class=GramE>1,сп</span>2) Если список можно преобразо�
 унифицировать с созданным термом, то предикат истинен, иначе ложен.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>В остальных
-случаях или если вторым аргументом окажется пустой список, то выполнение
-программы прекратится и возникнет ошибка:</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>В остальных случаях
+или если вторым аргументом окажется пустой список, то выполнение программы
+прекратится и возникнет ошибка:</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>&quot;Невыполнимый
@@ -4374,15 +4391,14 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенн
 предикат ДОБ имеет три аргумента. Первый аргумент рассматривается, как голова
 добавляемого к базе знаний предложения, поэтому он может быть или термом или
 переменной, конкретизированной термом. Второй аргумент должен быть списком.
-Если список пустой, то предложение является фактом, иначе список
-рассматривается как список термов целей в предложении. Третий аргумент может
-быть целым или переменной, конкретизированной целым. Он является номером
-предложения с данной головой, перед которым необходимо вставить предложение.
-Если номер отрицательный, то предложение станет первым, если в базе знаний
-предложения с таким номером не существует, то данное предложение станет
-последним среди всех предложений с данной головой. Если не соблюдены
-ограничения на типы аргументов, то выполнение программы прекращается и
-выводится сообщение об ошибке:</span></p>
+Если список пустой, то предложение является фактом, иначе список рассматривается
+как список термов целей в предложении. Третий аргумент может быть целым или
+переменной, конкретизированной целым. Он является номером предложения с данной
+головой, перед которым необходимо вставить предложение. Если номер
+отрицательный, то предложение станет первым, если в базе знаний предложения с
+таким номером не существует, то данное предложение станет последним среди всех
+предложений с данной головой. Если не соблюдены ограничения на типы аргументов,
+то выполнение программы прекращается и выводится сообщение об ошибке:</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>&quot;Невыполнимый
@@ -4489,9 +4505,9 @@ style='font-size:13.5pt;font-family:"Arial","sans-serif";mso-fareast-font-family
 font-family:"Arial","sans-serif";mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></h1>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Во всех графических
-встроенных предикатах аргументами должны быть целыми или переменными,
-конкретизированными целыми, или <span class=SpellE>неконкретизированными</span>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Во всех
+графических встроенных предикатах аргументами должны быть целыми или
+переменными, конкретизированными целыми, или <span class=SpellE>неконкретизированными</span>
 переменными. Если это требование не выполнено, то появится сообщение об ошибке.
 Параметр v - вертикальный размер, а h - горизонтальный размер экрана. Для
 стандартной платы видеоадаптера VGA v=349, h=639.</span></p>
@@ -4601,8 +4617,8 @@ class=GramE>1,ц</span>2,П3,ц4,ц) Рисовать закрашенный т�
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЛИНИЯ(ц<span
-class=GramE>1,П</span>2,ц3,ц4,ц) Рисовать закрашенный треугольник с вершинами
-(ц1,0), (ц1,v), (ц3,ц4) и цветом ц;</span></p>
+class=GramE>1,П</span>2,ц3,ц4,ц) Рисовать закрашенный треугольник с вершинами (ц1,0),
+(ц1,v), (ц3,ц4) и цветом ц;</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ЛИНИЯ(П<span
@@ -4658,9 +4674,9 @@ class=GramE>1,ц</span>2,ц3,П4,ц) Четырехугольник цветом
 (h,ц2), (ц3,0), (ц3,v).</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
-margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>В этих
-шестнадцати случаях предикат истинен, иначе выполнение программы прекращается и
-выдается сообщение об ошибке.</span></p>
+margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>В этих шестнадцати
+случаях предикат истинен, иначе выполнение программы прекращается и выдается
+сообщение об ошибке.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><o:p>&nbsp;</o:p></p>
@@ -4718,8 +4734,8 @@ margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Синтакси
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>Встроенный
 предикат ОКРУЖНОСТЬ имеет четыре аргумента. Четвертым аргументом всегда должно
-быть целое, арифметическое выражение или переменная, конкретизированная целым.
-Ниже приведены результаты выполнения в зависимости от типов аргументов.</span></p>
+быть целое, арифметическое выражение или переменная, конкретизированная целым. Ниже
+приведены результаты выполнения в зависимости от типов аргументов.</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span style='font-family:"Arial","sans-serif"'>ОКРУЖНОСТЬ(ц<span
@@ -4825,7 +4841,8 @@ style='font-family:"Arial","sans-serif"'>(x1',y1',x2',y2',цвет')&lt;-ЛИН�
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span class=GramE><span style='font-family:"Arial","sans-serif"'>пример</span></span><span
-style='font-family:"Arial","sans-serif"'> &lt;- рамка(50,50,150,150,8), ЗАКРАСКА(100,100,15);</span></p>
+style='font-family:"Arial","sans-serif"'> &lt;- рамка(50,50,150,150,8),
+ЗАКРАСКА(100,100,15);</span></p>
 
 <p class=western style='margin-top:0cm;margin-right:0cm;margin-bottom:4.0pt;
 margin-left:0cm'><span class=GramE><span style='font-family:"Arial","sans-serif"'>?пример;.</span></span></p>
