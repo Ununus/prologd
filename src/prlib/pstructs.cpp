@@ -37,10 +37,10 @@ TScVar::~TScVar() {
 
 void TClVar::Init() {
   vmaxstack = kInitialStackSize;
-  vst_con.resize(kInitialStackSize);
-  vst_vr1.resize(kInitialStackSize);
-  vst_vr2.resize(kInitialStackSize);
-  vst_trail.resize(kInitialStackSize);
+  vst_con.resize(kInitialStackSize, isnil);
+  vst_vr1.resize(kInitialStackSize, isnil);
+  vst_vr2.resize(kInitialStackSize, isnil);
+  vst_trail.resize(kInitialStackSize, isnil);
   vbf.resize(kInitialUniBufSize);
   vBPT.resize(kInitialBptSize);
   ibpt = 0;

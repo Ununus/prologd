@@ -10,15 +10,15 @@
 #include "pdefs.h"
 #include <boost/multiprecision/cpp_int.hpp>
 
-constexpr size_t kInitialBptr = 1024;
-constexpr size_t kInitialGptr = 150;
-constexpr size_t kInitialVar = 512;
-constexpr size_t kInitialSymbol = 2048;
+constexpr size_t kInitialBptr = 4 * 1024;
+constexpr size_t kInitialGptr = 4 * 150;
+constexpr size_t kInitialVar = 4 * 512;
+constexpr size_t kInitialSymbol = 4 * 2048;
 
-constexpr size_t kInitialHeapSize = 16384;
-constexpr size_t kInitialStackSize = 4096;
-constexpr size_t kInitialUniBufSize = 100;
-constexpr size_t kInitialBptSize = 256;
+constexpr size_t kInitialHeapSize = 16 * 16384;
+constexpr size_t kInitialStackSize = 16 * 4096;
+constexpr size_t kInitialUniBufSize = 4 * 100;
+constexpr size_t kInitialBptSize = 4 * 256;
 
 using FloatType = double;
 using IntegerType = boost::multiprecision::cpp_int;

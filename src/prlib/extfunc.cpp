@@ -11,7 +11,7 @@
 // #include <charconv>
 
 // TODO: автоматически менять
-const char *kPrologVersion = "23 марта 2023";
+const char *kPrologVersion = "24 марта 2023";
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
@@ -1466,6 +1466,7 @@ size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap) {
         auto *lst = heap->GetPrecordlist(indx);
         auto cstTermIdx = GetConstTerm(lst->head, _Frame, ClVar, heap);
         auto lstCopy = heap->append(recordlist(cstTermIdx));
+        lst = heap->GetPrecordlist(indx);
         if (lstPrev > 0) {
           heap->GetPrecordlist(lstPrev)->link = lstCopy;
         } else {
@@ -1613,6 +1614,8 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     recordfunction *prf = (recordfunction *)tp;
     auto ArgIndex = heap->append<size_t>(0, prf->narg);
+    tp = heap->GetPbaserecord(ScVar->vgoal[maxarity]);
+    prf = (recordfunction *)tp;
     auto *parg = heap->GetPunsigned(ArgIndex);
     auto *prf_arg = heap->GetPunsigned(prf->ptrarg);
     for (size_t i = 0; i < prf->narg; i++) {
@@ -1662,6 +1665,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       }
       recordfunction *prf = heap->GetPrecordfunction(ptarget[i]);
       auto ArgIndex = heap->append<size_t>(0, prf->narg);
+      prf = heap->GetPrecordfunction(ptarget[i]);
       auto *arg = heap->GetPunsigned(ArgIndex);
       auto *prf_arg = heap->GetPunsigned(prf->ptrarg);
       for (size_t j = 0; j < prf->narg; ++j) {
