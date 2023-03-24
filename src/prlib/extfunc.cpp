@@ -918,6 +918,8 @@ PredicateState prskol(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Error;       // 1; // r_t_e
 }
 
+size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap);
+
 // репл
 PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
@@ -932,7 +934,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (tp->ident == islist) {
       plist = (recordlist *)tp;
       baserecord *test = heap->GetPbaserecord(plist->head);
-      if (test->ident != issymbol) {
+      if (test->ident != issymbol && test->ident != isvar) {
         return PredicateState::No;  // 5;
       }
     }
@@ -962,6 +964,12 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     auto *ptrargs = heap->GetPunsigned(index);
     plist = heap->GetPrecordlist(ScVar->vgoal[maxarity + 1]);
     auto funcsymb = plist->head;
+    if (heap->GetPbaserecord(funcsymb)->ident == isvar) {
+      funcsymb = GetConstTerm(funcsymb, ClVar->frame2, ClVar, heap);
+      if (heap->GetPbaserecord(funcsymb)->ident == isvar) {
+        return PredicateState::No;
+      }
+    }
     i = 0;
     plist = heap->GetPrecordlist(plist->link);
     while (plist->ident == islist) {
