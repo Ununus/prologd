@@ -1,12 +1,13 @@
 #include "preprocessor.h"
 
 extern std::string import_directory;
+
 std::ofstream destinationFile;
 
 void preprocessor(std::string filename) {
   std::ifstream program(filename);
   std::string line;
-  std::regex import("\\?ÈÌÏÎĞÒ\\(\".+\"\\)\\.");
+  std::regex import("\\?Ğ˜ĞœĞŸĞĞ Ğ¢\\(\".+\"\\)\\.");
   if (program.is_open() == false)
     throw std::exception(("Cannot open file: " + filename).c_str());
   while (program >> line) {
