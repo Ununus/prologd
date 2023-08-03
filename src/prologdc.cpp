@@ -5,6 +5,8 @@
 #include "prlib/control.h"
 #include "prlib/functions.h"
 
+#include "preprocessor.h"
+
 #include <iostream>
 #include <string>
 #include <list>
@@ -15,6 +17,8 @@
 #include <string.h>
 
 constexpr char input_signal_char = '$';
+
+std::string import_directory = "";
 
 static const char *source_filename{ nullptr };
 static const char *input_filename{ nullptr };
@@ -231,12 +235,13 @@ unsigned GetPixel(long long, long long) {
 }
 
 void printHelp() {
-  std::cout << "-s, --source=FILE\tinterpret a file.\n";
-  std::cout << "-i, --input=FILE \tuse a file to input.\n";
-  std::cout << "-o, --output=FILE\tuse a file to print the output.\n";
-  std::cout << "-e, --error=FILE \tuse a file to print an error.\n";
-  std::cout << "-q, --qustions   \tprint questions.\n";
-  std::cout << "-h, --help       \tshow this help and exit.\n";
+  std::cout << "-s, --source=FILE  \tinterpret a file.\n";
+  std::cout << "-d, --directory=DIR\tuse an import directory\n";
+  std::cout << "-i, --input=FILE   \tuse a file to input.\n";
+  std::cout << "-o, --output=FILE  \tuse a file to print the output.\n";
+  std::cout << "-e, --error=FILE   \tuse a file to print an error.\n";
+  std::cout << "-q, --questions    \tprint questions.\n";
+  std::cout << "-h, --help         \tshow this help and exit.\n";
   std::cout << "\n";
   std::cout << "If files are not specified, then standard streams will be used.\n";
   std::cout << "\n";
@@ -280,11 +285,25 @@ int main(int argc, char **argv) {
       error_filename = eqptr + 1;
       continue;
     }
+	if (strncmp(argv[i], "-d", sizeof("-d") - 1) == 0 || strncmp(argv[i], "--directory", sizeof("--directory") - 1) == 0)
+	{
+      import_directory = eqptr + 1;
+      if (import_directory.back() != '\\')
+        import_directory += '\\';
+      continue;
+	}
     std::cerr << "Invalid argument " << argv[i] << std::endl;
     return 1;
   }
   if (source_filename) {
-    source_file = std::make_unique<std::ifstream>(source_filename);
+    std::string src;
+    try {
+      src = preprocessor_run(source_filename);
+	} catch (std::exception &err) {
+      std::cerr << err.what() << std::endl;
+      return 1;
+	}
+    source_file = std::make_unique<std::ifstream>(src.c_str());
     if (!source_file->is_open()) {
       std::cerr << "Cannot open file " << source_filename << std::endl;
       return 1;
