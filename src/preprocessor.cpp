@@ -1,15 +1,28 @@
+#include <fstream>
+#include <regex>
+
 #include "preprocessor.h"
 
 extern std::string import_directory;
 
 std::ofstream destinationFile;
 
+std::string getFileName(std::string fullName)
+{
+  int lastBackSlash = fullName.rfind("\\") + 1;
+  if (lastBackSlash != -1)
+  {
+    fullName = fullName.substr(lastBackSlash);
+  }
+  return fullName;
+}
+
 void preprocessor(std::string filename) {
   std::ifstream program(filename);
   std::string line;
   std::regex import("\\?ИМПОРТ\\(\".+\"\\)\\.");
   if (program.is_open() == false)
-    throw std::exception(("Cannot open file: " + filename).c_str());
+    throw std::exception(("Cannot open file: " + getFileName(filename)).c_str());
   while (program >> line) {
     if (std::regex_match(line, import)) {
       int pos1 = line.find("\"") + 1;
