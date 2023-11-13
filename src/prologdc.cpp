@@ -288,8 +288,8 @@ int main(int argc, char **argv) {
 	if (strncmp(argv[i], "-d", sizeof("-d") - 1) == 0 || strncmp(argv[i], "--directory", sizeof("--directory") - 1) == 0)
 	{
       import_directory = eqptr + 1;
-      if (import_directory.back() != '\\')
-        import_directory += '\\';
+      if (import_directory.back() != '/')
+        import_directory += '/';
       continue;
 	}
     std::cerr << "Invalid argument " << argv[i] << std::endl;
@@ -299,7 +299,7 @@ int main(int argc, char **argv) {
     std::string src;
     try {
       src = preprocessor_run(source_filename);
-	} catch (std::exception &err) {
+	} catch (const std::runtime_error &err) {
       std::cerr << err.what() << std::endl;
       return 1;
 	}
