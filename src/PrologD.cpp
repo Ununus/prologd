@@ -22,9 +22,14 @@
 #include <queue>
 #include <string>
 #include <thread>
+#include <list>
 
 #include <QPainter>
 #include <QDebug>
+
+#include "preprocessor.h"
+std::string import_directory;
+
 
 const QRgb PROLOG_COLOR_BLACK = QColor(0, 0, 0).rgb();
 const QRgb PROLOG_COLOR_BLUE = QColor(0, 0, 255).rgb();
@@ -147,6 +152,16 @@ std::string decode_utf8_to_cp1251(QString qstr) {
   str.resize(si);
   return str;
 }
+
+std::list<std::string> convertToStdString(const QStringList& program) {
+    std::list<std::string> res;
+    for (Nstr = 0; Nstr < program.size(); Nstr++) {
+        std::string str = program[Nstr].toStdString();
+        res.push_back(str);
+    }
+    return res;
+}
+
 void prdout(bool value) {
   emit prd->signalPredicatOut(value);
 }
@@ -267,7 +282,29 @@ void vertical(long long x1, long long y1, long long x2, long long y2) {
 void PrologDWorker::inputString(QString qstr) {
   inputedStrs.push_back(decode_utf8_to_cp1251(qstr));
 }
-
+static void decode_utf8_to_cp1251_2(std::string &str) {
+  if (str.empty())
+    return;
+  size_t si = 0;
+  for (size_t i = 0; i < str.size();) {
+    if (i + 1 < str.size() && str[i] == -48 && str[i + 1] == -127) {
+      str[si++] = '®';
+      i += 2;
+    } else if (i + 1 < str.size() && str[i] == -47 && str[i + 1] == -111) {
+      str[si++] = 'Є';
+      i += 2;
+    } else if ((str[i] & 128u) == 0) {
+      str[si++] = str[i++];
+    } else if ((str[i] & 224u) == 192u && i + 1 != str.size()) {
+      str[si++] = ((str[i] ^ 192u) << 6u) + (str[i + 1] & 63u) - 1040u - 64u;
+      i += 2;
+    } else {
+      errout("Decoding error");
+      throw 1;
+    }
+  }
+  str.resize(si);
+}
 PrologDWorker::PrologDWorker(CanvasArea *canvas, QObject *parent)
   : QObject(parent)
   , m_canvas(canvas) {}
@@ -292,12 +329,19 @@ void PrologDWorker::run(const QStringList &program, const QStringList &input) {
     if (serr != ErrorCode::NoErrors) {
       throw std::runtime_error(GetPrErrText(serr));
     }
+    std::list<std::string> stdprogram_utf8 = convertToStdString(program);
+    stdprogram_utf8 = preprocessor_run_on_source(stdprogram_utf8);
+    std::list<std::string>::iterator it = stdprogram_utf8 .begin();
     Ninp = 0;
-    for (Nstr = 0; EnableRunning && Nstr < program.size(); Nstr++) {
+    for (Nstr = 0; EnableRunning && Nstr < stdprogram_utf8.size(); Nstr++) {
       // трансл€ци€ построчно
-      QString lise = program[Nstr];
-      lise.replace('\t', ' ');
-      std::string line = decode_utf8_to_cp1251(lise);
+      //QString lise = program[Nstr];
+      //lise.replace('\t', ' ');
+      //std::string line = decode_utf8_to_cp1251(lise);
+      std::string line = *it;
+      ++it;
+      decode_utf8_to_cp1251_2(line);
+
 
       char *p = const_cast<char *>(line.c_str());  // текуща€ строка
 

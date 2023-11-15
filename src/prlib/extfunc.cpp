@@ -11,7 +11,7 @@
 // #include <charconv>
 
 // TODO: автоматически менять
-const char *kPrologVersion = "24 марта 2023";
+const char *kPrologVersion = "16 ноябрая 2023";
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {

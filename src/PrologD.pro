@@ -19,6 +19,7 @@ SOURCES += \
     gui/Highlighter.cpp \
     gui/Settings.cpp \
     PrologD.cpp \
+    preprocessor.cpp \
     prlib/control.cpp \
     prlib/extfunc.cpp \
     prlib/err.cpp \
@@ -36,6 +37,7 @@ HEADERS  += \
     gui/Highlighter.h \
     gui/Settings.h \
     PrologD.h \
+    preprocessor.h \
     prlib/control.h \
     prlib/extfunc.h \
     prlib/err.h \
