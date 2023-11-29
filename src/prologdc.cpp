@@ -295,23 +295,40 @@ int main(int argc, char **argv) {
     std::cerr << "Invalid argument " << argv[i] << std::endl;
     return 1;
   }
-  if (source_filename) {
+
+  if (!source_filename) {
+    source_stream = &std::cin;
     std::string src;
     try {
-      src = preprocessor_run(source_filename);
-	} catch (const std::runtime_error &err) {
+      src = preprocessor_run_interactive(&std::cin);
+    } catch (const std::runtime_error &err) {
       std::cerr << err.what() << std::endl;
       return 1;
-	}
+    }
     source_file = std::make_unique<std::ifstream>(src.c_str());
     if (!source_file->is_open()) {
       std::cerr << "Cannot open file " << source_filename << std::endl;
       return 1;
     }
     source_stream = source_file.get();
-  } else {
-    source_stream = &std::cin;
   }
+  else
+  {
+    std::string src;
+    try {
+      src = preprocessor_run(source_filename);
+    } catch (const std::runtime_error &err) {
+      std::cerr << err.what() << std::endl;
+      return 1;
+    }
+    source_file = std::make_unique<std::ifstream>(src.c_str());
+    if (!source_file->is_open()) {
+      std::cerr << "Cannot open file " << source_filename << std::endl;
+      return 1;
+    }
+    source_stream = source_file.get();
+  }
+
   if (input_filename) {
     input_file = std::make_unique<std::ifstream>(input_filename);
     if (!input_file->is_open()) {

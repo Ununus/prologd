@@ -39,10 +39,40 @@ void preprocessor(std::string filename) {
 }
 
 std::string preprocessor_run(std::string filename) {
-  int lastBackSlash = filename.rfind("/") + 1;
-  std::string destinationName = filename.substr(0, lastBackSlash) + "prologd_temporary_file.pld";
+  std::string destinationName = "./prologd_temporary_file.pld";
   destinationFile.open(destinationName);
+  if(destinationFile.is_open() == false)
+    throw std::runtime_error("Cannot create temporary file.");
   preprocessor(filename);
+  destinationFile.close();
+  return destinationName;
+}
+
+void preprocessor_interactive(std::istream *source) {
+  std::string line;
+  std::regex import_("\\?ИМПОРТ\\(\".+\"\\)\\.");
+  while (std::getline(*source, line)) {
+    if (line.empty())
+      break;
+    if (std::regex_match(line, import_)) {
+      int pos1 = line.find("\"") + 1;
+      int pos2 = line.find("\"", pos1);
+      std::string importFileName = line.substr(pos1, pos2 - pos1);
+      if (importFileName.find("..\\") != -1 || importFileName.find("../") != -1)
+        throw std::runtime_error("An attempt was made to access the parent directory with \"../\".");
+      preprocessor(import_directory + importFileName);
+    } else {
+      destinationFile << line << "\n";
+    }
+  }
+}
+
+std::string preprocessor_run_interactive(std::istream *source) {
+  std::string destinationName = "./prologd_temporary_file.pld";
+  destinationFile.open(destinationName);
+  if(destinationFile.is_open() == false)
+    throw std::runtime_error("Can not create temporary file.");
+  preprocessor_interactive(source);
   destinationFile.close();
   return destinationName;
 }
