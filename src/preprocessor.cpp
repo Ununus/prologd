@@ -1,10 +1,12 @@
 #include <fstream>
+#include <sstream>
 #include <regex>
 
 #include "preprocessor.h"
 
 extern std::string import_directory;
 
+std::stringstream preprocessorDestination;
 std::ofstream destinationFile;
 
 std::string getFileName(std::string fullName)
@@ -20,7 +22,7 @@ std::string getFileName(std::string fullName)
 void preprocessor(std::string filename) {
   std::ifstream program(filename);
   std::string line;
-  std::regex import_("\\?ИМПОРТ\\(\".+\"\\)\\.");
+  std::regex import_("\\?ИМПОРТ\\(\".+\"\\)\\.\n*\r*");
   if (program.is_open() == false)
     throw std::runtime_error(("Cannot open file: " + getFileName(filename)).c_str());
   while (std::getline(program, line)) {
@@ -32,25 +34,20 @@ void preprocessor(std::string filename) {
         throw std::runtime_error("An attempt was made to access the parent directory with \"../\".");
       preprocessor(import_directory + importFileName);
     } else {
-      destinationFile << line << "\n";
+      preprocessorDestination << line << "\n";
     }
   }
   program.close();
 }
 
-std::string preprocessor_run(std::string filename) {
-  std::string destinationName = "./prologd_temporary_file.pld";
-  destinationFile.open(destinationName);
-  if(destinationFile.is_open() == false)
-    throw std::runtime_error("Cannot create temporary file.");
+std::stringstream& preprocessor_run(std::string filename) {
   preprocessor(filename);
-  destinationFile.close();
-  return destinationName;
+  return preprocessorDestination;
 }
 
 void preprocessor_interactive(std::istream *source) {
   std::string line;
-  std::regex import_("\\?ИМПОРТ\\(\".+\"\\)\\.");
+  std::regex import_("\\?ИМПОРТ\\(\".+\"\\)\\.\n*\r*");
   while (std::getline(*source, line)) {
     if (line.empty())
       break;
@@ -62,19 +59,14 @@ void preprocessor_interactive(std::istream *source) {
         throw std::runtime_error("An attempt was made to access the parent directory with \"../\".");
       preprocessor(import_directory + importFileName);
     } else {
-      destinationFile << line << "\n";
+      preprocessorDestination << line << "\n";
     }
   }
 }
 
-std::string preprocessor_run_interactive(std::istream *source) {
-  std::string destinationName = "./prologd_temporary_file.pld";
-  destinationFile.open(destinationName);
-  if(destinationFile.is_open() == false)
-    throw std::runtime_error("Can not create temporary file.");
+std::stringstream& preprocessor_run_interactive(std::istream *source) {
   preprocessor_interactive(source);
-  destinationFile.close();
-  return destinationName;
+  return preprocessorDestination;
 }
 
 std::list<std::string> preprocessor_run_on_source(std::list<std::string> source) {
@@ -84,8 +76,7 @@ std::list<std::string> preprocessor_run_on_source(std::list<std::string> source)
     destinationFile << s << '\n';
   }
   destinationFile.close();
-  std::string dest = preprocessor_run("./prologd_temporary_file_1.pld");
-  std::ifstream in(dest);
+  std::stringstream& in = preprocessor_run("./prologd_temporary_file_1.pld");
   std::string line;
   source.clear();
   while (std::getline(in, line)) {

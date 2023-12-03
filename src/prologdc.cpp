@@ -25,12 +25,12 @@ static const char *input_filename{ nullptr };
 static const char *output_filename{ nullptr };
 static const char *error_filename{ nullptr };
 
-static std::unique_ptr<std::ifstream> source_file;
+static std::unique_ptr<std::stringstream> source_file;
 static std::unique_ptr<std::ifstream> input_file;
 static std::unique_ptr<std::ofstream> output_file;
 static std::unique_ptr<std::ofstream> error_file;
 
-static std::istream *source_stream{ nullptr };
+static std::stringstream *source_stream{ nullptr };
 static std::istream *input_stream{ nullptr };
 // TODO: если открываем один и тот же файл дл€ stdout и stderr, то не работает
 // Ќужно сделать если output_filename == output_filename, то указатели на один и тот же поток
@@ -296,37 +296,18 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  if (!source_filename) {
-    source_stream = &std::cin;
-    std::string src;
-    try {
-      src = preprocessor_run_interactive(&std::cin);
-    } catch (const std::runtime_error &err) {
-      std::cerr << err.what() << std::endl;
-      return 1;
-    }
-    source_file = std::make_unique<std::ifstream>(src.c_str());
-    if (!source_file->is_open()) {
-      std::cerr << "Cannot open file " << source_filename << std::endl;
-      return 1;
-    }
-    source_stream = source_file.get();
-  }
-  else
-  {
-    std::string src;
-    try {
-      src = preprocessor_run(source_filename);
-    } catch (const std::runtime_error &err) {
-      std::cerr << err.what() << std::endl;
-      return 1;
-    }
-    source_file = std::make_unique<std::ifstream>(src.c_str());
-    if (!source_file->is_open()) {
-      std::cerr << "Cannot open file " << source_filename << std::endl;
-      return 1;
-    }
-    source_stream = source_file.get();
+  try {
+    std::stringstream& src = ( 
+                                source_filename ? 
+                                preprocessor_run(source_filename) : 
+                                preprocessor_run_interactive(&std::cin)
+                             );
+    //source_file = std::make_unique<std::stringstream>(src);
+    //source_stream = source_file.get();
+    source_stream = &src;
+  } catch (const std::runtime_error &err) {
+    std::cerr << err.what() << std::endl;
+    return 1;
   }
 
   if (input_filename) {
