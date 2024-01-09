@@ -1,4 +1,5 @@
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 #include <regex>
 
@@ -70,18 +71,20 @@ std::stringstream& preprocessor_run_interactive(std::istream *source) {
 }
 
 std::list<std::string> preprocessor_run_on_source(std::list<std::string> source) {
-  std::string destinationName = "./prologd_temporary_file_1.pld";
-  destinationFile.open(destinationName);
+  std::filesystem::path tmpPath = std::filesystem::temp_directory_path();
+  tmpPath /= "prologd_temporary_file_1.pld";
+  std::string destinationPath = tmpPath.string();
+
+  destinationFile.open(destinationPath);
   for (std::string& s : source) {
     destinationFile << s << '\n';
   }
   destinationFile.close();
-  std::stringstream& in = preprocessor_run("./prologd_temporary_file_1.pld");
+  std::stringstream& in = preprocessor_run(destinationPath);
   std::string line;
   source.clear();
   while (std::getline(in, line)) {
       source.push_back(line);
   }
-  destinationFile.close();
   return source;
 }
