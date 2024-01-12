@@ -4,6 +4,7 @@ project ("prologd")
 
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 option(BUILD_GUI "Build GUI editor" OFF)
 
 add_subdirectory("prlib")
