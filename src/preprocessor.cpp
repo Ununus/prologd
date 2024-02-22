@@ -76,6 +76,9 @@ std::list<std::string> preprocessor_run_on_source(std::list<std::string> source)
   std::string destinationPath = tmpPath.string();
 
   destinationFile.open(destinationPath);
+  if (!destinationFile.is_open()) {
+      throw std::runtime_error(("Cannot open file: " + destinationPath).c_str());
+  }
   for (std::string& s : source) {
     destinationFile << s << '\n';
   }
@@ -86,5 +89,6 @@ std::list<std::string> preprocessor_run_on_source(std::list<std::string> source)
   while (std::getline(in, line)) {
       source.push_back(line);
   }
+  preprocessorDestination = std::stringstream();
   return source;
 }

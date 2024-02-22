@@ -11,7 +11,7 @@
 // #include <charconv>
 
 // TODO: автоматически менять
-const char *kPrologVersion = "16 ноября 2023";
+const char *kPrologVersion = "22 февраля 2024";
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
@@ -1843,7 +1843,7 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (l[2] % l[1] == 0) {
       return zap1(l[2] / l[1], 1, ScVar, ClVar, heap);
     }
-    f[2] = (FloatType)l[1];
+    f[2] = (FloatType)l[2];
     f[1] = (FloatType)l[1];
   case 566:
     if (f[1] == 0) {
