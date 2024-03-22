@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <sstream>
 #include <regex>
+#include <algorithm>
 
 #include "preprocessor.h"
 
@@ -27,6 +28,7 @@ void preprocessor(std::string filename) {
   if (program.is_open() == false)
     throw std::runtime_error(("Cannot open file: " + getFileName(filename)).c_str());
   while (std::getline(program, line)) {
+    std::replace(line.begin(), line.end(), '\t', ' '); // the interpreter doesn't like tabs
     if (std::regex_match(line, import_)) {
       int pos1 = line.find("\"") + 1;
       int pos2 = line.find("\"", pos1);

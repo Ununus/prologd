@@ -1,0 +1,1 @@
+#define PRLIB_BUILD_DATE "${prlib_t}"

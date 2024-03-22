@@ -10,8 +10,8 @@
 #include "functions.h"
 // #include <charconv>
 
-// TODO: автоматически менять
-const char *kPrologVersion = "22 февраля 2024";
+#include "prlib_config.h"
+const char *kPrologVersion = PRLIB_BUILD_DATE;
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
