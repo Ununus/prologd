@@ -1054,6 +1054,201 @@ PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Yes;  // 3;
 }
 
+// ABS
+PredicateState prabs(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  IntegerType l[4];
+  FloatType f[4];
+  bool isFloatProcessing = false;
+  for (size_t i = 0; i < 2; ++i)
+    isFloatProcessing |= (ScVar->vgoal[i] == 6);
+  for (size_t i = 0; i < 2; ++i) {
+    switch (ScVar->vgoal[i]) {
+    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
+    case 7:
+      if (isFloatProcessing) {
+        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        break;
+        switch (i) {
+        case 0: sw -= 10; break;
+        case 1: sw -= 1;
+        }
+      } else {
+        l[i] = occ(i, ScVar, ClVar, heap);
+      }
+     break;
+    }
+  }
+  switch (sw) {
+  case 77: return (abs(l[0]) == l[1]) ? PredicateState::Yes : PredicateState::No;
+  case 66: return (abs(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 57:
+  case 56: return PredicateState::No;  // Не умеем брать обратную функцию: abs^-1(x) = undefined
+  case 75: return zap1(abs(l[0]), 2, ScVar, ClVar, heap);
+  case 65: return zap1f(abs(f[0]), 2, ScVar, ClVar, heap);
+  }
+  outerror(ErrorCode::UnknownError);
+  return PredicateState::Error;
+}
+// SQRT
+PredicateState prsqrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  IntegerType l[4];
+  FloatType f[4];
+  bool isFloatProcessing = false;
+  for (size_t i = 0; i < 2; ++i)
+    isFloatProcessing |= (ScVar->vgoal[i] == 6);
+  for (size_t i = 0; i < 2; ++i) {
+    switch (ScVar->vgoal[i]) {
+    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
+    case 7:
+      if (isFloatProcessing) {
+        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        break;
+        switch (i) {
+        case 0: sw -= 10; break;
+        case 1: sw -= 1;
+        }
+      } else {
+        l[i] = occ(i, ScVar, ClVar, heap);
+      }
+      break;
+    }
+  }
+  switch (sw) {
+  case 77: return (sqrt(l[0]) == l[1]) ? PredicateState::Yes : PredicateState::No;
+  case 66: return (sqrt(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 57: return zap1(l[1] * l[1], 1, ScVar, ClVar, heap);
+  case 56: return zap1f(f[1] * f[1], 1, ScVar, ClVar, heap);
+  case 75: return zap1(sqrt(l[0]), 2, ScVar, ClVar, heap);
+  case 65: return zap1f(sqrt(f[0]), 2, ScVar, ClVar, heap);
+  }
+  outerror(ErrorCode::UnknownError);
+  return PredicateState::Error;
+}
+// SIN
+PredicateState prsin(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  IntegerType l[4];
+  FloatType f[4];
+  bool isFloatProcessing = true;
+  for (size_t i = 0; i < 2; ++i) {
+    switch (ScVar->vgoal[i]) {
+    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
+    case 7:
+      if (isFloatProcessing) {
+        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        break;
+        switch (i) {
+        case 0: sw -= 10; break;
+        case 1: sw -= 1;
+        }
+      } else {
+        l[i] = occ(i, ScVar, ClVar, heap);
+      }
+      break;
+    }
+  }
+  switch (sw) {
+  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  case 66: return (sin(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 56: return zap1f(asin(f[1]), 1, ScVar, ClVar, heap); 
+  case 65: return zap1f(sin(f[0]), 2, ScVar, ClVar, heap);
+  }
+  outerror(ErrorCode::UnknownError);
+  return PredicateState::Error;
+}
+// COS
+PredicateState prcos(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  IntegerType l[4];
+  FloatType f[4];
+  bool isFloatProcessing = true;
+  for (size_t i = 0; i < 2; ++i) {
+    switch (ScVar->vgoal[i]) {
+    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
+    case 7:
+      if (isFloatProcessing) {
+        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        break;
+        switch (i) {
+        case 0: sw -= 10; break;
+        case 1: sw -= 1;
+        }
+      } else {
+        l[i] = occ(i, ScVar, ClVar, heap);
+      }
+      break;
+    }
+  }
+  switch (sw) {
+  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  case 66: return (cos(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 56: return zap1f(acos(f[1]), 1, ScVar, ClVar, heap);
+  case 65: return zap1f(cos(f[0]), 2, ScVar, ClVar, heap);
+  }
+  outerror(ErrorCode::UnknownError);
+  return PredicateState::Error;
+}
+// TAN
+PredicateState prtan(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  IntegerType l[4];
+  FloatType f[4];
+  bool isFloatProcessing = true;
+  for (size_t i = 0; i < 2; ++i) {
+    switch (ScVar->vgoal[i]) {
+    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
+    case 7:
+      if (isFloatProcessing) {
+        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        break;
+        switch (i) {
+        case 0: sw -= 10; break;
+        case 1: sw -= 1;
+        }
+      } else {
+        l[i] = occ(i, ScVar, ClVar, heap);
+      }
+      break;
+    }
+  }
+  switch (sw) {
+  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  case 66: return (tan(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 56: return zap1f(atan(f[1]), 1, ScVar, ClVar, heap);
+  case 65: return zap1f(tan(f[0]), 2, ScVar, ClVar, heap);
+  }
+  outerror(ErrorCode::UnknownError);
+  return PredicateState::Error;
+}
+// EXP
+PredicateState prexp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
+  IntegerType l[4];
+  FloatType f[4];
+  bool isFloatProcessing = true;
+  for (size_t i = 0; i < 2; ++i) {
+    switch (ScVar->vgoal[i]) {
+    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
+    case 7:
+      if (isFloatProcessing) {
+        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        break;
+        switch (i) {
+        case 0: sw -= 10; break;
+        case 1: sw -= 1;
+        }
+      } else {
+        l[i] = occ(i, ScVar, ClVar, heap);
+      }
+      break;
+    }
+  }
+  switch (sw) {
+  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  case 66: return (exp(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 56: return zap1f(log(f[1]), 1, ScVar, ClVar, heap);
+  case 65: return zap1f(exp(f[0]), 2, ScVar, ClVar, heap);
+  }
+  outerror(ErrorCode::UnknownError);
+  return PredicateState::Error;
+}
+
 PredicateState argtwo(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(2, ClVar->head, ScVar, ClVar, heap);
   size_t sw = ScVar->vgoal[0] * 10 + ScVar->vgoal[1];
@@ -1072,6 +1267,12 @@ PredicateState argtwo(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);               // ВВОДСТР
   case hprdint: return prrdint(sw, ScVar, ClVar, heap);               // ВВОДЦЕЛ
   case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);           // ВВОДВЕЩ
+  case hpabs: return prabs(sw, ScVar, ClVar, heap);                   // ABS
+  case hpsqrt: return prsqrt(sw, ScVar, ClVar, heap);                 // SQRT
+  case hpsin: return prsin(sw, ScVar, ClVar, heap);                   // SIN
+  case hpcos: return prcos(sw, ScVar, ClVar, heap);                   // COS
+  case hptan: return prtan(sw, ScVar, ClVar, heap);                   // TAN
+  case hpexp: return prexp(sw, ScVar, ClVar, heap);                   // EXP
   }
   return PredicateState::Error;  // 1;
 }
@@ -2416,6 +2617,13 @@ bool bpred(size_t name, size_t narg) {
   case hprdstr: return (narg == 1 || narg == 2) ? true : false;
 
   case hprand: return (narg == 1 || narg == 3) ? true : false;
+
+  case hpabs:
+  case hpsqrt:
+  case hpsin:
+  case hpcos:
+  case hptan:
+  case hpexp:
 
   case hpgt:
   case hpstint:

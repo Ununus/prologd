@@ -471,3 +471,21 @@ constexpr size_t hpquiet = hp_float + sizeof(recordsconst) + sizeof("ÒÈÕÎ") - 1;
 
 // לוסעמ ÂÅÐÑÈ‗
 constexpr size_t hpversion = hpquiet + sizeof(recordsconst) + sizeof("ÂÅÐÑÈ‗") - 1;
+
+// לוסעמ ABS
+constexpr size_t hpabs = hpversion + sizeof(recordsconst) + sizeof("ABS") - 1;
+
+// לוסעמ SQRT
+constexpr size_t hpsqrt = hpabs + sizeof(recordsconst) + sizeof("SQRT") - 1;
+
+// לוסעמ SIN
+constexpr size_t hpsin = hpsqrt + sizeof(recordsconst) + sizeof("SIN") - 1;
+
+// לוסעמ COS
+constexpr size_t hpcos = hpsin + sizeof(recordsconst) + sizeof("COS") - 1;
+
+// לוסעמ TAN
+constexpr size_t hptan = hpcos + sizeof(recordsconst) + sizeof("TAN") - 1;
+
+// לוסעמ EXP
+constexpr size_t hpexp = hptan + sizeof(recordsconst) + sizeof("EXP") - 1;

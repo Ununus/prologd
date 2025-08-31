@@ -87,6 +87,18 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 // ЛИНИЯ
 PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// ABS
+PredicateState prabs(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// SQRT
+PredicateState prsqrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// SIN
+PredicateState prsin(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// COS
+PredicateState prcos(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// TAN
+PredicateState prtan(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// EXP
+PredicateState prexp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 //=========== функции ввода ==============
 std::string Inputstring(const char *caption = nullptr);
 std::string Inputline(const char *caption = nullptr);
