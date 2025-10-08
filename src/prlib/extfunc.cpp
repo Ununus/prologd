@@ -1058,31 +1058,35 @@ PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 PredicateState prabs(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
-  bool isFloatProcessing = false;
-  for (size_t i = 0; i < 2; ++i)
-    isFloatProcessing |= (ScVar->vgoal[i] == 6);
   for (size_t i = 0; i < 2; ++i) {
     switch (ScVar->vgoal[i]) {
-    case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
-    case 7:
-      if (isFloatProcessing) {
-        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+    case 6: // int
+        f[i] = occf(i, ScVar, ClVar, heap);
         break;
-        switch (i) {
-        case 0: sw -= 10; break;
-        case 1: sw -= 1;
-        }
-      } else {
+    case 7: // float
         l[i] = occ(i, ScVar, ClVar, heap);
-      }
      break;
     }
   }
   switch (sw) {
   case 77: return (abs(l[0]) == l[1]) ? PredicateState::Yes : PredicateState::No;
   case 66: return (abs(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
-  case 57:
-  case 56: return PredicateState::No;  // Не умеем брать обратную функцию: abs^-1(x) = undefined
+  case 76: return (static_cast<FloatType>(abs(l[0])) == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 67: return (abs(f[0]) == static_cast<FloatType>(l[1])) ? PredicateState::Yes : PredicateState::No;
+  case 56: // var float
+      if (f[1] >= 0) {
+        zap1f(abs(f[1]), 1, ScVar, ClVar, heap);
+        return PredicateState::Yes;
+      } else {
+        return PredicateState::No;
+      }
+  case 57: // var int
+      if (l[1] >= 0) {
+        zap1(abs(l[1]), 1, ScVar, ClVar, heap);
+        return PredicateState::Yes;
+      } else {
+        return PredicateState::No;
+      }
   case 75: return zap1(abs(l[0]), 2, ScVar, ClVar, heap);
   case 65: return zap1f(abs(f[0]), 2, ScVar, ClVar, heap);
   }
