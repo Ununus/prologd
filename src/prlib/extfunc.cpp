@@ -644,31 +644,58 @@ PredicateState argone(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // БОЛЬШЕ
 PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType a[2];
-  int ind = 0;
+  int ind = ScVar->vgoal[0] * 10 + ScVar->vgoal[1];
   FloatType af[2];
+  std::string as[2];
   for (int i = 0; i < 2; i++) {
     switch (ScVar->vgoal[i]) {
     case 7:
-      ind += 1 * (i + 1);
       a[i] = occ(i, ScVar, ClVar, heap);
       break;  // ind==1 || 2
     case 6:
-      ind += 3 * (i + 1);
       af[i] = occf(i, ScVar, ClVar, heap);
       break;  // ind==3 || 6
-    default: ind = 10;
+    case 4:
+        as[i] = occ_line(i, ScVar, ClVar, heap);
+        break;
+
     }
   }
   switch (ind) {
-  case 3: return (a[0] > a[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
-  case 7: af[0] = (FloatType)a[0]; break;
-  case 5: af[1] = (FloatType)a[1]; break;
-  case 9: break;
+  case 66: // float float
+      return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;
+  case 67: // float int
+      return (af[0] > static_cast<float>(a[1])) ? PredicateState::Yes : PredicateState::No;
+  case 76: // int float
+      return (static_cast<float>(a[0]) > af[1]) ? PredicateState::Yes : PredicateState::No;
+  case 77: // int int
+      return (a[0] > a[1]) ? PredicateState::Yes : PredicateState::No;
+  case 44:
+  {
+      bool greater = true;
+      for (int i = 0; i < as[0].size() && i < as[1].size(); ++i) {
+          if (as[0][i] < as[1][i]) {
+              greater = false;
+              goto eccase;
+          }
+          if (as[0][i] > as[1][i]) {
+              greater = true;
+              goto eccase;
+          }
+      }
+      if (as[0].size() <= as[1].size()) {
+          greater = false;
+      }
+eccase:
+      return greater ? PredicateState::Yes : PredicateState::No;
+  }
   default: {
     throw std::runtime_error("БОЛЬШЕ: Недопустимый тип аргументов");
   }
   }
-  return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+  throw std::runtime_error("БОЛЬШЕ: Недопустимый тип аргументов");
+  return PredicateState::No;
+  //return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
 }
 
 // составить строку символов из элементов tp - tp должен быть list
