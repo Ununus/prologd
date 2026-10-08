@@ -153,9 +153,11 @@ class Session {
   host::Sinks make_sinks() {
     host::Sinks sinks;
     sinks.out_line = [this](const std::string &text) {
+      at_line_start_ = true;
       emit(Json{{"event", "output"}, {"text", text}});
     };
     sinks.out_raw = [this](const std::string &text) {
+      at_line_start_ = false;
       emit(Json{{"event", "output"}, {"text", text}});
     };
     sinks.error = [this](const std::string &text, int line, const std::string &kind) {
@@ -165,9 +167,24 @@ class Session {
       }
       emit(event);
     };
-    // The Yes/No of a question travels as the `found` of its `result` event,
-    // which `run` reads from `host::run_line`; this sink has nothing to add.
-    sinks.result = [](bool) {};
+    // `prdout` is the Yes/No of a question whose goal has no variables: the
+    // interpreter prints «ДА» or «НЕТ» for it (a goal with variables prints its
+    // bindings instead), and the window shows that line as the answer - it reads
+    // the `result` event only for the flag.  So the text a console user sees is
+    // sent here, on its own line, and a question that finds nothing no longer
+    // concludes in silence.
+    sinks.result = [this](bool value) {
+      std::string text;
+      if (!at_line_start_) {
+        // The program left a half-line of its own (`ВЫВОД` without `ПС`), exactly
+        // as the console's `prdout` answers after a `usrout`.
+        text += '\n';
+      }
+      text += value ? "ДА" : "НЕТ";
+      text += '\n';
+      at_line_start_ = true;
+      emit(Json{{"event", "output"}, {"text", text}});
+    };
     sinks.input = [this](const std::string &caption, bool split_space) {
       return read_input_answer(caption, split_space);
     };
@@ -300,6 +317,9 @@ class Session {
   std::istream &in_;
   std::ostream &out_;
   int exit_code_ = 0;
+  //: Whether the last text sent to the front-end ended its line — the console
+  //: keeps the same flag, and the answer of a question follows it.
+  bool at_line_start_ = true;
 };
 
 }  // namespace
