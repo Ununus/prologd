@@ -18,7 +18,7 @@ const char *NamesOfPredicates[] = { "mod",    "кнфэ",      "рпюяяю",    "мер_рпю
                                     "ярпжек", "ярпбеы",    "ярпяохя",   "жекбеы",     "асйбю",    "жхтпю",  "репл",     "сдюкемхе", "яйнкэйн", "рнвйю",
                                     "яжео",   "дна",       "слмнфемхе", "нйпсфмнярэ", "гюйпюяйю", "йнохъ",  "опедк",    "кхмхъ",    "яксв",    "якнфемхе",
                                     "фдх",    "div",       "int",       "float",      "рхун",     "бепяхъ", "ABS",      "SQRT",     "SIN",     "COS", 
-                                    "TAN",    "EXP" };
+                                    "TAN",    "EXP",      "мюирхбяе" };
 const size_t MAX_BUILD_PRED = sizeof(NamesOfPredicates) / sizeof(char *);
 
 const char *Build_in_Libriary[] = {

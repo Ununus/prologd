@@ -2128,6 +2128,7 @@ PredicateState argthree(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) 
   case hpassrt: return prassrt(sw, ScVar, ClVar, heap);  // ÄÎÁ
   case hpadd: return pradd(sw, ScVar, ClVar, heap);      // ÑËÎÆÅÍÈÅ
   case hppaint: return prpaint(sw, ScVar, ClVar, heap);  // ÇÀÊĞÀÑÊÀ
+  case hpfndall: return prfindall(sw, ScVar, ClVar, heap);  // ÍÀÉÒÈÂÑÅ
   case hprand: return prrandom(sw, ScVar, ClVar, heap);  // ÑËÓ×
   }
   return PredicateState::Error;
@@ -2689,6 +2690,7 @@ bool bpred(size_t name, size_t narg) {
   case hpapp:
   case hppaint:
   case hpassrt: return (narg == 3) ? true : false;  // 3
+  case hpfndall: return (narg == 3) ? true : false;  // ÍÀÉÒÈÂÑÅ
 
   case hpmul: return (narg == 3 || narg == 4) ? true : false;
   case hpcircl:

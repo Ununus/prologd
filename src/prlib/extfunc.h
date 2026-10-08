@@ -63,6 +63,8 @@ PredicateState print(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 PredicateState prfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 // “≈–Ã
 PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// Õ¿…“»¬—≈
+PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 // ¡ŒÀ‹ÿ≈
 PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap);
 // «¿ –¿— ¿

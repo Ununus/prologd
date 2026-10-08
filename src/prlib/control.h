@@ -1,9 +1,14 @@
 #pragma once
 
+#include <functional>
+
 #include "pstructs.h"
 
 void bound(size_t *t, size_t *f, size_t *j, TClVar *ClVar, array *heap);
 ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning);
+// Перебор всех решений запроса (heap->query) без печати ответов: каждый ответ
+// отдаётся on_answer, после чего поиск продолжается (НАЙТИВСЕ).
+ErrorCode control_all(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning, const std::function<void()> &on_answer);
 bool unify(size_t tt1, size_t tt2, size_t ff1, size_t ff2, TClVar *, array *);
 size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClVar *ClVar, array *heap);
 void outerror(ErrorCode err);

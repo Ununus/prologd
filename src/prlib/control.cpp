@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
+#include <functional>
+#include <map>
+#include <string>
 #include "pdefs.h"
 #include "pstructs.h"
 #include "control.h"
@@ -245,6 +248,9 @@ PredicateState prout(TScVar *ScVar, TClVar *ClVar, array *heap) {
 size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto &outBuff = ClVar->outBuff;
   size_t i = 0;
+  // Номер свободной переменной в этом терме: W — место переменной в стеке,
+  // поэтому одна переменная получает один номер, сколько бы раз ни встретилась.
+  std::map<size_t, size_t> freevars;
   term = TERM;
   frame = FRAME;
   bool ex = true;
@@ -252,9 +258,11 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
   arg = 0;
   while (ex) {  // здесь циклический вывод терма
     if (term == isnil || term == NULL) {
-      outBuff.push_back('_');
-      ++j;
-      std::string str = std::to_string(W);
+      auto found = freevars.find(W);
+      if (found == freevars.end()) {
+        found = freevars.emplace(W, freevars.size() + 1).first;
+      }
+      std::string str = "_" + std::to_string(found->second);
       outBuff += str;
       j += str.size();
       ex = nextarg(&j, ScVar, ClVar, heap);
@@ -422,11 +430,15 @@ static void st_2(TScVar *ScVar, TClVar *ClVar, array *heap) {
 // Выделяется цель, которая должна быть удовлетворена. Если все цели
 // удовлетворены, то из стека восстанавливается родительская среда.
 // Если родительской среды нет, то выводется ответная подстановка.
-static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap) {
+static void st_3(TScVar *ScVar, TClVar *ClVar, array *heap, const std::function<void()> *on_answer) {
   if (!heap->GetPunsigned(heap->ipacltarget)[++ClVar->atomp])  // все цели удовлетворены
     if (ClVar->parent == NULL)                                 // есть ответ на вопрос
     {
-      prvars(ScVar, ClVar, heap);  // печать переменных
+      if (on_answer) {
+        (*on_answer)();  // ответ забирает вызывающий (НАЙТИВСЕ), печати нет
+      } else {
+        prvars(ScVar, ClVar, heap);  // печать переменных
+      }
       if (ClVar->stat != PredicateState::Error) {
         ClVar->stat = PredicateState::No;  // 5;  // неудача - не найдено решение
       }
@@ -608,12 +620,19 @@ static void OnControl(TClVar *ClVar, array *heap) {
   heap->ipaclause = ClVar->aclause;
   heap->ipacltarget = heap->GetPrecordclause(heap->ipaclause)->ptrtarget;
   ClVar->varqu = heap->GetPrecordclause(heap->ipaclause)->nvars;
-  ClVar->svptr = ClVar->varqu;
+  // Область переменных НАЙТИВСЕ: выше переменных вопроса и ниже кадров вызываемых
+  // предложений, поэтому копии шаблона переживают возвраты по стеку.
+  ClVar->findallbase = ClVar->varqu;
+  ClVar->findallused = 0;
+  ClVar->builtin_error = false;
+  ClVar->svptr = ClVar->findallbase + kFindallSlots;
   ClVar->atomp = -1;
   ClVar->quiet = false;
 }
 
-ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
+static ErrorCode machine(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning,
+                         const std::function<void()> *on_answer) {
+  ClVar->enableRunning = EnableRunning;
   OnControl(ClVar, heap);
   while (ClVar->stat != PredicateState::Error && ClVar->err == ErrorCode::NoErrors) {
     switch (ClVar->stat) {
@@ -621,7 +640,7 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
       st_2(ScVar, ClVar, heap);
       [[fallthrough]];         // если stat = 2 то выполнение сразу же и 3
     case PredicateState::Yes:  // 3
-      st_3(ScVar, ClVar, heap);
+      st_3(ScVar, ClVar, heap, on_answer);
       break;
     case PredicateState::ControlStep:  // 4
       st_4(ScVar, ClVar, heap);
@@ -631,6 +650,11 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
       break;
     case PredicateState::Builtin:  // 6
       st_6(ScVar, ClVar, heap);
+      // В режиме перебора об ошибке предиката (её текст уже напечатан) должен
+      // узнать тот, кто перебирает ответы.
+      if (on_answer && ClVar->stat == PredicateState::Error && ClVar->err == ErrorCode::NoErrors) {
+        ClVar->builtin_error = true;
+      }
       break;
     default: break;
     }
@@ -638,10 +662,19 @@ ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning
       ClVar->err = ErrorCode::ExecutionInterrupted;  // 27;  // abort
     }
   }
-  if (ClVar->flag && !ClVar->quiet) {
-    prdout(false);
+  if (!on_answer && ClVar->flag && !ClVar->quiet) {
+    prdout(false);  // вопрос без решения: НЕТ (у НАЙТИВСЕ ответа нет по замыслу)
   }
   return ClVar->err;
+}
+
+ErrorCode control(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning) {
+  return machine(ScVar, ClVar, heap, EnableRunning, nullptr);
+}
+
+ErrorCode control_all(TScVar *ScVar, TClVar *ClVar, array *heap, bool *EnableRunning, const std::function<void()> &on_answer) {
+  bool running = true;
+  return machine(ScVar, ClVar, heap, EnableRunning ? EnableRunning : &running, &on_answer);
 }
 
 // ================ унификация =======================

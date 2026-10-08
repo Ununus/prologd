@@ -13,6 +13,7 @@ add_executable(prlib_tests
   "test_program.cpp"
   "test_arith.cpp"
   "test_control.cpp"
+  "test_findall.cpp"
   "test_strings.cpp"
   "test_types.cpp"
   "test_input.cpp"

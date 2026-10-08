@@ -8,6 +8,7 @@ add_library (prlib
 "encoding.cpp" "encoding.h"
 "err.cpp" "err.h"
 "extfunc.cpp" "extfunc.h"
+"findall.cpp"
 "functions.cpp" "functions.h"
 "keywords.h"
 "pstructs.cpp" "pstructs.h"

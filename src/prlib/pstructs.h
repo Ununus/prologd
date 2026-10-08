@@ -19,6 +19,8 @@ constexpr size_t kInitialHeapSize = 16 * 16384;
 constexpr size_t kInitialStackSize = 16 * 4096;
 constexpr size_t kInitialUniBufSize = 4 * 100;
 constexpr size_t kInitialBptSize = 4 * 256;
+// мест стека переменных, отданных под копии НАЙТИВСЕ (control.cpp)
+constexpr size_t kFindallSlots = 4 * 1024;
 
 using FloatType = double;
 using IntegerType = prologd::BigInt;
@@ -297,6 +299,11 @@ struct TClVar {
   bool ex, flag;
   bool quiet{ false };  // Для предиката ТИХО
 
+  size_t findallbase;             // начало области переменных НАЙТИВСЕ
+  size_t findallused;             // сколько мест области уже занято
+  bool *enableRunning{ nullptr };  // флаг прерывания (нужен вложенному перебору)
+  bool builtin_error{ false };     // предикат сообщил об ошибке (перебор ответов)
+
   // для unify
   size_t bp, term1, term2, fr1, fr2, numb;
 
@@ -489,3 +496,6 @@ constexpr size_t hptan = hpcos + sizeof(recordsconst) + sizeof("TAN") - 1;
 
 // место EXP
 constexpr size_t hpexp = hptan + sizeof(recordsconst) + sizeof("EXP") - 1;
+
+// место НАЙТИВСЕ
+constexpr size_t hpfndall = hpexp + sizeof(recordsconst) + sizeof("НАЙТИВСЕ") - 1;
