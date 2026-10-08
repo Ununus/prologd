@@ -5,6 +5,7 @@ project ("prlib")
 add_library (prlib 
 "big_int.cpp" "big_int.hpp"
 "control.cpp" "control.h"
+"encoding.cpp" "encoding.h"
 "err.cpp" "err.h"
 "extfunc.cpp" "extfunc.h"
 "functions.cpp" "functions.h"

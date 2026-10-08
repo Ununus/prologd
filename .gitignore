@@ -33,7 +33,7 @@ bld/
 [Oo]ut/
 [Ll]og/
 [Ll]ogs/
-[Bb]uild-*/
+[Bb]uild*/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -374,3 +374,7 @@ src/prlib/Makefile
 
 # Pycharm files
 .idea/
+
+# Third-party sources are fetched into the build tree by CMake (see CMakeLists).
+src/3rdparty/
+3rdparty/

@@ -1,0 +1,42 @@
+# The test suite.  It is built only with -DPROLOGD_BUILD_TESTS=ON (the root
+# CMakeLists.txt has already fetched Catch2 by then).
+#
+# The engine is driven the way prologdc.cpp drives it: the tests define the hooks
+# the engine prints and reads through (test_host.cpp) and feed it one statement
+# per line, so a test reads what a console user would see.  That is why the test
+# binary links prlib directly instead of running the interpreter as a process;
+# the interpreter is covered by the two command line tests at the end, and by the
+# protocol tests of a front-end build.
+
+add_executable(prlib_tests
+  "test_host.cpp"
+  "test_program.cpp"
+  "test_arith.cpp"
+  "test_control.cpp"
+  "test_strings.cpp"
+  "test_types.cpp"
+  "test_input.cpp"
+  "test_graphics.cpp"
+  "test_helpers.hpp"
+)
+
+target_link_libraries(prlib_tests prlib Catch2::Catch2WithMain)
+target_include_directories(prlib_tests PRIVATE "${CMAKE_SOURCE_DIR}/src")
+
+if(MSVC)
+  # A test is written in UTF-8 (it carries the words of the dialect), while the
+  # engine reads CP1251; test_host.cpp converts with prlib's own conversions.  The
+  # headers of the engine are still CP1251, which /utf-8 cannot read - hence the
+  # suppressed warning (C4828: a character that is not valid in codepage 65001).
+  target_compile_options(prlib_tests PRIVATE "/utf-8" "/wd4828" "/wd4876")
+endif()
+
+catch_discover_tests(prlib_tests)
+
+# The interpreter itself: it is a process, so it is tested as one.
+add_test(NAME cli_help COMMAND prologd --help)
+set_tests_properties(cli_help PROPERTIES PASS_REGULAR_EXPRESSION "--source")
+
+add_test(NAME cli_factorial
+  COMMAND prologd "--source=${CMAKE_SOURCE_DIR}/src/examples/factorial.pld")
+set_tests_properties(cli_factorial PROPERTIES PASS_REGULAR_EXPRESSION "=720")

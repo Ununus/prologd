@@ -4,8 +4,14 @@
 #include "prlib/pstructs.h"
 #include "prlib/control.h"
 #include "prlib/functions.h"
+#include "prlib/encoding.h"
 
 #include "preprocessor.h"
+
+#ifdef PROLOGD_FOR_GUI
+#include "host.hpp"
+#include "protocol.hpp"
+#endif
 
 #include <iostream>
 #include <string>
@@ -15,6 +21,8 @@
 #include <memory>
 #include <stdexcept>
 #include <string.h>
+#include <functional>
+#include <utility>
 
 constexpr char input_signal_char = '$';
 
@@ -47,50 +55,44 @@ static std::stringstream cur_str_stream;
 // Работает только с одним потоком вывода
 static bool last_srv = true;
 
+#ifdef PROLOGD_FOR_GUI
+// ---- front-end sinks (see host.hpp) ----
+static bool g_haveSinks = false;
+static std::function<void(const std::string &)> g_sinkOutLine;
+static std::function<void(const std::string &)> g_sinkOutRaw;
+static std::function<void(const std::string &, int, const std::string &)> g_sinkError;
+static std::function<void(bool)> g_sinkResult;
+static std::function<std::string(const std::string &, bool)> g_sinkInput;
+#endif
+
+// Set around `scaner` so a diagnostic knows whether it came from the scanner.
+static std::string g_errorKind = "runtime";
+// The Yes/No of the question being answered, for a front-end that wants it as a
+// `result` event.
+static bool g_lastFound = false;
+
 void print_cp1251_decoded_to_utf8(const char *str, std::ostream &out) {
-  for (const char *c = str; *c; ++c) {
-    if (*c == 'ё') {
-      out << static_cast<unsigned char>(-47);
-      out << static_cast<unsigned char>(-111);
-    } else if (*c == 'Ё') {
-      out << static_cast<unsigned char>(-48);
-      out << static_cast<unsigned char>(-127);
-    } else if (*c >= 'А' && *c <= 'я') {
-      auto v = static_cast<unsigned char>(*c - 'А') + 1040u;
-      unsigned char c1 = 192u + (v >> 6u);
-      unsigned char c2 = (v & 63u) + 128u;
-      out << c1 << c2;
-    } else {
-      out << static_cast<unsigned char>(*c & 127u);
-    }
-  }
-  // out << '\n';
+  out << prologd::cp1251_to_utf8(str);
 }
 
 void decode_utf8_to_cp1251(std::string &str) {
-  if (str.empty())
-    return;
-  size_t si = 0;
-  for (size_t i = 0; i < str.size();) {
-    if (i + 1 < str.size() && str[i] == -48 && str[i + 1] == -127) {
-      str[si++] = 'Ё';
-      i += 2;
-    } else if (i + 1 < str.size() && str[i] == -47 && str[i + 1] == -111) {
-      str[si++] = 'ё';
-      i += 2;
-    } else if ((str[i] & 128u) == 0) {
-      str[si++] = str[i++];
-    } else if ((str[i] & 224u) == 192u && i + 1 != str.size()) {
-      str[si++] = ((str[i] ^ 192u) << 6u) + (str[i + 1] & 63u) - 1040u - 64u;
-      i += 2;
-    } else {
-      errout("Decoding error");
-      throw 1;
-    }
+  try {
+    str = prologd::utf8_to_cp1251(str);
+  } catch (const std::runtime_error &) {
+    errout("Decoding error");
+    throw 1;
   }
-  str.resize(si);
 }
 void prdout(bool value) {
+#ifdef PROLOGD_FOR_GUI
+  if (g_haveSinks) {
+    g_lastFound = value;
+    if (g_sinkResult) {
+      g_sinkResult(value);
+    }
+    return;
+  }
+#endif
   if (!last_srv) {
     *output_stream << '\n';
   }
@@ -103,15 +105,39 @@ void prdout(bool value) {
   last_srv = true;
 }
 void pldout(const char *str) {
+#ifdef PROLOGD_FOR_GUI
+  if (g_haveSinks) {
+    if (g_sinkOutLine) {
+      g_sinkOutLine(prologd::cp1251_to_utf8(str) + "\n");
+    }
+    return;
+  }
+#endif
   print_cp1251_decoded_to_utf8(str, *output_stream);
   *output_stream << '\n';
   last_srv = true;
 }
 void usrout(const char *str) {
+#ifdef PROLOGD_FOR_GUI
+  if (g_haveSinks) {
+    if (g_sinkOutRaw) {
+      g_sinkOutRaw(prologd::cp1251_to_utf8(str));
+    }
+    return;
+  }
+#endif
   print_cp1251_decoded_to_utf8(str, *output_stream);
   last_srv = false;
 }
 void errout(const char *str) {
+#ifdef PROLOGD_FOR_GUI
+  if (g_haveSinks) {
+    if (g_sinkError) {
+      g_sinkError(prologd::cp1251_to_utf8(str), parsed_str_number, g_errorKind);
+    }
+    return;
+  }
+#endif
   if (!last_srv) {
     *error_stream << '\n';
   }
@@ -121,16 +147,35 @@ void errout(const char *str) {
   last_srv = true;
 }
 
-int runProlog() {
-  ErrorCode err = ErrorCode::NoErrors;
-  std::unique_ptr<array> heap;
-  std::unique_ptr<TScVar> ScVar;
-  std::unique_ptr<TClVar> ClVar;
-  try {  // инициализация переменных, необходимых для работы интерпретатора
-    heap = std::make_unique<array>();
-    ScVar = std::make_unique<TScVar>();
-    ClVar = std::make_unique<TClVar>();
-    ClVar->PrSetting = std::make_unique<TPrSetting>();
+namespace host {
+
+static std::unique_ptr<array> g_heap;
+static std::unique_ptr<TScVar> g_scVar;
+static std::unique_ptr<TClVar> g_clVar;
+static bool g_enableRunning = true;
+static int g_initialError = 0;
+
+#ifdef PROLOGD_FOR_GUI
+void install(Sinks sinks) {
+  g_haveSinks = true;
+  g_sinkOutLine = std::move(sinks.out_line);
+  g_sinkOutRaw = std::move(sinks.out_raw);
+  g_sinkError = std::move(sinks.error);
+  g_sinkResult = std::move(sinks.result);
+  g_sinkInput = std::move(sinks.input);
+}
+#endif
+
+void set_print_questions(bool on) {
+  out_questions = on;
+}
+
+int start() {
+  try {
+    g_heap = std::make_unique<array>();
+    g_scVar = std::make_unique<TScVar>();
+    g_clVar = std::make_unique<TClVar>();
+    g_clVar->PrSetting = std::make_unique<TPrSetting>();
   } catch (const std::bad_alloc &er) {
     errout(er.what());
     return 1;
@@ -141,31 +186,58 @@ int runProlog() {
     errout("Prolog initialization failure");
     return 3;
   }
-  bool EnableRunning = true;
-  err = buildin(ScVar.get(), heap.get());
   parsed_str_number = 0;
-  while (err == ErrorCode::NoErrors && EnableRunning) {  // трансляция построчно
-    std::string line;
-    if (!std::getline(*source_stream, line)) {
-      break;
-    }
-    ++parsed_str_number;
-    if (line.empty()) {
-      continue;
-    }
-    decode_utf8_to_cp1251(line);
-    if (line[0] == input_signal_char) {
-      line.erase(line.begin());
-      inputed_strs.push_back(line);
-      continue;
-    }
+  g_initialError = static_cast<int>(buildin(g_scVar.get(), g_heap.get()));
+  return 0;
+}
 
-    char *cur_str = const_cast<char *>(line.c_str());
-    try {
-      err = scaner(cur_str, ScVar.get(), heap.get());
-      if (err == ErrorCode::NoErrors && ScVar->Query && ScVar->EndOfClause)  // если конец предложения и вопрос то
-      {
-        if (out_questions) {
+int initial_error() {
+  return g_initialError;
+}
+
+bool running() {
+  return g_enableRunning;
+}
+
+void reset_line_counter() {
+  parsed_str_number = 0;
+}
+
+int run_line(const std::string &utf8_line, bool &was_query, bool &found) {
+  was_query = false;
+  found = false;
+  std::string line = utf8_line;
+  ++parsed_str_number;
+  if (line.empty()) {
+    return 0;
+  }
+  try {
+    decode_utf8_to_cp1251(line);
+  } catch (...) {
+    return static_cast<int>(ErrorCode::InvalidCharacter);
+  }
+  if (line[0] == input_signal_char) {
+    line.erase(line.begin());
+    inputed_strs.push_back(line);
+    return 0;
+  }
+
+  char *cur_str = const_cast<char *>(line.c_str());
+  int err = 0;
+  g_errorKind = "parse";
+  try {
+    err = static_cast<int>(scaner(cur_str, g_scVar.get(), g_heap.get()));
+    if (err == 0 && g_scVar->Query && g_scVar->EndOfClause) {
+      g_errorKind = "runtime";
+      was_query = true;
+      g_lastFound = true;
+      if (out_questions) {
+#ifdef PROLOGD_FOR_GUI
+        if (g_haveSinks) {
+          pldout(cur_str);
+        } else
+#endif
+        {
           if (!last_srv) {
             *output_stream << '\n';
           }
@@ -173,19 +245,47 @@ int runProlog() {
           *output_stream << '\n';
           last_srv = true;
         }
-        err = control(ScVar.get(), ClVar.get(), heap.get(), &EnableRunning);
-        ScVar->Query = ScVar->EndOfClause = false;  // на выполнение
       }
-    } catch (const std::bad_alloc &er) {
-      errout(er.what());
-    } catch (const std::runtime_error &er) {
-      errout(er.what());
-    } catch (...) {
-      errout("Prolog failure");
+      err = static_cast<int>(control(g_scVar.get(), g_clVar.get(), g_heap.get(), &g_enableRunning));
+      g_scVar->Query = g_scVar->EndOfClause = false;
+      found = g_lastFound && err == 0;
     }
+  } catch (const std::bad_alloc &er) {
+    g_errorKind = "runtime";
+    errout(er.what());
+  } catch (const std::runtime_error &er) {
+    g_errorKind = "runtime";
+    errout(er.what());
+  } catch (...) {
+    g_errorKind = "runtime";
+    errout("Prolog failure");
   }
-  if (err != ErrorCode::NoErrors) {
-    outerror(err);
+  return err;
+}
+
+void report_error(int code) {
+  outerror(static_cast<ErrorCode>(code));
+}
+
+}  // namespace host
+
+int runProlog() {
+  const int init = host::start();
+  if (init != 0) {
+    return init;
+  }
+  int err = host::initial_error();
+  while (err == 0 && host::running()) {
+    std::string line;
+    if (!std::getline(*source_stream, line)) {
+      break;
+    }
+    bool was_query = false;
+    bool found = false;
+    err = host::run_line(line, was_query, found);
+  }
+  if (err != 0) {
+    host::report_error(err);
   }
   return 0;
 }
@@ -207,7 +307,17 @@ std::string InputStringFromDialog(const char *caption, bool splitSpace) {
       cur_str_stream = std::stringstream(inputed_strs.front());
       inputed_strs.pop_front();
     } else {
-      if (!std::getline(*input_stream, line)) {
+      bool haveInput = false;
+#ifdef PROLOGD_FOR_GUI
+      if (g_haveSinks && g_sinkInput) {
+        line = g_sinkInput(prologd::cp1251_to_utf8(caption), splitSpace);
+        haveInput = !line.empty();
+      } else
+#endif
+      {
+        haveInput = static_cast<bool>(std::getline(*input_stream, line));
+      }
+      if (!haveInput) {
         errout("Недостаточно входных данных");
         return {};
       }
@@ -255,10 +365,30 @@ void printHelp() {
 }
 
 int main(int argc, char **argv) {
+  bool json_protocol = false;
   for (int i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
       printHelp();
       return 0;
+    }
+    if (strcmp(argv[i], "--list-keywords") == 0) {
+      // This engine has no reserved-name table to export; an empty answer is
+      // what a front-end reads as "no list available".
+      return 0;
+    }
+    if (strcmp(argv[i], "--protocol") == 0) {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for --protocol" << std::endl;
+        return 1;
+      }
+      const char *value = argv[++i];
+      if (strcmp(value, "json") == 0) {
+        json_protocol = true;
+      } else if (strcmp(value, "text") != 0) {
+        std::cerr << "Unknown protocol " << value << std::endl;
+        return 1;
+      }
+      continue;
     }
     if (strcmp(argv[i], "-q") == 0 || strcmp(argv[i], "--qustions") == 0) {
       out_questions = true;
@@ -268,6 +398,16 @@ int main(int argc, char **argv) {
     if (!eqptr || !*(eqptr + 1)) {
       std::cerr << "Invalid argument " << argv[i] << std::endl;
       return 1;
+    }
+    if (strncmp(argv[i], "--protocol", sizeof("--protocol") - 1) == 0) {
+      const char *value = eqptr + 1;
+      if (strcmp(value, "json") == 0) {
+        json_protocol = true;
+      } else if (strcmp(value, "text") != 0) {
+        std::cerr << "Unknown protocol " << value << std::endl;
+        return 1;
+      }
+      continue;
     }
     if (strncmp(argv[i], "-s", sizeof("-s") - 1) == 0 || strncmp(argv[i], "--source", sizeof("--source") - 1) == 0) {
       source_filename = eqptr + 1;
@@ -294,6 +434,23 @@ int main(int argc, char **argv) {
 	}
     std::cerr << "Invalid argument " << argv[i] << std::endl;
     return 1;
+  }
+
+  if (json_protocol) {
+#ifndef PROLOGD_FOR_GUI
+    std::cerr << "error: this build has no JSON protocol; configure with "
+                 "-DPROLOGD_BUILD_FOR_GUI=ON"
+              << std::endl;
+    return 1;
+#else
+    if (input_filename || output_filename || error_filename) {
+      std::cerr << "error: --protocol json owns stdin and stdout; drop -i/-o/-e" << std::endl;
+      return 1;
+    }
+    output_stream = &std::cout;
+    error_stream = &std::cerr;
+    return prologd_cli::run_json_session(std::cin, std::cout);
+#endif
   }
 
   try {
