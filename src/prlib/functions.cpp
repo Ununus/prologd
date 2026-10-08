@@ -266,7 +266,7 @@ ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
       valuei = IntegerType(bufnum);
     }
     // Не знаю зачем это, но тут не работает разбор 0. 0.0
-    //if ((valuef == valuei.convert_to<FloatType>()) && (i > 1 || (i == 1 && (*p != '0')))) {
+    //if ((valuef == valuei.toDouble()) && (i > 1 || (i == 1 && (*p != '0')))) {
     //  err = ErrorCode::InvalidNumberFormat;  // 4;  // не верный формат числа
     //} else {
       if (punkt || e) {

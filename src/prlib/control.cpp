@@ -278,7 +278,7 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
       } break;  // ok
       case isinteger: {
         ClVar->precordinteger = (recordinteger *)tp;
-        std::string str = ClVar->precordinteger->value.str();
+        std::string str = ClVar->precordinteger->value.toString();
         outBuff += str;
         j += str.size();
         ex = nextarg(&j, ScVar, ClVar, heap);
@@ -338,7 +338,7 @@ size_t write_term(size_t TERM, size_t FRAME, size_t W, size_t j, TScVar *ScVar, 
         auto ind = calculation(term, frame, &ii, &ff, ClVar, heap);
         switch (ind) {
         case isinteger: {
-          std::string str = ii.str();
+          std::string str = ii.toString();
           outBuff += str;
           j += str.size();
         } break;
@@ -713,7 +713,7 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
           else if (ind == isinteger) {
             oi2 = ClVar->precordinteger->value;  // второй операнд
           } else {
-            of2 = (FloatType)ClVar->precordinteger->value;  // если первый вещественный
+            of2 = ClVar->precordinteger->value.toDouble();  // если первый вещественный
           }
           delete sta.back();
           sta.pop_back();
@@ -729,7 +729,7 @@ size_t calculation(size_t term, size_t frame, IntegerType *i, FloatType *f, TClV
             of2 = ClVar->precordfloat->value;
             if (ind == isinteger) {
               ind = isfloat;
-              of1 = (FloatType)oi1;
+              of1 = oi1.toDouble();
             }
           }
           delete sta.back();
@@ -1060,7 +1060,7 @@ bool unint(TClVar *ClVar, array *heap) {
   case isfloat: {
     recordfloat *precordfloat = (recordfloat *)tp;
     recordinteger *precordinteger = heap->GetPrecordinteger(ClVar->term1);
-    if (precordfloat->value - 1 < precordinteger->value.convert_to<FloatType>() && precordfloat->value == (float)precordinteger->value) {
+    if (precordfloat->value - 1 < precordinteger->value.toDouble() && precordfloat->value == static_cast<float>(precordinteger->value.toDouble())) {
       ret = true;
       nextun(ClVar, heap);
     }
@@ -1099,7 +1099,7 @@ bool unfloat(TClVar *ClVar, array *heap) {
   case isinteger: {
     recordfloat *precordfloat = heap->GetPrecordfloat(ClVar->term1);
     recordinteger *precordinteger = (recordinteger *)tp;
-    if (precordfloat->value - 1 < precordinteger->value.convert_to<FloatType>() && (float)precordinteger->value == precordfloat->value) {
+    if (precordfloat->value - 1 < precordinteger->value.toDouble() && static_cast<float>(precordinteger->value.toDouble()) == precordfloat->value) {
       ret = true;
       nextun(ClVar, heap);
     }

@@ -8,7 +8,7 @@
 #include <type_traits>
 #include "err.h"
 #include "pdefs.h"
-#include <boost/multiprecision/cpp_int.hpp>
+#include "big_int.hpp"
 
 constexpr size_t kInitialBptr = 4 * 1024;
 constexpr size_t kInitialGptr = 4 * 150;
@@ -21,7 +21,7 @@ constexpr size_t kInitialUniBufSize = 4 * 100;
 constexpr size_t kInitialBptSize = 4 * 256;
 
 using FloatType = double;
-using IntegerType = boost::multiprecision::cpp_int;
+using IntegerType = prologd::BigInt;
 
 // используется в control
 enum class PredicateState { Error = 1, PrepereNewTarget = 2, Yes = 3, ControlStep = 4, No = 5, Builtin = 6 };

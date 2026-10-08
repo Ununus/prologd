@@ -348,7 +348,7 @@ void PrintEmptyList(char **Buf, size_t *BufSize, recordemptylist *pr, TScVar *Sc
 
 void PrintInteger(char **Buf, size_t *BufSize, recordinteger *pri, TScVar *ScVar, array *heap) {
   char pBuf[255];
-  sprintf(pBuf, "%s", pri->value.str().c_str());
+  sprintf(pBuf, "%s", pri->value.toString().c_str());
   size_t Length = strlen(pBuf);
   if (Length + 1 < *BufSize) {
     strcpy(*Buf, pBuf);

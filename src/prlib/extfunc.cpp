@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cassert>
 #include <limits.h>
 #include <string.h>
 #include <random>
@@ -191,7 +192,7 @@ PredicateState prrandom(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7:  // целое: инициализация генератора
     n = occ(0, ScVar, ClVar, heap);
-    rng = std::mt19937_64(n.convert_to<long long>());
+    rng = std::mt19937_64(static_cast<long long>(n.toInt64()));
     return PredicateState::Yes;  // 3;
   case 5:                        // переменная: получить новое значение
     return zap1(rng(), 1, ScVar, ClVar, heap);
@@ -202,7 +203,7 @@ PredicateState prrandom(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       throw std::runtime_error("СЛУЧ: АРГ2 >= АРГ3");
     }
     // dst = std::uniform_int_distribution<IntegerType>(n, m);
-    dst = std::uniform_int_distribution<long long>(n.convert_to<long long>(), m.convert_to<long long>());
+    dst = std::uniform_int_distribution<long long>(static_cast<long long>(n.toInt64()), static_cast<long long>(m.toInt64()));
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: {
     throw std::runtime_error("СЛУЧ: Недопустимый тип аргументов");
@@ -304,9 +305,9 @@ PredicateState priocod(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 7:  // целое !!!посмотреть на ввод вещественных этого делать нельзя
   {
     if (ClVar->PrSetting->out.is_open()) {
-      ClVar->PrSetting->out << char(occ(0, ScVar, ClVar, heap));
+      ClVar->PrSetting->out << static_cast<char>(occ(0, ScVar, ClVar, heap).toInt64());
     } else {
-      str0[0] = char(occ(0, ScVar, ClVar, heap));
+      str0[0] = static_cast<char>(occ(0, ScVar, ClVar, heap).toInt64());
       usrout(str0);
     }
     return PredicateState::Yes;  // 3;
@@ -585,7 +586,7 @@ PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 PredicateState print(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: return PredicateState::Yes;  // 3;  // уже целое
-  case 6: return zap1(static_cast<IntegerType>(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
+  case 6: return zap1(IntegerType::fromDouble(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::ErrorInBuiltinPredicateInt);  // 36
   return PredicateState::Error;                     // 1
@@ -594,7 +595,7 @@ PredicateState print(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 // преобразование в float
 PredicateState prfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
-  case 7: return zap1f(static_cast<FloatType>(occ(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
+  case 7: return zap1f(occ(0, ScVar, ClVar, heap).toDouble(), 1, ScVar, ClVar, heap);
   case 6: return PredicateState::Yes;  // 3;
   }
   outerror(ErrorCode::ErrorInBuiltinPredicateFloat);  // 37
@@ -611,7 +612,7 @@ PredicateState prwait(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   IntegerType n = occ(0, ScVar, ClVar, heap);
   if (n > 0) {
-    std::this_thread::sleep_for(std::chrono::duration<size_t, std::milli>(n.convert_to<size_t>()));
+    std::this_thread::sleep_for(std::chrono::duration<size_t, std::milli>(static_cast<size_t>(n.toInt64())));
   }
   return PredicateState::Yes;  // 3;
 }
@@ -665,9 +666,9 @@ PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 66: // float float
       return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;
   case 67: // float int
-      return (af[0] > static_cast<float>(a[1])) ? PredicateState::Yes : PredicateState::No;
+      return (af[0] > static_cast<float>(a[1].toDouble())) ? PredicateState::Yes : PredicateState::No;
   case 76: // int float
-      return (static_cast<float>(a[0]) > af[1]) ? PredicateState::Yes : PredicateState::No;
+      return (static_cast<float>(a[0].toDouble()) > af[1]) ? PredicateState::Yes : PredicateState::No;
   case 77: // int int
       return (a[0] > a[1]) ? PredicateState::Yes : PredicateState::No;
   case 44:
@@ -717,7 +718,7 @@ std::string GetStrFromList(baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *
       }
       if (pb->ident == isinteger) {
         recordinteger *pint = (recordinteger *)pb;
-        res.push_back(pint->value.convert_to<char>());
+        res.push_back(static_cast<char>(pint->value.toInt64()));
       }
     } break;
     case isemptylist: break;
@@ -726,7 +727,7 @@ std::string GetStrFromList(baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *
     } break;
     case isinteger: {
       recordinteger *pint = (recordinteger *)pb;
-      res.push_back(pint->value.convert_to<char>());
+      res.push_back(static_cast<char>(pint->value.toInt64()));
     } break;
     default: {
       outerror(ErrorCode::WrongList);  // 15
@@ -818,7 +819,7 @@ PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return (w == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 57: {
-    return zap3(occ(1, ScVar, ClVar, heap).str(), 1, ScVar, ClVar, heap);
+    return zap3(occ(1, ScVar, ClVar, heap).toString(), 1, ScVar, ClVar, heap);
   }
   case 56: {
     return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
@@ -863,17 +864,17 @@ PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 PredicateState printfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 76:                                                                                                                       // int float
-    return (occ(0, ScVar, ClVar, heap) == (IntegerType)occf(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
+    return (occ(0, ScVar, ClVar, heap) == IntegerType::fromDouble(occf(1, ScVar, ClVar, heap))) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   case 75:                                                                                                                       // int var
   {
     auto int_val = occ(0, ScVar, ClVar, heap);
-    auto float_val = int_val.convert_to<FloatType>();
+    auto float_val = int_val.toDouble();
     return zap1f(float_val, 2, ScVar, ClVar, heap);
   }
   case 56:  // var float
   {
     auto float_val = occf(1, ScVar, ClVar, heap);
-    auto int_val = static_cast<IntegerType>(float_val);
+    auto int_val = IntegerType::fromDouble(float_val);
     return zap1(int_val, 1, ScVar, ClVar, heap);
   }
   default: {
@@ -897,7 +898,7 @@ PredicateState whatisit(size_t sw, bool (*f)(char), size_t i, TScVar *ScVar, TCl
   switch (sw) {
   case 97:  // str int
   case 47: {
-    size_t w = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    size_t w = static_cast<size_t>(occ(1, ScVar, ClVar, heap).toInt64());
     if (w > 0 && w <= lnwr.size()) {
       return (*f)(lnwr[w - 1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
     }
@@ -1098,8 +1099,8 @@ PredicateState prabs(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 77: return (abs(l[0]) == l[1]) ? PredicateState::Yes : PredicateState::No;
   case 66: return (abs(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
-  case 76: return (static_cast<FloatType>(abs(l[0])) == f[1]) ? PredicateState::Yes : PredicateState::No;
-  case 67: return (abs(f[0]) == static_cast<FloatType>(l[1])) ? PredicateState::Yes : PredicateState::No;
+  case 76: return (abs(l[0]).toDouble() == f[1]) ? PredicateState::Yes : PredicateState::No;
+  case 67: return (abs(f[0]) == l[1].toDouble()) ? PredicateState::Yes : PredicateState::No;
   case 56: // var float
       if (f[1] >= 0) {
         zap1f(abs(f[1]), 1, ScVar, ClVar, heap);
@@ -1120,6 +1121,22 @@ PredicateState prabs(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   outerror(ErrorCode::UnknownError);
   return PredicateState::Error;
 }
+// Квадратный корень целого числа (с отбрасыванием дробной части)
+static IntegerType integer_sqrt(const IntegerType &value) {
+  if (value < 0) {
+    throw std::runtime_error("SQRT: отрицательное число");
+  }
+  if (value == 0) {
+    return 0;
+  }
+  IntegerType x = value;
+  IntegerType y = (x + 1) / 2;
+  while (y < x) {
+    x = y;
+    y = (x + value / x) / 2;
+  }
+  return x;
+}
 // SQRT
 PredicateState prsqrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
@@ -1132,7 +1149,7 @@ PredicateState prsqrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (isFloatProcessing) {
-        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         break;
         switch (i) {
         case 0: sw -= 10; break;
@@ -1145,11 +1162,11 @@ PredicateState prsqrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  case 77: return (sqrt(l[0]) == l[1]) ? PredicateState::Yes : PredicateState::No;
+  case 77: return (integer_sqrt(l[0]) == l[1]) ? PredicateState::Yes : PredicateState::No;
   case 66: return (sqrt(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
   case 57: return zap1(l[1] * l[1], 1, ScVar, ClVar, heap);
   case 56: return zap1f(f[1] * f[1], 1, ScVar, ClVar, heap);
-  case 75: return zap1(sqrt(l[0]), 2, ScVar, ClVar, heap);
+  case 75: return zap1(integer_sqrt(l[0]), 2, ScVar, ClVar, heap);
   case 65: return zap1f(sqrt(f[0]), 2, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::UnknownError);
@@ -1165,7 +1182,7 @@ PredicateState prsin(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (isFloatProcessing) {
-        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         break;
         switch (i) {
         case 0: sw -= 10; break;
@@ -1196,7 +1213,7 @@ PredicateState prcos(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (isFloatProcessing) {
-        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         break;
         switch (i) {
         case 0: sw -= 10; break;
@@ -1227,7 +1244,7 @@ PredicateState prtan(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (isFloatProcessing) {
-        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         break;
         switch (i) {
         case 0: sw -= 10; break;
@@ -1258,7 +1275,7 @@ PredicateState prexp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (isFloatProcessing) {
-        f[i] = static_cast<FloatType>(occ(i, ScVar, ClVar, heap));
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         break;
         switch (i) {
         case 0: sw -= 10; break;
@@ -1318,12 +1335,12 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     y1 = occ(1, ScVar, ClVar, heap);
     y2 = y1 + 5;
     color = occ(2, ScVar, ClVar, heap);
-    SetPixel(x1.convert_to<long long>(), y1.convert_to<long long>(), color.convert_to<unsigned>());
+    SetPixel(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 775: {
     x1 = occ(0, ScVar, ClVar, heap);
     y1 = occ(1, ScVar, ClVar, heap);
-    color = GetPixel(x1.convert_to<long long>(), y1.convert_to<long long>());
+    color = GetPixel(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()));
     return zap1(color, 3, ScVar, ClVar, heap);
   }
   case 757: {
@@ -1333,7 +1350,7 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     x2 = xy;
     y1 = 0;
     y2 = maxgry;
-    vertical(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), color.convert_to<unsigned>());
+    vertical(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(x2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 577: {
     xy = occ(1, ScVar, ClVar, heap);
@@ -1342,11 +1359,11 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     x1 = 0;
     x2 = maxgrx;
     color = 0;
-    horisontal(x1.convert_to<long long>(), y1.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
+    horisontal(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(y2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 557: {
     color = occ(2, ScVar, ClVar, heap);
-    ClearView(color.convert_to<unsigned>());
+    ClearView(static_cast<unsigned>(color.toInt64()));
   } break;
   default: {
     throw std::runtime_error("ТОЧКА: Недопустимый тип аргументов");
@@ -1632,7 +1649,7 @@ void PrintInteger(recordinteger *pbr, int Level) {
   char *p = pBuf + Level;
   sprintf(p, "PrintInteger: Level %d", Level);
   pldout(pBuf);
-  sprintf(p, "Value: %s", pbr->value.str().c_str());
+  sprintf(p, "Value: %s", pbr->value.toString().c_str());
   pldout(pBuf);
 }
 
@@ -2012,7 +2029,7 @@ PredicateState pradd(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
-        f[i] = (FloatType)occ(i, ScVar, ClVar, heap);
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         switch (i) {
         case 0: sw -= 100; break;
         case 1: sw -= 10; break;
@@ -2052,7 +2069,7 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
-        f[i] = (FloatType)occ(i, ScVar, ClVar, heap);
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         switch (i) {
         case 0: sw -= 100; break;
         case 1: sw -= 10; break;
@@ -2075,8 +2092,8 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (l[2] % l[1] == 0) {
       return zap1(l[2] / l[1], 1, ScVar, ClVar, heap);
     }
-    f[2] = (FloatType)l[2];
-    f[1] = (FloatType)l[1];
+    f[2] = l[2].toDouble();
+    f[1] = l[1].toDouble();
   case 566:
     if (f[1] == 0) {
       return PredicateState::No;  // 5;
@@ -2089,8 +2106,8 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     if (l[2] % l[0] == 0) {
       return zap1(l[2] / l[0], 2, ScVar, ClVar, heap);
     }
-    f[0] = (FloatType)l[0];
-    f[2] = (FloatType)l[2];
+    f[0] = l[0].toDouble();
+    f[2] = l[2].toDouble();
   case 656:
     if (f[0] == 0) {
       return PredicateState::No;  // 5;
@@ -2131,7 +2148,7 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     case 6: f[i] = occf(i, ScVar, ClVar, heap); break;
     case 7:
       if (fl == true) {
-        f[i] = (FloatType)occ(i, ScVar, ClVar, heap);
+        f[i] = occ(i, ScVar, ClVar, heap).toDouble();
         switch (i) {
         case 0: sw -= 1000; break;
         case 1: sw -= 100; break;
@@ -2231,7 +2248,7 @@ PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     color = occ(3, ScVar, ClVar, heap);
     // x2 = y2 = 0;
     // Ellipse(x1, y1, x2, y2, color);
-    Ellipse(x1.convert_to<long long>(), y1.convert_to<long long>(), r.convert_to<long long>(), r.convert_to<long long>(), color.convert_to<unsigned>());
+    Ellipse(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(r.toInt64()), static_cast<long long>(r.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
 
   case 7577: {
@@ -2241,7 +2258,7 @@ PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     y1 = 0;
     x2 = x1 + r + r;
     // y2 = maxgry;
-    vertical(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), color.convert_to<unsigned>());
+    vertical(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(x2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 5777: {
     color = occ(3, ScVar, ClVar, heap);
@@ -2250,7 +2267,7 @@ PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     y1 = occ(1, ScVar, ClVar, heap) - r;
     // x2 = maxgrx;
     y2 = y1 + r + r;
-    horisontal(x1.convert_to<long long>(), y1.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
+    horisontal(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(y2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 7757:
   case 7557:
@@ -2260,7 +2277,7 @@ PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     color = occ(3, ScVar, ClVar, heap);
     // x1 = 0; y1 = 0;
     // x2 = maxgrx; y2 = maxgry;
-    ClearView(color.convert_to<unsigned>());
+    ClearView(static_cast<unsigned>(color.toInt64()));
   } break;
   default: {
     throw std::runtime_error("ОКРУЖНОСТЬ: Недопустимый тип аргументов");
@@ -2279,7 +2296,7 @@ PredicateState prpaint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   x = occ(0, ScVar, ClVar, heap);
   y = occ(1, ScVar, ClVar, heap);
   color = occ(2, ScVar, ClVar, heap);
-  FloodFill(x.convert_to<long long>(), y.convert_to<long long>(), color.convert_to<unsigned>());
+  FloodFill(static_cast<long long>(x.toInt64()), static_cast<long long>(y.toInt64()), static_cast<unsigned>(color.toInt64()));
   return PredicateState::Yes;  // 3;
 }
 
@@ -2290,8 +2307,8 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 9775:  // str int int var
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
-    auto i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
-    auto i2 = occ(2, ScVar, ClVar, heap).convert_to<long long>();
+    auto i1 = static_cast<size_t>(occ(1, ScVar, ClVar, heap).toInt64());
+    auto i2 = static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64());
     if (i2 < 0) {
       i2 = -i2;
     }
@@ -2307,8 +2324,8 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
     auto str3 = occ_line(3, ScVar, ClVar, heap);
-    auto i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
-    auto i2 = occ(2, ScVar, ClVar, heap).convert_to<long long>();
+    auto i1 = static_cast<size_t>(occ(1, ScVar, ClVar, heap).toInt64());
+    auto i2 = static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64());
     if (i2 < 0) {
       i2 = -i2;
     }
@@ -2325,7 +2342,7 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
     auto str3 = occ_line(3, ScVar, ClVar, heap);
-    auto i2 = occ(2, ScVar, ClVar, heap).convert_to<long long>();
+    auto i2 = static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64());
     bool neg = false;
     if (i2 < 0) {
       i2 = -i2;
@@ -2366,7 +2383,7 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 9759:  // str int var str
   {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
-    auto i1 = occ(1, ScVar, ClVar, heap).convert_to<size_t>();
+    auto i1 = static_cast<size_t>(occ(1, ScVar, ClVar, heap).toInt64());
     auto str3 = occ_line(3, ScVar, ClVar, heap);
     if (i1 > 0 && i1 + str3.size() <= str0.size() + 1 && str0.substr(i1 - 1, str3.size()) == str3) {
       return zap1(str3.size(), 3, ScVar, ClVar, heap);
@@ -2422,7 +2439,7 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   }
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   IntegerType w;
-  for (w = 1; pc->next != isnil && pc->next != NULL && w < i; w++) {
+  for (w = 1; pc->next != isnil && pc->next != NULL && w < i; w += 1) {
     pc = heap->GetPrecordclause(pc->next);
   }
   if (w != i) {
@@ -2522,31 +2539,31 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     x2 = occ(2, ScVar, ClVar, heap);
     y2 = occ(3, ScVar, ClVar, heap);
     color = occ(4, ScVar, ClVar, heap);
-    MoveTo_LineTo(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
+    MoveTo_LineTo(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(x2.toInt64()), static_cast<long long>(y2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 77757:
-    vertical(occ(0, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(1, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(2, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    vertical(static_cast<long long>(occ(0, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(1, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
     break;
   case 77577:
-    horisontal(occ(0, ScVar, ClVar, heap).convert_to<long long>(),
-               occ(1, ScVar, ClVar, heap).convert_to<long long>(),
-               occ(3, ScVar, ClVar, heap).convert_to<long long>(),
-               occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    horisontal(static_cast<long long>(occ(0, ScVar, ClVar, heap).toInt64()),
+               static_cast<long long>(occ(1, ScVar, ClVar, heap).toInt64()),
+               static_cast<long long>(occ(3, ScVar, ClVar, heap).toInt64()),
+               static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
     break;
   case 75777:
-    vertical(occ(2, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(3, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(0, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    vertical(static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(3, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(0, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
     break;
   case 57777:
-    horisontal(occ(2, ScVar, ClVar, heap).convert_to<long long>(),
-               occ(3, ScVar, ClVar, heap).convert_to<long long>(),
-               occ(1, ScVar, ClVar, heap).convert_to<long long>(),
-               occ(4, ScVar, ClVar, heap).convert_to<long long>());
+    horisontal(static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64()),
+               static_cast<long long>(occ(3, ScVar, ClVar, heap).toInt64()),
+               static_cast<long long>(occ(1, ScVar, ClVar, heap).toInt64()),
+               static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
     break;
     //=================
 
@@ -2563,7 +2580,7 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     x2 = maxgrx;
     y2 = maxgry;
     // SetPenAndBrushColor(color);
-    Rectangle(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
+    Rectangle(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(x2.toInt64()), static_cast<long long>(y2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
 
   case 75757: {
@@ -2573,7 +2590,7 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     x2 = occ(2, ScVar, ClVar, heap);
     y2 = maxgry;
     // SetPenAndBrushColor(color);
-    Rectangle(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
+    Rectangle(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(x2.toInt64()), static_cast<long long>(y2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
 
   case 57577: {
@@ -2583,27 +2600,27 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     x2 = maxgrx;
     y2 = occ(3, ScVar, ClVar, heap);
     // SetPenAndBrushColor(color);
-    Rectangle(x1.convert_to<long long>(), y1.convert_to<long long>(), x2.convert_to<long long>(), y2.convert_to<long long>(), color.convert_to<unsigned>());
+    Rectangle(static_cast<long long>(x1.toInt64()), static_cast<long long>(y1.toInt64()), static_cast<long long>(x2.toInt64()), static_cast<long long>(y2.toInt64()), static_cast<unsigned>(color.toInt64()));
   } break;
   case 75577: {
     vertical(0,
-             occ(3, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(0, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+             static_cast<long long>(occ(3, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(0, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
     vertical(maxgrx,
-             occ(3, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(0, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+             static_cast<long long>(occ(3, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(0, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
   } break;
   case 57757: {
     vertical(0,
-             occ(1, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(2, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+             static_cast<long long>(occ(1, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
     vertical(maxgrx,
-             occ(1, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(2, ScVar, ClVar, heap).convert_to<long long>(),
-             occ(4, ScVar, ClVar, heap).convert_to<long long>());
+             static_cast<long long>(occ(1, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(2, ScVar, ClVar, heap).toInt64()),
+             static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
   } break;
   default: {
     throw std::runtime_error("ЛИНИЯ: Недопустимый тип аргументов");
