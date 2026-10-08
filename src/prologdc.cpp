@@ -24,10 +24,24 @@
 #include <string.h>
 #include <functional>
 #include <utility>
+#include <filesystem>
+#include <vector>
 
 constexpr char input_signal_char = '$';
 
-std::string import_directory = "";
+// Каталоги ИМПОРТ из командной строки (`-I`, `-d`) — в порядке поиска.
+static std::vector<std::string> import_directories;
+
+//: Каталог, в котором лежит сам движок: рядом с ним поставка держит
+//: `examples` и `stdlib`, поэтому его путь идёт в поиск файлов ИМПОРТ.
+static std::string directory_of_executable(const char *path) {
+  std::error_code error;
+  const std::filesystem::path exe = std::filesystem::absolute(path, error);
+  if (error) {
+    return std::string();
+  }
+  return exe.parent_path().string();
+}
 
 static const char *source_filename{ nullptr };
 static const char *input_filename{ nullptr };
@@ -358,7 +372,8 @@ void printKeywords() {
 
 void printHelp() {
   std::cout << "-s, --source=FILE  \tinterpret a file.\n";
-  std::cout << "-d, --directory=DIR\tuse an import directory\n";
+  std::cout << "-I, --include=DIR  \tuse an import directory; may be repeated.\n";
+  std::cout << "-d, --directory=DIR\tthe same as --include.\n";
   std::cout << "-i, --input=FILE   \tuse a file to input.\n";
   std::cout << "-o, --output=FILE  \tuse a file to print the output.\n";
   std::cout << "-e, --error=FILE   \tuse a file to print an error.\n";
@@ -379,6 +394,9 @@ void printHelp() {
 
 int main(int argc, char **argv) {
   bool json_protocol = false;
+  if (argc > 0 && argv[0] != nullptr) {
+    preprocessor_set_executable_directory(directory_of_executable(argv[0]));
+  }
   for (int i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
       printHelp();
@@ -406,10 +424,22 @@ int main(int argc, char **argv) {
       out_questions = true;
       continue;
     }
+    if (strcmp(argv[i], "-I") == 0 || strcmp(argv[i], "--include") == 0) {
+      if (i + 1 >= argc) {
+        std::cerr << "Missing value for " << argv[i] << std::endl;
+        return 1;
+      }
+      import_directories.emplace_back(argv[++i]);
+      continue;
+    }
     char *eqptr = strchr(argv[i], '=');
     if (!eqptr || !*(eqptr + 1)) {
       std::cerr << "Invalid argument " << argv[i] << std::endl;
       return 1;
+    }
+    if (strncmp(argv[i], "-I", sizeof("-I") - 1) == 0 || strncmp(argv[i], "--include", sizeof("--include") - 1) == 0) {
+      import_directories.emplace_back(eqptr + 1);
+      continue;
     }
     if (strncmp(argv[i], "--protocol", sizeof("--protocol") - 1) == 0) {
       const char *value = eqptr + 1;
@@ -437,16 +467,15 @@ int main(int argc, char **argv) {
       error_filename = eqptr + 1;
       continue;
     }
-	if (strncmp(argv[i], "-d", sizeof("-d") - 1) == 0 || strncmp(argv[i], "--directory", sizeof("--directory") - 1) == 0)
-	{
-      import_directory = eqptr + 1;
-      if (import_directory.back() != '/')
-        import_directory += '/';
+    if (strncmp(argv[i], "-d", sizeof("-d") - 1) == 0 || strncmp(argv[i], "--directory", sizeof("--directory") - 1) == 0) {
+      // Старое имя того же каталога: `-d каталог` и `-I каталог` равнозначны.
+      import_directories.emplace_back(eqptr + 1);
       continue;
-	}
+    }
     std::cerr << "Invalid argument " << argv[i] << std::endl;
     return 1;
   }
+  preprocessor_set_import_directories(import_directories);
 
   if (json_protocol) {
 #ifndef PROLOGD_FOR_GUI

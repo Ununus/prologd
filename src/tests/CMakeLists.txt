@@ -11,6 +11,7 @@
 add_executable(prlib_tests
   "test_host.cpp"
   "test_program.cpp"
+  "test_preprocessor.cpp"
   "test_arith.cpp"
   "test_control.cpp"
   "test_findall.cpp"
@@ -23,6 +24,11 @@ add_executable(prlib_tests
 )
 
 target_link_libraries(prlib_tests prlib Catch2::Catch2WithMain)
+
+# Разбор `?ИМПОРТ` — часть предпроцессора интерпретатора, а не движка: он
+# лежит рядом с prologdc.cpp, и тесты берут тот же файл, ничем его не
+# оборачивая.
+target_sources(prlib_tests PRIVATE "${CMAKE_SOURCE_DIR}/src/preprocessor.cpp")
 target_include_directories(prlib_tests PRIVATE "${CMAKE_SOURCE_DIR}/src")
 
 if(MSVC)
@@ -42,3 +48,10 @@ set_tests_properties(cli_help PROPERTIES PASS_REGULAR_EXPRESSION "--source")
 add_test(NAME cli_factorial
   COMMAND prologd "--source=${CMAKE_SOURCE_DIR}/src/examples/factorial.pld")
 set_tests_properties(cli_factorial PROPERTIES PASS_REGULAR_EXPRESSION "=720")
+
+# ИМПОРТ в самом интерпретаторе: файл программы называет библиотеку рядом с
+# собой; запуск идёт из `src`, поэтому виден и поиск от текущего каталога.
+add_test(NAME cli_imports
+  COMMAND prologd "--source=${CMAKE_SOURCE_DIR}/src/examples/import.pld"
+  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src")
+set_tests_properties(cli_imports PROPERTIES PASS_REGULAR_EXPRESSION "=42")

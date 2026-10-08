@@ -205,9 +205,13 @@ class Session {
     host::set_print_questions(request.value("printQuestions", false));
     const bool questions = request.value("questions", true);
 
+    // Имя файла программы: от его каталога ищутся `?ИМПОРТ`.  Буфер называют
+    // путём, когда он сохранён (поле `name`), иначе — только заголовком окна.
+    const std::string source_name =
+        has_path ? request.at("path").get<std::string>() : request.value("name", std::string());
     std::list<std::string> lines;
     if (has_path) {
-      const std::string path = request.at("path").get<std::string>();
+      const std::string path = source_name;
       std::ifstream file(path, std::ios::binary);
       if (!file) {
         fail("parse", "Cannot open file: " + path);
@@ -221,7 +225,7 @@ class Session {
     }
 
     try {
-      lines = preprocessor_run_on_source(lines);
+      lines = preprocessor_run_on_source(lines, source_name);
     } catch (const std::runtime_error &import_error) {
       fail("parse", import_error.what());
       exit_code_ = 2;
