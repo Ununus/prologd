@@ -13,6 +13,8 @@
 
 #include "host.hpp"
 #include "preprocessor.h"
+#include "prlib/encoding.h"
+#include "prlib/keywords.h"
 
 namespace prologd_cli {
 namespace {
@@ -24,6 +26,29 @@ using Json = nlohmann::json;
 //: formatting and graphics ones do not (this engine has none of them), and a
 //: front-end is expected to read what it knows and ignore the rest.
 constexpr int kProtocolVersion = 13;
+
+/// The reserved names of the engine, as the `ready` event carries them: the same
+/// list `prologd --list-keywords` prints, with the kind of every name (`mod` and
+/// `div` are operators of an expression, not goals).  The engine keeps its names
+/// in CP1251 and the protocol speaks UTF-8.
+Json keywords_event() {
+  Json entries = Json::array();
+  for (const prologd::ReservedName &name : prologd::reserved_names()) {
+    Json entry{{"name", prologd::cp1251_to_utf8(name.name)},
+               {"kind", name.callable ? "predicate" : "operator"}};
+    if (name.variadic) {
+      entry["variadic"] = true;
+    } else if (!name.arities.empty()) {
+      Json arities = Json::array();
+      for (size_t arity : name.arities) {
+        arities.push_back(arity);
+      }
+      entry["arities"] = arities;
+    }
+    entries.push_back(entry);
+  }
+  return entries;
+}
 
 /// Splits text into source lines the way the console's `getline` does.  A
 /// trailing newline is a terminator, not an empty line.
@@ -68,7 +93,8 @@ class Session {
     host::install(make_sinks());
     emit(Json{{"event", "ready"},
               {"protocol", kProtocolVersion},
-              {"version", "prologd"}});
+              {"version", "prologd"},
+              {"keywords", keywords_event()}});
 
     const int init = host::start();
     if (init != 0) {

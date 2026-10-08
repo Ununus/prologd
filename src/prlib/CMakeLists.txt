@@ -9,6 +9,7 @@ add_library (prlib
 "err.cpp" "err.h"
 "extfunc.cpp" "extfunc.h"
 "functions.cpp" "functions.h"
+"keywords.h"
 "pstructs.cpp" "pstructs.h"
 "scaner.cpp" "scaner.h"
 "pdefs.h"

@@ -5,6 +5,7 @@
 #include "prlib/control.h"
 #include "prlib/functions.h"
 #include "prlib/encoding.h"
+#include "prlib/keywords.h"
 
 #include "preprocessor.h"
 
@@ -344,6 +345,17 @@ unsigned GetPixel(long long, long long) {
   return 0;
 }
 
+// Список занятых имён движка (keywords.h) — то, что интерфейс читает командой
+// `--list-keywords`.  Строки идут в UTF-8: консоль переводит их так же, как и
+// всё остальное, что печатает движок.
+void printKeywords() {
+  for (const prologd::ReservedName &name : prologd::reserved_names()) {
+    for (const std::string &label : name.labels()) {
+      std::cout << prologd::cp1251_to_utf8(label) << '\n';
+    }
+  }
+}
+
 void printHelp() {
   std::cout << "-s, --source=FILE  \tinterpret a file.\n";
   std::cout << "-d, --directory=DIR\tuse an import directory\n";
@@ -352,6 +364,7 @@ void printHelp() {
   std::cout << "-e, --error=FILE   \tuse a file to print an error.\n";
   std::cout << "-q, --questions    \tprint questions.\n";
   std::cout << "-h, --help         \tshow this help and exit.\n";
+  std::cout << "--list-keywords    \tprint the reserved names of the engine and exit.\n";
   std::cout << "\n";
   std::cout << "If files are not specified, then standard streams will be used.\n";
   std::cout << "\n";
@@ -372,8 +385,7 @@ int main(int argc, char **argv) {
       return 0;
     }
     if (strcmp(argv[i], "--list-keywords") == 0) {
-      // This engine has no reserved-name table to export; an empty answer is
-      // what a front-end reads as "no list available".
+      printKeywords();
       return 0;
     }
     if (strcmp(argv[i], "--protocol") == 0) {

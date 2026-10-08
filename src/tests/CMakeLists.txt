@@ -17,6 +17,7 @@ add_executable(prlib_tests
   "test_types.cpp"
   "test_input.cpp"
   "test_graphics.cpp"
+  "test_keywords.cpp"
   "test_helpers.hpp"
 )
 

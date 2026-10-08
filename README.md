@@ -36,3 +36,8 @@ prologd --source=FILE
 ```
 
 Use `prologd --help` to see all available options.
+
+`prologd --list-keywords` prints the reserved names of the engine
+(`СЛОЖЕНИЕ/3`, `ВЫВОД/+`, `ЛИНИЯ/5`, …), one per line. A front-end reads that
+command — and the `keywords` field of the `ready` event — to offer hints and
+colour the names the engine actually accepts.

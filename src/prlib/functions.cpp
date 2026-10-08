@@ -1,8 +1,10 @@
 #include <ctype.h>
 #include <limits.h>
 #include <string.h>
+#include <algorithm>
 #include <stdlib.h>
 #include "functions.h"
+#include "keywords.h"
 #include "pdefs.h"
 // #include "extdecl.h"
 #include "scaner.h"
@@ -56,6 +58,92 @@ ErrorCode buildin(TScVar *ScVar, array *heap) {
 }
 
 // Инициализация. Все приводится к исходному состоянию
+//=======Занятые имена для интерфейса (keywords.h)
+namespace prologd {
+
+std::vector<std::string> ReservedName::labels() const {
+  std::vector<std::string> lines;
+  if (variadic) {
+    lines.push_back(name + "/+");
+    return lines;
+  }
+  if (arities.empty()) {
+    lines.push_back(name);
+    return lines;
+  }
+  for (size_t arity : arities) {
+    lines.push_back(name + "/" + std::to_string(arity));
+  }
+  return lines;
+}
+
+namespace {
+
+// Имена, которые движок описывает предложениями библиотеки (Build_in_Libriary):
+// у них нет ни записи в NamesOfPredicates, ни проверки арности, поэтому список
+// написан рядом с самими предложениями.  СЛОЖЕНИЯ здесь нет: оно есть и среди
+// встроенных имён, а его арность проверяет bpred().
+struct LibraryPredicate {
+  const char *name;
+  size_t arity;
+};
+const LibraryPredicate LibraryPredicates[] = {
+  { "НЕ", 1 }, { "ИЛИ", 2 }, { "РАВНО", 2 },
+  { "МЕНЬШЕ", 2 }, { "ПС", 0 }, { "ДЛИНА", 2 },
+};
+const size_t MAX_LIBRARY_PRED = sizeof(LibraryPredicates) / sizeof(LibraryPredicate);
+
+// Место встроенного имени в куче: по нему bpred() узнаёт предикат (pstructs.h,
+// константы hp...).  Считается тем же правилом, по которому buildin() укладывает
+// имена — символы имени, затем его запись.
+size_t placeOfBuiltin(size_t index) {
+  size_t place = strlen(NamesOfPredicates[0]);
+  for (size_t i = 1; i <= index; ++i) {
+    place += sizeof(recordsconst) + strlen(NamesOfPredicates[i]);
+  }
+  return place;
+}
+
+}  // namespace
+
+std::vector<ReservedName> reserved_names() {
+  std::vector<ReservedName> names;
+  names.reserve(MAX_BUILD_PRED + MAX_LIBRARY_PRED);
+  for (size_t i = 0; i < MAX_BUILD_PRED; ++i) {
+    ReservedName name;
+    name.name = NamesOfPredicates[i];
+    const size_t place = placeOfBuiltin(i);
+    if (place == hpout) {
+      // ВЫВОД печатает любое число значений: арность не проверяется (control.cpp).
+      name.variadic = true;
+    } else if (place == hpmod || place == hpdiv) {
+      // mod и div — операторы выражений #...#, целью их назвать нельзя.
+      name.callable = false;
+    } else if (place == hpversion) {
+      // ВЕРСИЯ — цель без аргументов, её обрабатывает argnull().
+      name.arities.push_back(0);
+    } else {
+      for (size_t arity = 0; arity <= maxarity; ++arity) {
+        if (bpred(place, arity)) {
+          name.arities.push_back(arity);
+        }
+      }
+    }
+    names.push_back(name);
+  }
+  for (size_t i = 0; i < MAX_LIBRARY_PRED; ++i) {
+    ReservedName name;
+    name.name = LibraryPredicates[i].name;
+    name.arities.push_back(LibraryPredicates[i].arity);
+    names.push_back(name);
+  }
+  std::sort(names.begin(), names.end(),
+            [](const ReservedName &left, const ReservedName &right) { return left.name < right.name; });
+  return names;
+}
+
+}  // namespace prologd
+
 ErrorCode InitProlog() {
   ErrorCode err = ErrorCode::NoErrors;  // нет ошибок
   return err;
