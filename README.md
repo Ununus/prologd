@@ -3,4 +3,16 @@ Prolog D - Пролог детский, интерпретатор языка П
 
 ## Requirements
 `C++17`
-`Qt 6.2.4` для GUI
+
+## Build
+```
+cmake -S . -B build
+cmake --build build
+```
+
+## Run
+```
+prologd --source=FILE
+```
+
+Use `prologd --help` to see all available options.
