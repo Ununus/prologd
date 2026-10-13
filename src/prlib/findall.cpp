@@ -1,12 +1,3 @@
-// НАЙТИВСЕ(шаблон, цель, список) — все решения цели и список подстановок шаблона
-// (findall).
-//
-// Цель решается как отдельный вопрос в собственной машине (TClVar): связывания
-// цели не достаются вызывающему, а её переменные предварительно копируются со
-// свежими номерами в кадре вопроса.  Каждый ответ копируется ещё раз — в область
-// НАЙТИВСЕ вызывающего (control.cpp, kFindallSlots), поэтому собранный список не
-// делит переменные ни с целью, ни с прошлыми копиями, ни с вызывающим.
-
 #include <functional>
 #include <map>
 #include <memory>
@@ -17,137 +8,34 @@
 #include "extfunc.h"
 #include "pdefs.h"
 #include "pstructs.h"
+#include "termcopy.h"
 
 namespace {
 
-// Коды типов аргументов, которыми пользуются предикаты (см. occur_term).
+// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ. occur_term).
 constexpr size_t kArgFunction = 8;
 constexpr size_t kArgSymbol = 4;
 
-// Что occur_term возвращает для переменной без значения.
+// пїЅпїЅпїЅ occur_term пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 constexpr size_t kFreeVariable = 5;
-
-// Копия терма: свободная переменная источника заменяется свежей переменной,
-// начиная с номера `first`.  Одна и та же переменная (одно место стека) даёт одну
-// и ту же свежую переменную, сколько бы раз она ни встретилась.  Свежих
-// переменных заводится не больше `max`, иначе копия залезла бы в чужие места
-// стека; признак переполнения сообщает об этом вызывающему.
-class TermCopier {
- public:
-  TermCopier(array *heap, TClVar *source, size_t first, size_t max)
-    : heap_(heap)
-    , source_(source)
-    , first_(first)
-    , max_(max) {}
-
-  //: Копия терма `term`, который читается в кадре `term_frame` машины-источника.
-  size_t copy(size_t term, size_t term_frame);
-
-  //: Сколько свежих переменных заняла копия.
-  size_t used() const {
-    return used_;
-  }
-
-  //: Свежие переменные кончились, копия неполна.
-  bool overflow() const {
-    return overflow_;
-  }
-
- private:
-  //: Свежая переменная вместо свободного места `place` машины-источника.
-  size_t fresh(size_t place) {
-    auto found = fresh_.find(place);
-    if (found != fresh_.end()) {
-      return found->second;
-    }
-    if (used_ >= max_) {
-      overflow_ = true;
-      return heap_->append(recordvar(0, 0, first_));
-    }
-    const size_t index = heap_->append(recordvar(0, 0, first_ + used_));
-    ++used_;
-    fresh_.emplace(place, index);
-    return index;
-  }
-
-  array *heap_;
-  TClVar *source_;
-  size_t first_;
-  size_t max_;
-  size_t used_{ 0 };
-  bool overflow_{ false };
-  std::map<size_t, size_t> fresh_;  // место машины-источника -> свежая переменная
-};
-
-size_t TermCopier::copy(size_t term, size_t term_frame) {
-  for (;;) {
-    if (term == isnil) {  // свободная переменная: `place` уже в term_frame
-      return fresh(term_frame);
-    }
-    baserecord *record = heap_->GetPbaserecord(term);
-    switch (record->ident) {
-    case isvar: {
-      size_t place = 0;
-      bound(&term, &term_frame, &place, source_, heap_);
-      if (term == isnil) {
-        return fresh(place);
-      }
-      break;  // связана: дальше копируется значение, в своём кадре
-    }
-    case isfunction: {
-      // Всё, что нужно, считывается до вставок в кучу: она может переехать.
-      const size_t narg = heap_->GetPrecordfunction(term)->narg;
-      const size_t func = heap_->GetPrecordfunction(term)->func;
-      const size_t ptrarg = heap_->GetPrecordfunction(term)->ptrarg;
-      const size_t *args = heap_->GetPunsigned(ptrarg);
-      std::vector<size_t> arguments(args, args + narg);
-      const size_t index = heap_->append<size_t>(0, narg);
-      size_t *copied = heap_->GetPunsigned(index);
-      for (size_t i = 0; i < narg; ++i) {
-        copied[i] = copy(arguments[i], term_frame);
-      }
-      return heap_->append(recordfunction(narg, func, index));
-    }
-    case islist: {
-      const size_t head = heap_->GetPrecordlist(term)->head;
-      const size_t link = heap_->GetPrecordlist(term)->link;
-      return heap_->append(recordlist(copy(head, term_frame), copy(link, term_frame)));
-    }
-    case isexpression: {
-      const size_t length = heap_->GetPrecordexpression(term)->length;
-      const size_t precord = heap_->GetPrecordexpression(term)->precord;
-      const size_t *operands = heap_->GetPunsigned(precord);
-      std::vector<size_t> expression(operands, operands + length);
-      const size_t index = heap_->append<size_t>(0, length);
-      size_t *copied = heap_->GetPunsigned(index);
-      for (size_t i = 0; i < length; ++i) {
-        copied[i] = expression[i] < isbase ? copy(expression[i], term_frame) : expression[i];
-      }
-      return heap_->append(recordexpression(length, index));
-    }
-    default:
-      return term;  // числа, строки, константы, пустой список: копировать нечего
-    }
-  }
-}
 
 }  // namespace
 
 PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
-  (void)sw;  // аргументы проверил bpred, типы — унификация
+  (void)sw;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ bpred, пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   if (ScVar->vgoal[1] != kArgFunction && ScVar->vgoal[1] != kArgSymbol) {
-    throw std::runtime_error("НАЙТИВСЕ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
 
-  // Аргументы берутся из самой цели (как в zap1): у переменной без значения в
-  // vgoal места в стеке уже нет, а по нему узнаётся её подстановка.
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅ zap1): пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ
+  // vgoal пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
   const size_t arguments = heap->GetPrecordfunction(ClVar->head)->ptrarg;
   const size_t *ptr = heap->GetPunsigned(arguments);
   const size_t list_term = ptr[2];
-  const size_t frame = ClVar->frame2;  // кадр аргументов цели
+  const size_t frame = ClVar->frame2;  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-  // Шаблон вычисляется, как аргумент любого предиката, но переменная без значения
-  // остаётся переменной: собираются именно её подстановки.
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
   size_t template_term = ptr[0];
   size_t template_frame = frame;
   if (occur_term(&template_term, &template_frame, ClVar, heap) == kFreeVariable) {
@@ -155,8 +43,8 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     template_frame = frame;
   }
 
-  // Цель и шаблон копируются одним копировщиком: общие переменные получают одни и
-  // те же номера, поэтому подстановки цели попадают в шаблон.
+  // пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ
+  // пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
   TermCopier to_nested(heap, ClVar, 0, kFindallSlots);
   const size_t goal = to_nested.copy(ScVar->vgoal[maxarity + 1], ScVar->vgoal[maxarity * 2 + 1]);
   const size_t skeleton = to_nested.copy(template_term, template_frame);
@@ -166,7 +54,7 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Error;        // 1
   }
 
-  // Запрос для вложенной машины: цель как `?цель.`
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ `?пїЅпїЅпїЅпїЅ.`
   const size_t targets = heap->append<size_t>(0, 2);
   heap->GetPunsigned(targets)[0] = goal;
   heap->GetPunsigned(targets)[1] = 0;
@@ -179,8 +67,8 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   nested_sc.nosymbol = ScVar->nosymbol;
   nested_sc.vtat = ScVar->vtat;
 
-  // Копии ответов ложатся в область НАЙТИВСЕ вызывающего с текущего места: места
-  // прошлых операторов НАЙТИВСЕ в этом вопросе уже заняты их списками.
+  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅ
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
   std::vector<size_t> elements;
   size_t used = 0;
   const size_t base = ClVar->findallbase + ClVar->findallused;
@@ -195,7 +83,7 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     elements.push_back(element);
   };
 
-  // Поля кучи, которые трогает машина: у вызывающего в них своё состояние.
+  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
   const size_t saved_query = heap->query;
   const size_t saved_ipaclause = heap->ipaclause;
   const size_t saved_ipacltarget = heap->ipacltarget;
@@ -207,7 +95,7 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   heap->query = query;
   ErrorCode err = ErrorCode::NoErrors;
   {
-    // Настройки вывода (файлы, ТРАССА, ТИХО) у цели те же, что у вызывающего.
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ) пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ, пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
     struct SettingGuard {
       TClVar *owner;
       TClVar *nested;
@@ -228,10 +116,10 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   heap->ipncltarget = saved_ipncltarget;
 
   if (nested.builtin_error) {
-    return PredicateState::Error;  // 1; сообщение напечатал предикат цели
+    return PredicateState::Error;  // 1; пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
   }
   if (err != ErrorCode::NoErrors) {
-    ClVar->err = err;  // 44 или прерывание: текст напечатает тот, кто вёл вопрос
+    ClVar->err = err;  // 44 пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     return PredicateState::Error;  // 1
   }
 
@@ -240,7 +128,7 @@ PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   for (auto element = elements.rbegin(); element != elements.rend(); ++element) {
     list = heap->append(recordlist(*element, list));
   }
-  // Переменные списка лежат в области НАЙТИВСЕ, то есть в кадре 0.
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ 0.
   if (!unify(list, list_term, 0, frame, ClVar, heap)) {
     return PredicateState::No;  // 5
   }

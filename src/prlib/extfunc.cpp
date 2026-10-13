@@ -1302,6 +1302,7 @@ PredicateState argtwo(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   size_t sw = ScVar->vgoal[0] * 10 + ScVar->vgoal[1];
   switch (name) {
   case hpgt: return prgt(ScVar, ClVar, heap);                         // ÁÎËÜØÅ
+  case hpforall: return prforall(sw, ScVar, ClVar, heap);             // ÄËßÂÑÅÕ
   case hpstint: return prstint(sw, ScVar, ClVar, heap);               // ÑÒĞÖÅË
   case hpstfloat: return prstfloat(sw, ScVar, ClVar, heap);           // ÑÒĞÂÅÙ
   case hpstlst: return prstlst(sw, ScVar, ClVar, heap);               // ÑÒĞÑÏÈÑ
@@ -2691,6 +2692,7 @@ bool bpred(size_t name, size_t narg) {
   case hppaint:
   case hpassrt: return (narg == 3) ? true : false;  // 3
   case hpfndall: return (narg == 3) ? true : false;  // ÍÀÉÒÈÂÑÅ
+  case hpforall: return (narg == 2) ? true : false;  // ÄËßÂÑÅÕ
 
   case hpmul: return (narg == 3 || narg == 4) ? true : false;
   case hpcircl:

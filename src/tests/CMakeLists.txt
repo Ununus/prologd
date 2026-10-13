@@ -15,6 +15,7 @@ add_executable(prlib_tests
   "test_arith.cpp"
   "test_control.cpp"
   "test_findall.cpp"
+  "test_forall.cpp"
   "test_strings.cpp"
   "test_types.cpp"
   "test_input.cpp"
@@ -55,3 +56,9 @@ add_test(NAME cli_imports
   COMMAND prologd "--source=${CMAKE_SOURCE_DIR}/src/examples/import.pld"
   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src")
 set_tests_properties(cli_imports PROPERTIES PASS_REGULAR_EXPRESSION "=42")
+
+# ДЛЯВСЕХ в примере рядом с остальными: последний вопрос выводит оценки по разу на
+# каждое решение условия, и `534` — это те три вывода в порядке предложений.
+add_test(NAME cli_forall
+  COMMAND prologd "--source=${CMAKE_SOURCE_DIR}/src/examples/forall.pld")
+set_tests_properties(cli_forall PROPERTIES PASS_REGULAR_EXPRESSION "534")
