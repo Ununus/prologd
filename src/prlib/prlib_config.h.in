@@ -1,1 +1,7 @@
 #define PRLIB_BUILD_DATE "${prlib_t}"
+#define PROLOGD_VERSION "${PROLOGD_VERSION}"
+
+//: The string the version predicate prints: the name of the interpreter, the
+//: version of the project's CMakeLists and the date this build was configured for,
+//: as in "PrologD 1.xx (dd.mm.yyyy)".
+#define PROLOGD_VERSION_STRING "PrologD " PROLOGD_VERSION " (" PRLIB_BUILD_DATE ")"

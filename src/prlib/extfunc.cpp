@@ -12,7 +12,6 @@
 // #include <charconv>
 
 #include "prlib_config.h"
-const char *kPrologVersion = PRLIB_BUILD_DATE;
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
@@ -27,7 +26,7 @@ PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     break;
   case hpquiet: ClVar->quiet = true; break;
-  case hpversion: pldout(kPrologVersion); break;
+  case hpversion: pldout(PROLOGD_VERSION_STRING); break;
   }
   return PredicateState::Yes;  // 3;
 }

@@ -15,6 +15,7 @@
 #include "preprocessor.h"
 #include "prlib/encoding.h"
 #include "prlib/keywords.h"
+#include "prlib_config.h"
 
 namespace prologd_cli {
 namespace {
@@ -93,7 +94,7 @@ class Session {
     host::install(make_sinks());
     emit(Json{{"event", "ready"},
               {"protocol", kProtocolVersion},
-              {"version", "prologd"},
+              {"version", PROLOGD_VERSION},
               {"keywords", keywords_event()}});
 
     const int init = host::start();

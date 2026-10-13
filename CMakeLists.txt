@@ -1,6 +1,7 @@
 ﻿cmake_minimum_required(VERSION 3.16)
 
-project("prologd" LANGUAGES CXX)
+project("prologd" VERSION 1.27 LANGUAGES CXX)
+set(PROLOGD_VERSION "${PROJECT_VERSION}")
 
 # The engine and the interpreter are C++17 (std::filesystem, [[fallthrough]]).
 set(CMAKE_CXX_STANDARD 17)
