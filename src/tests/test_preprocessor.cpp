@@ -148,6 +148,52 @@ TEST_CASE("an absolute import name is taken as it is", "[preprocessor]") {
   REQUIRE(run(readSource(text, "")).output == "К=мир\n");
 }
 
+TEST_CASE("an import may be written as a directive", "[preprocessor]") {
+  // `:- ИМПОРТ("имя").` — запись Пролога-Д 2.x: переносимые программы пишут так.
+  SearchPaths paths;
+  const Sandbox sandbox("directive");
+  sandbox.file("lib/library.pld", "удвоить(Ч, Д):-УМНОЖЕНИЕ(Ч, 2, Д).\n");
+  const std::filesystem::path program =
+      sandbox.file("main.pld", ":- ИМПОРТ(\"lib/library.pld\").\n?удвоить(21, Д).\n");
+  REQUIRE(run(readProgram(program)).output == "Д=42\n");
+}
+
+TEST_CASE("a directive allows spaces after the colon and the dash", "[preprocessor]") {
+  SearchPaths paths;
+  const Sandbox sandbox("spaces");
+  sandbox.file("library.pld", "привет(мир).\n");
+  REQUIRE(run(readSource(":-   ИМПОРТ(\"library.pld\").\n?привет(К).\n",
+                         sandbox.under("main.pld"))).output == "К=мир\n");
+  REQUIRE(run(readSource(":-ИМПОРТ(\"library.pld\").\n?привет(К).\n",
+                         sandbox.under("main.pld"))).output == "К=мир\n");
+  // и вопрос с пробелом — то же самое
+  REQUIRE(run(readSource("?   ИМПОРТ(\"library.pld\").\n?привет(К).\n",
+                         sandbox.under("main.pld"))).output == "К=мир\n");
+}
+
+TEST_CASE("the names directive of another implementation is dropped", "[preprocessor]") {
+  // `:- ИМЕНА(N).` задаёт, как читать имена, в Прологе-Д 2.x.  Этот движок
+  // читает их только по-старому, и такой строки он не знает: в разбор она не
+  // попадает, а остальной текст остаётся как был.
+  SearchPaths paths;
+  const Sandbox sandbox("names");
+  const std::filesystem::path program = sandbox.file(
+      "main.pld", ":- ИМЕНА(2).\nцель(1).\n:-ИМЕНА(0).\n?цель(х).\n");
+  REQUIRE(readProgram(program) == "цель(1).\n?цель(х).\n");
+  REQUIRE(run(readProgram(program)).output == "х=1\n");
+}
+
+TEST_CASE("a names directive may stand among imports", "[preprocessor]") {
+  SearchPaths paths;
+  const Sandbox sandbox("names-import");
+  sandbox.file("lib/library.pld", "привет(мир).\n");
+  const std::filesystem::path program = sandbox.file(
+      "main.pld",
+      ":- ИМЕНА(2).\n:- ИМПОРТ(\"lib/library.pld\").\n?привет(К).\n");
+  REQUIRE(readProgram(program) == "привет(мир).\n?привет(К).\n");
+  REQUIRE(run(readProgram(program)).output == "К=мир\n");
+}
+
 TEST_CASE("a missing import is named in the error", "[preprocessor]") {
   SearchPaths paths;
   const Sandbox sandbox("missing");

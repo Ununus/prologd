@@ -19,7 +19,13 @@ std::string executableDirectory;
 std::vector<std::string> importDirectories;
 
 const std::regex &importLine() {
-  static const std::regex line("\\?ИМПОРТ\\(\".+\"\\)\\.\n*\r*");
+  static const std::regex line("(?:\\?|:-)[ ]*ИМПОРТ\\(\".+\"\\)\\.\n*\r*");
+  return line;
+}
+
+//: Строка `:- ИМЕНА(N).` — указание, как читать имена, из Пролога-Д 2.x.
+const std::regex &namesLine() {
+  static const std::regex line(":-[ ]*ИМЕНА.*\n*\r*");
   return line;
 }
 
@@ -46,10 +52,6 @@ bool isFile(const std::filesystem::path &path) {
   return std::filesystem::is_regular_file(path, error);
 }
 
-//: Разбор одного файла: обычные строки попадают в результат, а строка `?ИМПОРТ`
-//: заменяется содержимым названного файла.  Каталог, от которого ищется имя,
-//: задан для верхнего файла (`baseDirectory`) и всегда берётся от самого файла
-//: для вложенных: `?ИМПОРТ` внутри импортированного файла считается от него.
 void preprocessFile(const std::string &filename, const std::filesystem::path &baseDirectory) {
   std::ifstream program(filename);
   if (program.is_open() == false) {
@@ -60,6 +62,9 @@ void preprocessFile(const std::string &filename, const std::filesystem::path &ba
   std::string line;
   while (std::getline(program, line)) {
     std::replace(line.begin(), line.end(), '\t', ' ');  // the interpreter doesn't like tabs
+    if (std::regex_match(line, namesLine())) {
+      continue;  // `:- ИМЕНА(N).` — движок читает имена по-старому и её не знает
+    }
     if (!std::regex_match(line, importLine())) {
       preprocessorDestination << line << "\n";
       continue;
@@ -80,6 +85,9 @@ void preprocessInteractive(std::istream *source) {
   while (std::getline(*source, line)) {
     if (line.empty()) {
       break;
+    }
+    if (std::regex_match(line, namesLine())) {
+      continue;  // `:- ИМЕНА(N).` — движок читает имена по-старому и её не знает
     }
     if (!std::regex_match(line, importLine())) {
       preprocessorDestination << line << "\n";

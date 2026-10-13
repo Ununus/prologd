@@ -12,10 +12,10 @@ void preprocessor_set_executable_directory(std::string directory);
 // спрашивают после каталога импортирующего файла.
 void preprocessor_set_import_directories(std::vector<std::string> directories);
 
-// Файл, который называет строка `?ИМПОРТ("имя")`: абсолютное имя берётся как
-// есть, иначе имя ищется от каталога импортирующего файла, от каталогов `-I`, от
-// каталога exe (и его `stdlib`) и, наконец, от текущего каталога.  Пустая
-// строка — файла с таким именем нет нигде.
+// Файл, который называет строка `?ИМПОРТ("имя")` (или `:- ИМПОРТ("имя")`):
+// абсолютное имя берётся как есть, иначе имя ищется от каталога импортирующего
+// файла, от каталогов `-I`, от каталога exe (и его `stdlib`) и, наконец, от
+// текущего каталога.
 std::string preprocessor_find_import(std::string name, std::string from_directory);
 
 std::stringstream& preprocessor_run(std::string);
