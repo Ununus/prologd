@@ -12,6 +12,7 @@
 #include <nlohmann/json.hpp>
 
 #include "host.hpp"
+#include "path_utf8.hpp"
 #include "preprocessor.h"
 #include "prlib/encoding.h"
 #include "prlib/keywords.h"
@@ -213,7 +214,7 @@ class Session {
     std::list<std::string> lines;
     if (has_path) {
       const std::string path = source_name;
-      std::ifstream file(path, std::ios::binary);
+      std::ifstream file(prologd_path::from_utf8(path), std::ios::binary);
       if (!file) {
         fail("parse", "Cannot open file: " + path);
         exit_code_ = 2;

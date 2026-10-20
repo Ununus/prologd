@@ -5,8 +5,8 @@ add_subdirectory("prlib")
 # The console interpreter.  The JSON session of a front-end is an option: it needs
 # the third-party JSON header, and a build that only runs programs should not
 # carry it.
-set(PROLOGD_CLI_SOURCES "prologdc.cpp" "preprocessor.cpp")
-set(PROLOGD_CLI_HEADERS "preprocessor.h")
+set(PROLOGD_CLI_SOURCES "prologdc.cpp" "preprocessor.cpp" "path_utf8.cpp")
+set(PROLOGD_CLI_HEADERS "preprocessor.h" "path_utf8.hpp")
 
 if(PROLOGD_BUILD_FOR_GUI)
   list(APPEND PROLOGD_CLI_SOURCES "protocol.cpp")
@@ -15,6 +15,11 @@ endif()
 
 add_executable(prologd ${PROLOGD_CLI_SOURCES} ${PROLOGD_CLI_HEADERS})
 target_link_libraries(prologd prlib)
+
+if(WIN32)
+  # CommandLineToArgvW (the command line as UTF-8, src/prologdc.cpp).
+  target_link_libraries(prologd shell32)
+endif()
 
 if(PROLOGD_BUILD_FOR_GUI)
   target_link_libraries(prologd prologd_json)

@@ -28,8 +28,10 @@ target_link_libraries(prlib_tests prlib Catch2::Catch2WithMain)
 
 # Разбор `?ИМПОРТ` — часть предпроцессора интерпретатора, а не движка: он
 # лежит рядом с prologdc.cpp, и тесты берут тот же файл, ничем его не
-# оборачивая.
-target_sources(prlib_tests PRIVATE "${CMAKE_SOURCE_DIR}/src/preprocessor.cpp")
+# оборачивая.  Пути эти файлы переводят в системные сами (path_utf8.cpp).
+target_sources(prlib_tests PRIVATE
+  "${CMAKE_SOURCE_DIR}/src/preprocessor.cpp"
+  "${CMAKE_SOURCE_DIR}/src/path_utf8.cpp")
 target_include_directories(prlib_tests PRIVATE "${CMAKE_SOURCE_DIR}/src")
 
 if(MSVC)
@@ -62,3 +64,12 @@ set_tests_properties(cli_imports PROPERTIES PASS_REGULAR_EXPRESSION "=42")
 add_test(NAME cli_forall
   COMMAND prologd "--source=${CMAKE_SOURCE_DIR}/src/examples/forall.pld")
 set_tests_properties(cli_forall PROPERTIES PASS_REGULAR_EXPRESSION "534")
+
+# Кириллица в пути к файлу: имя приходит в UTF-8, а узкий `argv` собрала бы CRT в
+# ANSI-кодировке — интерпретатор читает командную строку сам (src/prologdc.cpp).
+set(prologd_cyrillic_dir "${CMAKE_CURRENT_BINARY_DIR}/кириллица")
+file(MAKE_DIRECTORY "${prologd_cyrillic_dir}")
+file(WRITE "${prologd_cyrillic_dir}/программа.pld" "?СЛОЖЕНИЕ(2, 3, С).\n")
+add_test(NAME cli_cyrillic_path
+  COMMAND prologd "--source=${prologd_cyrillic_dir}/программа.pld")
+set_tests_properties(cli_cyrillic_path PROPERTIES PASS_REGULAR_EXPRESSION "=5")

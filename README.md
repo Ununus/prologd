@@ -37,6 +37,9 @@ prologd --source=FILE
 
 Use `prologd --help` to see all available options.
 
+The names of files — on the command line, in `-I`, and in `?ИМПОРТ("...")` — are
+UTF-8, so a path with Cyrillic letters is taken as it was typed (`-s=примеры/файл.pld`).
+
 `prologd --list-keywords` prints the reserved names of the engine
 (`СЛОЖЕНИЕ/3`, `ВЫВОД/+`, `ЛИНИЯ/5`, …), one per line. A front-end reads that
 command — and the `keywords` field of the `ready` event — to offer hints and

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "path_utf8.hpp"
 #include "preprocessor.h"
 
 std::stringstream preprocessorDestination;
@@ -29,9 +30,8 @@ const std::regex &namesLine() {
   return line;
 }
 
-//: Имя файла без каталогов — так оно и попадает в сообщение об ошибке.
-std::string fileName(const std::string &path) {
-  return std::filesystem::path(path).filename().string();
+std::string fileName(const std::filesystem::path &path) {
+  return prologd_path::to_utf8(path.filename());
 }
 
 //: Имя, названное в строке `?ИМПОРТ("имя")`.
@@ -52,13 +52,43 @@ bool isFile(const std::filesystem::path &path) {
   return std::filesystem::is_regular_file(path, error);
 }
 
-void preprocessFile(const std::string &filename, const std::filesystem::path &baseDirectory) {
+std::filesystem::path findImport(const std::string &name, const std::filesystem::path &fromDirectory) {
+  const std::filesystem::path import = prologd_path::from_utf8(name);
+  if (import.is_absolute()) {
+    return isFile(import) ? import : std::filesystem::path();
+  }
+  std::vector<std::filesystem::path> bases;
+  if (!fromDirectory.empty()) {
+    bases.push_back(fromDirectory);
+  }
+  for (const std::string &directory : importDirectories) {
+    bases.push_back(prologd_path::from_utf8(directory));
+  }
+  if (!executableDirectory.empty()) {
+    const std::filesystem::path executable = prologd_path::from_utf8(executableDirectory);
+    bases.push_back(executable);
+    bases.push_back(executable / "stdlib");
+  }
+  std::error_code error;
+  const std::filesystem::path current = std::filesystem::current_path(error);
+  if (!error) {
+    bases.push_back(current);
+  }
+  for (const std::filesystem::path &base : bases) {
+    const std::filesystem::path candidate = base / import;
+    if (isFile(candidate)) {
+      return candidate;
+    }
+  }
+  return std::filesystem::path();
+}
+
+void preprocessFile(const std::filesystem::path &filename, const std::filesystem::path &baseDirectory) {
   std::ifstream program(filename);
   if (program.is_open() == false) {
     throw std::runtime_error(("Cannot open file: " + fileName(filename)).c_str());
   }
-  const std::filesystem::path base = baseDirectory.empty() ? std::filesystem::path(filename).parent_path()
-                                                           : baseDirectory;
+  const std::filesystem::path base = baseDirectory.empty() ? filename.parent_path() : baseDirectory;
   std::string line;
   while (std::getline(program, line)) {
     std::replace(line.begin(), line.end(), '\t', ' ');  // the interpreter doesn't like tabs
@@ -71,7 +101,7 @@ void preprocessFile(const std::string &filename, const std::filesystem::path &ba
     }
     const std::string name = importName(line);
     checkImportName(name);
-    const std::string found = preprocessor_find_import(name, base.string());
+    const std::filesystem::path found = findImport(name, base);
     if (found.empty()) {
       throw std::runtime_error("Cannot open file: " + name);
     }
@@ -95,7 +125,7 @@ void preprocessInteractive(std::istream *source) {
     }
     const std::string name = importName(line);
     checkImportName(name);
-    const std::string found = preprocessor_find_import(name, std::string());
+    const std::filesystem::path found = findImport(name, std::filesystem::path());
     if (found.empty()) {
       throw std::runtime_error("Cannot open file: " + name);
     }
@@ -114,38 +144,13 @@ void preprocessor_set_import_directories(std::vector<std::string> directories) {
 }
 
 std::string preprocessor_find_import(std::string name, std::string from_directory) {
-  const std::filesystem::path import(name);
-  if (import.is_absolute()) {
-    return isFile(import) ? import.string() : std::string();
-  }
-  std::vector<std::filesystem::path> bases;
-  if (!from_directory.empty()) {
-    bases.emplace_back(from_directory);
-  }
-  for (const std::string &directory : importDirectories) {
-    bases.emplace_back(directory);
-  }
-  if (!executableDirectory.empty()) {
-    bases.emplace_back(executableDirectory);
-    bases.emplace_back(std::filesystem::path(executableDirectory) / "stdlib");
-  }
-  std::error_code error;
-  const std::filesystem::path current = std::filesystem::current_path(error);
-  if (!error) {
-    bases.emplace_back(current);
-  }
-  for (const std::filesystem::path &base : bases) {
-    const std::filesystem::path candidate = base / import;
-    if (isFile(candidate)) {
-      return candidate.string();
-    }
-  }
-  return std::string();
+  const std::filesystem::path found = findImport(name, prologd_path::from_utf8(from_directory));
+  return found.empty() ? std::string() : prologd_path::to_utf8(found);
 }
 
 std::stringstream& preprocessor_run(std::string filename) {
   preprocessorDestination = std::stringstream();
-  preprocessFile(filename, std::filesystem::path());
+  preprocessFile(prologd_path::from_utf8(filename), std::filesystem::path());
   return preprocessorDestination;
 }
 
@@ -161,20 +166,19 @@ std::list<std::string> preprocessor_run_on_source(std::list<std::string> source,
   preprocessorDestination = std::stringstream();
   std::filesystem::path tmpPath = std::filesystem::temp_directory_path();
   tmpPath /= "prologd_temporary_file_1.pld";
-  std::string destinationPath = tmpPath.string();
 
   // Поток локальный: разбор может бросить ошибку `?ИМПОРТ`, и тогда файл
   // должен быть закрыт — иначе следующая программа читала бы его пустым.
   {
-    std::ofstream destinationFile(destinationPath);
+    std::ofstream destinationFile(tmpPath);
     if (!destinationFile.is_open()) {
-        throw std::runtime_error(("Cannot open file: " + destinationPath).c_str());
+      throw std::runtime_error(("Cannot open file: " + prologd_path::to_utf8(tmpPath)).c_str());
     }
     for (std::string& s : source) {
       destinationFile << s << '\n';
     }
   }
-  preprocessFile(destinationPath, std::filesystem::path(source_path).parent_path());
+  preprocessFile(tmpPath, prologd_path::from_utf8(source_path).parent_path());
   std::stringstream& in = preprocessorDestination;
   std::string line;
   source.clear();

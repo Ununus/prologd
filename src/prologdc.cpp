@@ -7,6 +7,7 @@
 #include "prlib/encoding.h"
 #include "prlib/keywords.h"
 
+#include "path_utf8.hpp"
 #include "preprocessor.h"
 
 #ifdef PROLOGD_FOR_GUI
@@ -27,6 +28,11 @@
 #include <filesystem>
 #include <vector>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 constexpr char input_signal_char = '$';
 
 //  аталоги »ћѕќ–“ из командной строки (`-I`, `-d`) Ч в пор€дке поиска.
@@ -36,11 +42,11 @@ static std::vector<std::string> import_directories;
 //: `examples` и `stdlib`, поэтому его путь идЄт в поиск файлов »ћѕќ–“.
 static std::string directory_of_executable(const char *path) {
   std::error_code error;
-  const std::filesystem::path exe = std::filesystem::absolute(path, error);
+  const std::filesystem::path exe = std::filesystem::absolute(prologd_path::from_utf8(path), error);
   if (error) {
     return std::string();
   }
-  return exe.parent_path().string();
+  return prologd_path::to_utf8(exe.parent_path());
 }
 
 static const char *source_filename{ nullptr };
@@ -392,7 +398,39 @@ void printHelp() {
                "  questions that were in the source code.\n";
 }
 
+//:  омандна€ строка в UTF-8.  ”зкий `argv` собрала бы CRT в ANSI-кодировке,
+//: и кириллица в пути к файлу до main не дошла бы: в аргументе уже сто€т `?`.
+//: «десь аргументы берутс€ из широкой командной строки Ч так, как их набрали.
+static void use_utf8_command_line(int &argc, char **&argv) {
+#ifdef _WIN32
+  int count = 0;
+  wchar_t **wide = CommandLineToArgvW(GetCommandLineW(), &count);
+  if (wide == nullptr || count <= 0) {
+    return;
+  }
+  // ’ранилище живЄт до конца программы: `argv` указывает в него, а разобранные
+  // имена файлов (`-s`, `-I`, ...) Ч на его строки.
+  static std::vector<std::string> arguments;
+  static std::vector<char *> pointers;
+  arguments.clear();
+  pointers.clear();
+  arguments.reserve(static_cast<size_t>(count));
+  for (int i = 0; i < count; ++i) {
+    arguments.push_back(prologd_path::to_utf8(std::filesystem::path(wide[i])));
+  }
+  LocalFree(wide);
+  pointers.reserve(static_cast<size_t>(count) + 1);
+  for (std::string &argument : arguments) {
+    pointers.push_back(argument.data());
+  }
+  pointers.push_back(nullptr);
+  argc = count;
+  argv = pointers.data();
+#endif
+}
+
 int main(int argc, char **argv) {
+  use_utf8_command_line(argc, argv);
   bool json_protocol = false;
   if (argc > 0 && argv[0] != nullptr) {
     preprocessor_set_executable_directory(directory_of_executable(argv[0]));
@@ -509,7 +547,7 @@ int main(int argc, char **argv) {
   }
 
   if (input_filename) {
-    input_file = std::make_unique<std::ifstream>(input_filename);
+    input_file = std::make_unique<std::ifstream>(prologd_path::from_utf8(input_filename));
     if (!input_file->is_open()) {
       std::cerr << "Cannot open file " << input_filename << std::endl;
       return 1;
@@ -519,7 +557,7 @@ int main(int argc, char **argv) {
     input_stream = &std::cin;
   }
   if (output_filename) {
-    output_file = std::make_unique<std::ofstream>(output_filename);
+    output_file = std::make_unique<std::ofstream>(prologd_path::from_utf8(output_filename));
     if (!output_file->is_open()) {
       std::cerr << "Cannot open file " << output_filename << std::endl;
       return 1;
@@ -529,7 +567,7 @@ int main(int argc, char **argv) {
     output_stream = &std::cout;
   }
   if (error_filename) {
-    error_file = std::make_unique<std::ofstream>(error_filename);
+    error_file = std::make_unique<std::ofstream>(prologd_path::from_utf8(error_filename));
     if (!error_file->is_open()) {
       std::cerr << "Cannot open file " << error_filename << std::endl;
       return 1;

@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "path_utf8.hpp"
 #include "preprocessor.h"
 #include "test_helpers.hpp"
 
@@ -35,17 +36,20 @@ class Sandbox {
   Sandbox(const Sandbox &) = delete;
   Sandbox &operator=(const Sandbox &) = delete;
 
-  //: Пишет файл и отвечает его путём.
+  //: Пишет файл и отвечает его путём.  Имя — UTF-8, как его называет программа:
+  //: в имени может быть кириллица, и в системный путь его переводит path_utf8.
   std::filesystem::path file(const std::string &relative, const std::string &text) const {
-    const std::filesystem::path path = root_ / relative;
+    const std::filesystem::path path = root_ / prologd_path::from_utf8(relative);
     std::filesystem::create_directories(path.parent_path());
     std::ofstream out(path, std::ios::binary);
     out << text;
     return path;
   }
 
-  std::string under(const std::string &relative) const { return (root_ / relative).string(); }
-  std::string root() const { return root_.string(); }
+  std::string under(const std::string &relative) const {
+    return prologd_path::to_utf8(root_ / prologd_path::from_utf8(relative));
+  }
+  std::string root() const { return prologd_path::to_utf8(root_); }
 
  private:
   std::filesystem::path root_;
@@ -65,8 +69,9 @@ class SearchPaths {
 };
 
 //: Текст программы, каким его читает движок: строки файла и всё, что он вобрал.
+//: Имя файла — UTF-8: так его называет и командная строка, и протокол окна.
 std::string readProgram(const std::filesystem::path &path) {
-  std::stringstream &source = preprocessor_run(path.string());
+  std::stringstream &source = preprocessor_run(prologd_path::to_utf8(path));
   std::string text;
   std::string line;
   while (std::getline(source, line)) {
@@ -91,7 +96,7 @@ std::string readSource(const std::string &text, const std::string &source_path) 
 }
 
 bool same(const std::string &found, const std::string &expected) {
-  return !found.empty() && std::filesystem::path(found) == std::filesystem::path(expected);
+  return !found.empty() && prologd_path::from_utf8(found) == prologd_path::from_utf8(expected);
 }
 
 }  // namespace
@@ -221,6 +226,44 @@ TEST_CASE("an import cannot reach the parent directory", "[preprocessor]") {
             "An attempt was made to access the parent directory with \"../\".");
   }
   REQUIRE(thrown);
+}
+
+TEST_CASE("a Cyrillic name is found and read", "[preprocessor]") {
+  // Имя файла приходит в UTF-8 — так его несёт текст программы, — а строка,
+  // отданная `std::ifstream`, прочиталась бы в ANSI-кодировке: «библиотека»
+  // превратилась бы в «?» и файла не нашлось бы.
+  SearchPaths paths;
+  const Sandbox sandbox("cyrillic-name");
+  sandbox.file("библиотека/книги.pld", "удвоить(Ч, Д):-УМНОЖЕНИЕ(Ч, 2, Д).\n");
+  const std::filesystem::path program = sandbox.file(
+      "main.pld", "?ИМПОРТ(\"библиотека/книги.pld\").\n?удвоить(21, Д).\n");
+  REQUIRE(run(readProgram(program)).output == "Д=42\n");
+
+  // Тот же файл по имени, названному строкой вопроса, и по имени каталога `-I`.
+  REQUIRE(run(readSource("?ИМПОРТ(\"библиотека/книги.pld\").\n?удвоить(21, Д).\n",
+                         sandbox.under("main.pld"))).output == "Д=42\n");
+  SearchPaths include({sandbox.under("библиотека")});
+  REQUIRE(run(readSource("?ИМПОРТ(\"книги.pld\").\n?удвоить(21, Д).\n", "")).output == "Д=42\n");
+}
+
+TEST_CASE("a Cyrillic path names the program and the directory its imports come from",
+          "[preprocessor]") {
+  // Путь самой программы тоже бывает кириллическим: тогда от него ищется
+  // `?ИМПОРТ`, а он открывается всё тем же путём, а не строкой.
+  SearchPaths paths;
+  const Sandbox sandbox("cyrillic-path");
+  sandbox.file("примеры/книги.pld", "привет(мир).\n");
+  const std::filesystem::path program =
+      sandbox.file("примеры/программа.pld", "?ИМПОРТ(\"книги.pld\").\n?привет(К).\n");
+  REQUIRE(run(readProgram(program)).output == "К=мир\n");
+
+  // Окно грузит текст и называет его путём — кириллица и здесь.
+  const std::string text = "?ИМПОРТ(\"книги.pld\").\n?привет(К).\n";
+  REQUIRE(run(readSource(text, sandbox.under("примеры/программа.pld"))).output == "К=мир\n");
+
+  // Найденное имя — UTF-8, и это тот же файл, каким его назвали.
+  REQUIRE(same(preprocessor_find_import("книги.pld", sandbox.under("примеры")),
+               sandbox.under("примеры/книги.pld")));
 }
 
 TEST_CASE("the search asks the file, then -I, then the interpreter", "[preprocessor]") {
