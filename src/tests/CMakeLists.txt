@@ -12,6 +12,7 @@ add_executable(prlib_tests
   "test_host.cpp"
   "test_program.cpp"
   "test_preprocessor.cpp"
+  "test_source_encoding.cpp"
   "test_arith.cpp"
   "test_control.cpp"
   "test_findall.cpp"
@@ -25,6 +26,10 @@ add_executable(prlib_tests
 )
 
 target_link_libraries(prlib_tests prlib Catch2::Catch2WithMain)
+
+# The sources are checked for their own encoding (test_source_encoding.cpp): the
+# engine is compiled without /utf-8, so it needs to know which files are CP1251.
+target_compile_definitions(prlib_tests PRIVATE PROLOGD_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 # Разбор `?ИМПОРТ` — часть предпроцессора интерпретатора, а не движка: он
 # лежит рядом с prologdc.cpp, и тесты берут тот же файл, ничем его не
