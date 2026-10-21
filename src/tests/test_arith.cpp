@@ -5,9 +5,11 @@
 
 #include <string>
 
+#include "prlib/err.h"
 #include "test_helpers.hpp"
 
 using prologd_test::question;
+using prologd_test::run;
 
 TEST_CASE("addition and multiplication answer their third argument", "[arith]") {
   REQUIRE(question("СЛОЖЕНИЕ(2,3,х)") == "х=5\n");
@@ -27,6 +29,47 @@ TEST_CASE("comparisons answer YES or NO", "[arith]") {
   REQUIRE(question("БОЛЬШЕ(5,3)") == "ДА\n");
   REQUIRE(question("МЕНЬШЕ(3,5)") == "ДА\n");
   REQUIRE(question("БОЛЬШЕ(2.5,2.0)") == "ДА\n");
+}
+
+TEST_CASE("lists compare element by element", "[arith]") {
+  // Лексикографически, как строки: [] меньше любого непустого, головы сравниваются
+  // теми же правилами, что и сами аргументы БОЛЬШЕ, а при равных головах — хвосты.
+  REQUIRE(question("БОЛЬШЕ([1,3],[1,2])") == "ДА\n");
+  REQUIRE(question("МЕНЬШЕ([1,2],[1,3])") == "ДА\n");
+  REQUIRE(question("БОЛЬШЕ([1,2],[1,3])") == "НЕТ\n");
+  // Короткий список меньше своего продолжения.
+  REQUIRE(question("МЕНЬШЕ([1,2],[1,2,3])") == "ДА\n");
+  REQUIRE(question("БОЛЬШЕ([1,2,3],[1,2])") == "ДА\n");
+  // Пустой список — самый маленький, а два пустых друг друга не больше.
+  REQUIRE(question("МЕНЬШЕ([],[1])") == "ДА\n");
+  REQUIRE(question("БОЛЬШЕ([1],[])") == "ДА\n");
+  REQUIRE(question("БОЛЬШЕ([],[])") == "НЕТ\n");
+  REQUIRE(question("МЕНЬШЕ([],[])") == "НЕТ\n");
+  // Элементы — символы, строки и вложенные списки: на каждом уровне те же правила.
+  REQUIRE(question("МЕНЬШЕ([аня],[боря])") == "ДА\n");
+  REQUIRE(question("МЕНЬШЕ([\"аб\"],[\"ав\"])") == "ДА\n");
+  REQUIRE(question("МЕНЬШЕ([[1],[2]],[[1],[3]])") == "ДА\n");
+  // Целое и вещественное вперемешку — по значению.
+  REQUIRE(question("МЕНЬШЕ([1.5],[2])") == "ДА\n");
+  REQUIRE(question("БОЛЬШЕ([2],[1.5])") == "ДА\n");
+  // Ни больше, ни меньше: списки равны, и это видно унификацией.
+  REQUIRE(question("БОЛЬШЕ([1,2],[1,2])") == "НЕТ\n");
+  REQUIRE(question("МЕНЬШЕ([1,2],[1,2])") == "НЕТ\n");
+  REQUIRE(question("РАВНО([1,2],[1,2])") == "ДА\n");
+}
+
+TEST_CASE("a list is compared only with a list of comparable elements", "[arith]") {
+  // Род термов не смешивается, как и раньше: список с числом не сравнить.
+  REQUIRE(run("?БОЛЬШЕ([1,2],5).\n").error_code ==
+          static_cast<int>(ErrorCode::AnExceptionOccurredDuringExecution));
+  REQUIRE(run("?БОЛЬШЕ(5,[1,2]).\n").error_code ==
+          static_cast<int>(ErrorCode::AnExceptionOccurredDuringExecution));
+  // ... и элементы подчиняются тому же правилу: число с символом — ошибка.
+  REQUIRE(run("?БОЛЬШЕ([1],[аня]).\n").error_code ==
+          static_cast<int>(ErrorCode::AnExceptionOccurredDuringExecution));
+  // Свободную переменную сравнивать не с чем.
+  REQUIRE(run("?БОЛЬШЕ([Х],[1]).\n").error_code ==
+          static_cast<int>(ErrorCode::AnExceptionOccurredDuringExecution));
 }
 
 TEST_CASE("ABS and SQRT", "[arith]") {

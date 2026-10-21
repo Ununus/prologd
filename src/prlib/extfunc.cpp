@@ -15,7 +15,7 @@
 
 PredicateState argnull(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (name) {
-  case hpfail: return PredicateState::No;  // 5;  // ложь
+  case hpfail: return PredicateState::No;  // 5;  // пїЅпїЅпїЅпїЅ
   case hptrace: ClVar->PrSetting->Trace = true; break;
   case hpnottr: ClVar->PrSetting->Trace = false; break;
   case hpcut:
@@ -45,9 +45,9 @@ void conarg(size_t numb, size_t h, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ScVar->vgoal[maxarity * 2 + i] = frame;
   }
 }
-//====================================содрано=============
+//====================================пїЅпїЅпїЅпїЅпїЅпїЅпїЅ=============
 
-// получение строки связанной с переменной
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 char *occ_line(int x, char *lnwr, TScVar *ScVar, TClVar *ClVar, array *heap) {
   char *ad;
   recordstring *ps = heap->GetPrecordstring(ScVar->vgoal[maxarity + x]);
@@ -68,7 +68,7 @@ std::string occ_line(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return rs;
 }
 
-// ВЫП
+// пїЅпїЅпїЅ
 PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   size_t w;
   switch (sw) {
@@ -81,7 +81,7 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
 
   default: {
-    throw std::runtime_error("ВЫП: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   if (w < heap->freeheap) {
@@ -91,10 +91,10 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     ClVar->head = ScVar->vgoal[maxarity];
     ClVar->frame2 = ScVar->vgoal[2 * maxarity];
-    return PredicateState::Builtin;  // 6;  // встроенный предикат
+    return PredicateState::Builtin;  // 6;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   }
 
-  // невстроенный предикат под call
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ call
   recordsconst *ps = heap->GetPrecordsconst(w);
   if (ps->begin && ps->begin != isnil) {
     ClVar->newclause = ps->begin;
@@ -105,12 +105,12 @@ PredicateState prcall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::ControlStep;  // 4;
   } else {
     outerror(ErrorCode::UnknownError);  // 24
-    return PredicateState::Error;       // 1; // r_t_e(41) не выполнимый предикат ВЫП
+    return PredicateState::Error;       // 1; // r_t_e(41) пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
   }
   return PredicateState::Error;  // 1;
 }
 
-// запись строки и унификация его с arg
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ arg
 PredicateState zap3(std::string str, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto bakindex = heap->last;
   auto index = heap->append<char>(0, str.size());
@@ -126,7 +126,7 @@ PredicateState zap3(std::string str, int arg, TScVar *ScVar, TClVar *ClVar, arra
   return PredicateState::No;  // 5;
 }
 
-// унификация целого num с arg аргументом предиката
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ num пїЅ arg пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto bakindex = heap->last;
   auto index = heap->append(recordinteger(num));
@@ -140,7 +140,7 @@ PredicateState zap1(IntegerType num, int arg, TScVar *ScVar, TClVar *ClVar, arra
   return PredicateState::No;  // 5;
 }
 
-// унификация целых num1 и num2 с arg1 и arg2 соотвественно аргументами предиката
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ num1 пїЅ num2 пїЅ arg1 пїЅ arg2 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto bakindex = heap->last;
   auto index1 = heap->append(recordinteger(num1));
@@ -154,7 +154,7 @@ PredicateState zap2(IntegerType num1, IntegerType num2, int arg1, int arg2, TScV
   return PredicateState::No;  // 5;
 }
 
-// унификация float num с arg аргументом предиката
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float num пїЅ arg пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState zap1f(FloatType num, int arg, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto bakindex = heap->last;
   auto index = heap->append(recordfloat(num));
@@ -167,7 +167,7 @@ PredicateState zap1f(FloatType num, int arg, TScVar *ScVar, TClVar *ClVar, array
   return PredicateState::No;  // 5;
 }
 
-// унификация float num1 с arg1 аргументом предиката
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float num1 пїЅ arg1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto bakindex = heap->last;
   auto index1 = heap->append(recordfloat(num1));
@@ -181,7 +181,7 @@ PredicateState zap2f(FloatType num1, FloatType num2, int arg1, int arg2, TScVar 
   return PredicateState::No;  // 5;
 }
 
-// СЛУЧ
+// пїЅпїЅпїЅпїЅ
 PredicateState prrandom(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType n, m;
   static std::mt19937_64 rng(std::chrono::steady_clock::now().time_since_epoch().count());
@@ -189,23 +189,23 @@ PredicateState prrandom(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   // static std::uniform_int_distribution<IntegerType> dst;
   static std::uniform_int_distribution<long long> dst;
   switch (sw) {
-  case 7:  // целое: инициализация генератора
+  case 7:  // пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     n = occ(0, ScVar, ClVar, heap);
     rng = std::mt19937_64(static_cast<long long>(n.toInt64()));
     return PredicateState::Yes;  // 3;
-  case 5:                        // переменная: получить новое значение
+  case 5:                        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     return zap1(rng(), 1, ScVar, ClVar, heap);
-  case 577:  // переменная: получить новое значение
+  case 577:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     n = occ(1, ScVar, ClVar, heap);
     m = occ(2, ScVar, ClVar, heap);
     if (n >= m) {
-      throw std::runtime_error("СЛУЧ: АРГ2 >= АРГ3");
+      throw std::runtime_error("пїЅпїЅпїЅпїЅ: пїЅпїЅпїЅ2 >= пїЅпїЅпїЅ3");
     }
     // dst = std::uniform_int_distribution<IntegerType>(n, m);
     dst = std::uniform_int_distribution<long long>(static_cast<long long>(n.toInt64()), static_cast<long long>(m.toInt64()));
     return zap1(dst(rng), 1, ScVar, ClVar, heap);
   default: {
-    throw std::runtime_error("СЛУЧ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
 }
@@ -214,9 +214,9 @@ PredicateState prrandom(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 bool see( void ) { return false; };
 bool mytell( void ){ return false; };
 */
-//=========================конец содранного
+//=========================пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-// ЗАПИСЬ_В
+// пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅ
 PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 9:
@@ -232,11 +232,11 @@ PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       return PredicateState::Yes;  // 3;
     }
 
-    // пытаемся открыть файл для записи.
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.
     ClVar->PrSetting->out.open(str);
     if (!ClVar->PrSetting->out.is_open()) {
       outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
-      return PredicateState::No;                                // 5; // r_t_e_(не могу открыть файл)
+      return PredicateState::No;                                // 5; // r_t_e_(пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
     }
     ClVar->PrSetting->name_out_file = str;
     return PredicateState::Yes;  // 3;
@@ -245,13 +245,13 @@ PredicateState outfile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(ClVar->PrSetting->name_out_file, 1, ScVar, ClVar, heap);
 
   default: {
-    throw std::runtime_error("ЗАПИСЬ_В: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Error;  // 1
 }
 
-// ЧТЕНИЕ_ИЗ
+// пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅпїЅ
 PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 9:
@@ -270,7 +270,7 @@ PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClVar->PrSetting->in.open(str);
     if (!ClVar->PrSetting->in.is_open()) {
       outerror(ErrorCode::AnExceptionOccurredDuringExecution);  // 43
-      return PredicateState::No;                                // 5; // r_t_e_(не могу открыть файл)
+      return PredicateState::No;                                // 5; // r_t_e_(пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ)
     }
     ClVar->PrSetting->name_in_file = str;
     return PredicateState::Yes;  // 3;
@@ -279,29 +279,29 @@ PredicateState infile(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(ClVar->PrSetting->name_in_file, 1, ScVar, ClVar, heap);
 
   default: {
-    throw std::runtime_error("ЧТЕНИЕ_ИЗ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Error;  // 1;
 }
 
-// получение целого связанного с переменной
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 IntegerType occ(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordinteger *pint = heap->GetPrecordinteger(ScVar->vgoal[maxarity + x]);
   return pint->value;
 }
 
-// получение вещесв связанного с переменной
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 FloatType occf(size_t x, TScVar *ScVar, TClVar *ClVar, array *heap) {
   recordfloat *pf = heap->GetPrecordfloat(ScVar->vgoal[maxarity + x]);
   return pf->value;
 }
 
-// ВВКОД
+// пїЅпїЅпїЅпїЅпїЅ
 PredicateState priocod(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   static char str0[2]{};
   switch (sw) {
-  case 7:  // целое !!!посмотреть на ввод вещественных этого делать нельзя
+  case 7:  // пїЅпїЅпїЅпїЅпїЅ !!!пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
   {
     if (ClVar->PrSetting->out.is_open()) {
       ClVar->PrSetting->out << static_cast<char>(occ(0, ScVar, ClVar, heap).toInt64());
@@ -311,7 +311,7 @@ PredicateState priocod(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return PredicateState::Yes;  // 3;
   }
-  case 5:  // переменная
+  case 5:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   {
     char w;
     if (ClVar->PrSetting->in.is_open()) {
@@ -322,27 +322,27 @@ PredicateState priocod(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     InputSymbol(&w);
     return zap1(w, 1, ScVar, ClVar, heap);
   }
-    //  case 1://анонимка
+    //  case 1://пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     //    if (ClVar->PrSetting->fin)
-    //      fgetc(ClVar->PrSetting->fin);//сдвинуть указатель файла ???
+    //      fgetc(ClVar->PrSetting->fin);//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ???
     //    return 3;
   default: {
-    throw std::runtime_error("ВВКОД: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Error;  // 1;
 }
 
-// ВВОДЦЕЛ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType w{};
-  const char *caption = "Введите целое";
+  const char *caption = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ";
 
   switch (sw) {
-  case 7:   // Целое
-  case 74:  // Целое, "caption"
-  case 79:  // Целое, caption
-  {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
+  case 7:   // пїЅпїЅпїЅпїЅпїЅ
+  case 74:  // пїЅпїЅпїЅпїЅпїЅ, "caption"
+  case 79:  // пїЅпїЅпїЅпїЅпїЅ, caption
+  {         // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
         return PredicateState::No;  // 5;
@@ -361,9 +361,9 @@ PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return (occ(0, ScVar, ClVar, heap) == w) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
-  case 5:   // Переменная
-  case 54:  // Переменная, "caption"
-  case 59:  // Переменная, caption
+  case 5:   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 54:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, "caption"
+  case 59:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, caption
 
   case 1:
   case 14:
@@ -387,24 +387,24 @@ PredicateState prrdint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap1(w, 1, ScVar, ClVar, heap);
   }
   default: {
-    throw std::runtime_error("ВВОДЦЕЛ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   outerror(ErrorCode::UnknownError);  // 24
   return PredicateState::Error;       // 1; // rte
 }
 
-// ВВОДВЕЩ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   FloatType w{};
-  const char *caption = "Введите вещественное";
+  const char *caption = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ";
 
   switch (sw) {
   case 6:   // Float
   case 64:  // Float, "caption"
   case 69:  // Float, caption
-  {         // Если введённое число совпало с аргументом то ИСТИНА иначе ЛОЖЬ
-            // TODO нужен ли тут eps?.
+  {         // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+            // TODO пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ eps?.
     if (ClVar->PrSetting->in.is_open()) {
       if (!(ClVar->PrSetting->in >> w)) {
         return PredicateState::No;  // 5;
@@ -423,9 +423,9 @@ PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return (occf(0, ScVar, ClVar, heap) == w) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
-  case 5:   // Переменная
-  case 54:  // Переменная, "caption"
-  case 59:  // Переменная, caption
+  case 5:   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case 54:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, "caption"
+  case 59:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, caption
 
   case 1:
   case 14:
@@ -449,20 +449,20 @@ PredicateState prrdfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap1f(w, 1, ScVar, ClVar, heap);
   }
   default: {
-    throw std::runtime_error("ВВОДВЕЩ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   outerror(ErrorCode::UnknownError);  // 24
   return PredicateState::Error;       // 1; // rte
 }
 
-// ВВОДСИМВ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   std::string str2;
   switch (sw) {
   case 9:
   case 4:
-  case 99: /*то же самое что и предыдущий пункт но с заголовком диалогового окна*/
+  case 99: /*пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ*/
   case 94:
   case 49:
   case 44: {
@@ -495,7 +495,7 @@ PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return zap3(str2, 1, ScVar, ClVar, heap);
   }
-  case 1:  // анонимка
+  case 1:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   case 19:
   case 14: {
     if (ClVar->PrSetting->in.is_open()) {
@@ -512,20 +512,20 @@ PredicateState prrdsym(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Yes;  // 3;
   }
   default: {
-    throw std::runtime_error("ВВОДСИМВ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::No;  // 5;
 }
 
-// TODO ВВОДСТР почти тоже самое что и ВВОДСИМВ
-// ВВОДСТР
+// TODO пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   std::string str2;
   switch (sw) {
   case 9:
   case 4:
-  case 99: /*то же самое что и предыдущий пункт но с заголовком диалогового окна*/
+  case 99: /*пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ*/
   case 94:
   case 49:
   case 44: {
@@ -558,7 +558,7 @@ PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     return zap3(str2, 1, ScVar, ClVar, heap);
   }
-  case 1:  // анонимка
+  case 1:  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   case 19:
   case 14: {
     if (ClVar->PrSetting->in.is_open()) {
@@ -575,23 +575,23 @@ PredicateState prrdstr(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Yes;  // 3;
   }
   default: {
-    throw std::runtime_error("ВВОДСТР: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::No;  // 5;
 }
 
-// преобразование в целое
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 PredicateState print(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
-  case 7: return PredicateState::Yes;  // 3;  // уже целое
+  case 7: return PredicateState::Yes;  // 3;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   case 6: return zap1(IntegerType::fromDouble(occf(0, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::ErrorInBuiltinPredicateInt);  // 36
   return PredicateState::Error;                     // 1
 }
 
-// преобразование в float
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ float
 PredicateState prfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: return zap1f(occ(0, ScVar, ClVar, heap).toDouble(), 1, ScVar, ClVar, heap);
@@ -601,12 +601,12 @@ PredicateState prfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Error;                       // 1
 }
 
-// ЖДИ
+// пїЅпїЅпїЅ
 PredicateState prwait(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 7: break;
   default: {
-    throw std::runtime_error("ЖДИ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   IntegerType n = occ(0, ScVar, ClVar, heap);
@@ -620,28 +620,101 @@ PredicateState argone(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(1, ClVar->head, ScVar, ClVar, heap);
   size_t sw = ScVar->vgoal[0];
   switch (name) {
-  case hpcall: return prcall(sw, ScVar, ClVar, heap);                                  // ВЫП
-  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);                                // ВВОДСИМВ
-  case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);                                // ВВОДСТР
-  case hprdint: return prrdint(sw, ScVar, ClVar, heap);                                // ВВОДЦЕЛ
-  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);                            // ВВОДВЕЩ
-  case hpiocod: return priocod(sw, ScVar, ClVar, heap);                                // ВВКОД
-  case hpsee: return infile(sw, ScVar, ClVar, heap);                                   // ЧТЕНИЕ_ИЗ
-  case hptell: return outfile(sw, ScVar, ClVar, heap);                                 // ЗАПИСЬ_В
-  case hpvar: return (sw == 5) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // ПЕР
-  case hpint: return (sw == 7) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // ЦЕЛ
-  case hpfloat: return (sw == 6) ? PredicateState::Yes : PredicateState::No;           // 3 : 5; // ВЕЩ
-  case hpsym: return (sw == 4) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // СИМВ
-  case hplst: return (sw == 2 || sw == 3) ? PredicateState::Yes : PredicateState::No;  // 3 : 5; // СПИСОК (пустой или с чем-то)
-  case hpwait: return prwait(sw, ScVar, ClVar, heap);                                  // ЖДИ
-  case hprand: return prrandom(sw, ScVar, ClVar, heap);                                // СЛУЧ
-  case hp_int: return print(sw, ScVar, ClVar, heap);                                   // преобразование int
-  case hp_float: return prfloat(sw, ScVar, ClVar, heap);                               // преобразование float
+  case hpcall: return prcall(sw, ScVar, ClVar, heap);                                  // пїЅпїЅпїЅ
+  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);                                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);                                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprdint: return prrdint(sw, ScVar, ClVar, heap);                                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);                            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpiocod: return priocod(sw, ScVar, ClVar, heap);                                // пїЅпїЅпїЅпїЅпїЅ
+  case hpsee: return infile(sw, ScVar, ClVar, heap);                                   // пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅпїЅ
+  case hptell: return outfile(sw, ScVar, ClVar, heap);                                 // пїЅпїЅпїЅпїЅпїЅпїЅ_пїЅ
+  case hpvar: return (sw == 5) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // пїЅпїЅпїЅ
+  case hpint: return (sw == 7) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // пїЅпїЅпїЅ
+  case hpfloat: return (sw == 6) ? PredicateState::Yes : PredicateState::No;           // 3 : 5; // пїЅпїЅпїЅ
+  case hpsym: return (sw == 4) ? PredicateState::Yes : PredicateState::No;             // 3 : 5; // пїЅпїЅпїЅпїЅ
+  case hplst: return (sw == 2 || sw == 3) ? PredicateState::Yes : PredicateState::No;  // 3 : 5; // пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ-пїЅпїЅ)
+  case hpwait: return prwait(sw, ScVar, ClVar, heap);                                  // пїЅпїЅпїЅ
+  case hprand: return prrandom(sw, ScVar, ClVar, heap);                                // пїЅпїЅпїЅпїЅ
+  case hp_int: return print(sw, ScVar, ClVar, heap);                                   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ int
+  case hp_float: return prfloat(sw, ScVar, ClVar, heap);                               // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float
   }
   return PredicateState::Error;  // 1;
 }
 
-// БОЛЬШЕ
+static int compareText(const std::string &left, const std::string &right) {
+  const size_t common = left.size() < right.size() ? left.size() : right.size();
+  for (size_t i = 0; i < common; ++i) {
+    if (left[i] < right[i]) {
+      return -1;
+    }
+    if (left[i] > right[i]) {
+      return 1;
+    }
+  }
+  if (left.size() == right.size()) {
+    return 0;
+  }
+  return (left.size() > right.size()) ? 1 : -1;
+}
+static std::string termText(size_t term, array *heap) {
+  const recordstring *ps = heap->GetPrecordstring(term);
+  return std::string(heap->GetPchar(ps->ptrsymb), ps->length);
+}
+
+static bool compareTerms(size_t left, size_t right, TClVar *ClVar, array *heap, int &order) {
+  for (;;) {
+    size_t leftFrame = ClVar->frame2;
+    size_t rightFrame = ClVar->frame2;
+    const size_t leftType = occur_term(&left, &leftFrame, ClVar, heap);
+    const size_t rightType = occur_term(&right, &rightFrame, ClVar, heap);
+    const bool leftNumber = (leftType == 7 || leftType == 6);
+    const bool rightNumber = (rightType == 7 || rightType == 6);
+    if (leftNumber && rightNumber) {
+      if (leftType == 7 && rightType == 7) {
+        const IntegerType l = heap->GetPrecordinteger(left)->value;
+        const IntegerType r = heap->GetPrecordinteger(right)->value;
+        order = (l > r) ? 1 : ((l == r) ? 0 : -1);
+      } else {
+        const double l = (leftType == 7) ? heap->GetPrecordinteger(left)->value.toDouble()
+                                         : heap->GetPrecordfloat(left)->value;
+        const double r = (rightType == 7) ? heap->GetPrecordinteger(right)->value.toDouble()
+                                          : heap->GetPrecordfloat(right)->value;
+        order = (l > r) ? 1 : ((l == r) ? 0 : -1);
+      }
+      return true;
+    }
+    const bool leftText = (leftType == 4 || leftType == 9);
+    const bool rightText = (rightType == 4 || rightType == 9);
+    if (leftText && rightText) {
+      order = compareText(termText(left, heap), termText(right, heap));
+      return true;
+    }
+    const bool leftList = (leftType == 2 || leftType == 3);
+    const bool rightList = (rightType == 2 || rightType == 3);
+    if (leftType == 2 || rightType == 2) {  // [] пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
+      if (!leftList || !rightList) {
+        return false;
+      }
+      order = (leftType == rightType) ? 0 : ((leftType == 2) ? -1 : 1);
+      return true;
+    }
+    if (!leftList || !rightList) {
+      return false;
+    }
+    const recordlist *l = heap->GetPrecordlist(left);
+    const recordlist *r = heap->GetPrecordlist(right);
+    if (!compareTerms(l->head, r->head, ClVar, heap, order)) {
+      return false;
+    }
+    if (order != 0) {
+      return true;
+    }
+    left = l->link;
+    right = r->link;
+  }
+}
+
+// пїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType a[2];
   int ind = ScVar->vgoal[0] * 10 + ScVar->vgoal[1];
@@ -670,35 +743,30 @@ PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap) {
       return (static_cast<float>(a[0].toDouble()) > af[1]) ? PredicateState::Yes : PredicateState::No;
   case 77: // int int
       return (a[0] > a[1]) ? PredicateState::Yes : PredicateState::No;
-  case 44:
-  {
-      bool greater = true;
-      for (int i = 0; i < as[0].size() && i < as[1].size(); ++i) {
-          if (as[0][i] < as[1][i]) {
-              greater = false;
-              goto eccase;
-          }
-          if (as[0][i] > as[1][i]) {
-              greater = true;
-              goto eccase;
-          }
-      }
-      if (as[0].size() <= as[1].size()) {
-          greater = false;
-      }
-eccase:
-      return greater ? PredicateState::Yes : PredicateState::No;
+  case 44:  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+      return (compareText(as[0], as[1]) > 0) ? PredicateState::Yes : PredicateState::No;
+  case 22:  // [] []
+  case 23:  // [] list
+    return PredicateState::No;
+  case 32:  // list []
+    return PredicateState::Yes;
+  case 33: {  // list list
+    int order = 0;
+    if (compareTerms(ScVar->vgoal[maxarity], ScVar->vgoal[maxarity + 1], ClVar, heap, order)) {
+      return (order > 0) ? PredicateState::Yes : PredicateState::No;
+    }
+    break;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
   }
   default: {
-    throw std::runtime_error("БОЛЬШЕ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
-  throw std::runtime_error("БОЛЬШЕ: Недопустимый тип аргументов");
+  throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   return PredicateState::No;
   //return (af[0] > af[1]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
 }
 
-// составить строку символов из элементов tp - tp должен быть list
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ tp - tp пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ list
 std::string GetStrFromList(baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *heap) {
   std::string res;
   baserecord *pb;
@@ -731,14 +799,14 @@ std::string GetStrFromList(baserecord *tp, TScVar *ScVar, TClVar *ClVar, array *
     default: {
       outerror(ErrorCode::WrongList);  // 15
       return {};
-    }  // R_t_e последний не []
+    }  // R_t_e пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ []
     }
     tp = heap->GetPbaserecord(plist->link);
   }
   return res;
 }
 
-// СТРСПИС
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp = 0;
   // recordlist* plist;
@@ -777,7 +845,7 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       unify(index, ptr[1], ClVar->frame2, ClVar->frame2, ClVar, heap);
       return PredicateState::Yes;  // 3;
     } else {
-      // строка не пустая
+      // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
       size_t j = heap->last, index1, index2;
       for (size_t i = 0; i < lnwr.size(); i++) {
         index1 = heap->append(recordinteger(lnwr[i]));
@@ -791,13 +859,13 @@ PredicateState prstlst(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   default: {
-    throw std::runtime_error("СТРСПИС: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
-  return PredicateState::No;  // 5;  //!!! посмотреть на код возврата
+  return PredicateState::No;  // 5;  //!!! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
-// СТРЦЕЛ
+// пїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 97:  // str int
@@ -824,13 +892,13 @@ PredicateState prstint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   default: {
-    throw std::runtime_error("СТРЦЕЛ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Error;
 }
 
-// СТРВЕЩ
+// пїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 96:  // str float
@@ -853,13 +921,13 @@ PredicateState prstfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap3(toString(occf(1, ScVar, ClVar, heap)), 1, ScVar, ClVar, heap);
   }
   default: {
-    throw std::runtime_error("СТРВЕЩ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Error;
 }
 
-// ЦЕЛВЕЩ
+// пїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState printfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 76:                                                                                                                       // int float
@@ -877,7 +945,7 @@ PredicateState printfloat(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) 
     return zap1(int_val, 1, ScVar, ClVar, heap);
   }
   default: {
-    throw std::runtime_error("ЦЕЛВЕЩ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Error;
@@ -891,7 +959,7 @@ bool letter(char a) {
   return (isalpharus(a) || isalphaang(a)) ? true : false;
 }
 
-// БУКВА; ЦИФРА
+// пїЅпїЅпїЅпїЅпїЅ; пїЅпїЅпїЅпїЅпїЅ
 PredicateState whatisit(size_t sw, bool (*f)(char), size_t i, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto lnwr = occ_line(0, ScVar, ClVar, heap);
   switch (sw) {
@@ -915,14 +983,14 @@ PredicateState whatisit(size_t sw, bool (*f)(char), size_t i, TScVar *ScVar, TCl
     break;
   }
   default: {
-    // i использовать для r_t_e
-    throw std::runtime_error("БУКВА|ЦИФРА: Недопустимый тип аргументов");
+    // i пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ r_t_e
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅ|пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }                                       
   return PredicateState::No;
 }
 
-// СКОЛЬКО
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prskol(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   int i = 0;
   recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
@@ -939,7 +1007,7 @@ PredicateState prskol(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap1(i, 2, ScVar, ClVar, heap);
   case 47:                                                                                // str int
     return (i == occ(1, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
-  default: throw std::runtime_error("СКОЛЬКО: Недопустимый тип аргументов");
+  default: throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   outerror(ErrorCode::UnknownError);  // 24
   return PredicateState::Error;       // 1; // r_t_e
@@ -947,7 +1015,7 @@ PredicateState prskol(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
 
 size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap);
 
-// ТЕРМ
+// пїЅпїЅпїЅпїЅ
 PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
   recordlist *plist;
@@ -969,7 +1037,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     while (tp->ident == islist) {
       plist = (recordlist *)tp;
       tp = heap->GetPbaserecord(plist->link);
-      i++;  // число элементов в списке
+      i++;  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     }
     if (tp->ident != isemptylist) {
       outerror(ErrorCode::WrongList);  // 15
@@ -984,9 +1052,9 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       //				heap->last=bakindex; //??????
       return PredicateState::No;  // 5;
     }
-    // сделать запись функции с аргументами из списка
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     assert(i > 0);
-    size_t n = i - 1;  // число целей в новой функции
+    size_t n = i - 1;  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     auto index = heap->append<size_t>(0, n);
     auto *ptrargs = heap->GetPunsigned(index);
     plist = heap->GetPrecordlist(ScVar->vgoal[maxarity + 1]);
@@ -1002,7 +1070,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     while (plist->ident == islist) {
       ptrargs[i] = plist->head;
       plist = heap->GetPrecordlist(plist->link);
-      i++;  // число элементов в списке
+      i++;  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     }
     index = heap->append(recordfunction(n, funcsymb, index));
     recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
@@ -1033,7 +1101,7 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return (unify(ptrarg[1], tlist, ClVar->frame2, ClVar->frame2, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
   }
   case 95:  // symb var
-  case 45:  // str var -над этим надо подумать ??
+  case 45:  // str var -пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ??
   {         // symb -> list
     auto oldindex = heap->last;
     recordlist pl(ScVar->vgoal[maxarity], oldindex + sizeof(recordlist));
@@ -1050,15 +1118,15 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::No;  // 5;
 }
 
-// УДАЛ
+// пїЅпїЅпїЅпїЅ
 PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw != 47) {
-    throw std::runtime_error("УДАЛ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   IntegerType i = occ(1, ScVar, ClVar, heap);
   recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
   if (ps->begin == isnil || ps->begin == NULL) {
-    return PredicateState::No;  // 5;  // нет предложения
+    return PredicateState::No;  // 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   }
   recordclause *pcpred = 0;
   recordclause *pc = heap->GetPrecordclause(ps->begin);
@@ -1068,7 +1136,7 @@ PredicateState prdel(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     pc = heap->GetPrecordclause(pc->next);
   }
 
-  if (w == 1) {  // первое предложение  даже если последнее
+  if (w == 1) {  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     ps->begin = pc->next;
   } else {
     if (!pcpred) {
@@ -1120,10 +1188,10 @@ PredicateState prabs(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   outerror(ErrorCode::UnknownError);
   return PredicateState::Error;
 }
-// Квадратный корень целого числа (с отбрасыванием дробной части)
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
 static IntegerType integer_sqrt(const IntegerType &value) {
   if (value < 0) {
-    throw std::runtime_error("SQRT: отрицательное число");
+    throw std::runtime_error("SQRT: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ");
   }
   if (value == 0) {
     return 0;
@@ -1194,7 +1262,7 @@ PredicateState prsin(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  // case 66: пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ No. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   case 66: return (sin(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
   case 56: return zap1f(asin(f[1]), 1, ScVar, ClVar, heap); 
   case 65: return zap1f(sin(f[0]), 2, ScVar, ClVar, heap);
@@ -1225,7 +1293,7 @@ PredicateState prcos(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  // case 66: пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ No. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   case 66: return (cos(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
   case 56: return zap1f(acos(f[1]), 1, ScVar, ClVar, heap);
   case 65: return zap1f(cos(f[0]), 2, ScVar, ClVar, heap);
@@ -1256,7 +1324,7 @@ PredicateState prtan(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  // case 66: пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ No. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   case 66: return (tan(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
   case 56: return zap1f(atan(f[1]), 1, ScVar, ClVar, heap);
   case 65: return zap1f(tan(f[0]), 2, ScVar, ClVar, heap);
@@ -1287,7 +1355,7 @@ PredicateState prexp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  // case 66: По идее будет всегда No. Сравнивать вещественные же мы не умеем
+  // case 66: пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ No. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   case 66: return (exp(f[0]) == f[1]) ? PredicateState::Yes : PredicateState::No;
   case 56: return zap1f(log(f[1]), 1, ScVar, ClVar, heap);
   case 65: return zap1f(exp(f[0]), 2, ScVar, ClVar, heap);
@@ -1300,21 +1368,21 @@ PredicateState argtwo(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(2, ClVar->head, ScVar, ClVar, heap);
   size_t sw = ScVar->vgoal[0] * 10 + ScVar->vgoal[1];
   switch (name) {
-  case hpgt: return prgt(ScVar, ClVar, heap);                         // БОЛЬШЕ
-  case hpforall: return prforall(sw, ScVar, ClVar, heap);             // ДЛЯВСЕХ
-  case hpstint: return prstint(sw, ScVar, ClVar, heap);               // СТРЦЕЛ
-  case hpstfloat: return prstfloat(sw, ScVar, ClVar, heap);           // СТРВЕЩ
-  case hpstlst: return prstlst(sw, ScVar, ClVar, heap);               // СТРСПИС
-  case hpintfloat: return printfloat(sw, ScVar, ClVar, heap);         // ЦЕЛВЕЩ
-  case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);  // БУКВА
-  case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);   // ЦИФРА
-  case hpterm: return prterm(sw, ScVar, ClVar, heap);                 // ТЕРМ
-  case hpdel: return prdel(sw, ScVar, ClVar, heap);                   // УДАЛ
-  case hpskol: return prskol(sw, ScVar, ClVar, heap);                 // СКОЛЬКО
-  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);               // ВВОДСИМВ (с заголовком)
-  case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);               // ВВОДСТР
-  case hprdint: return prrdint(sw, ScVar, ClVar, heap);               // ВВОДЦЕЛ
-  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);           // ВВОДВЕЩ
+  case hpgt: return prgt(ScVar, ClVar, heap);                         // пїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpforall: return prforall(sw, ScVar, ClVar, heap);             // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpstint: return prstint(sw, ScVar, ClVar, heap);               // пїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpstfloat: return prstfloat(sw, ScVar, ClVar, heap);           // пїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpstlst: return prstlst(sw, ScVar, ClVar, heap);               // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpintfloat: return printfloat(sw, ScVar, ClVar, heap);         // пїЅпїЅпїЅпїЅпїЅпїЅ
+  case hplettr: return whatisit(sw, letter, 55, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅ
+  case hpdigit: return whatisit(sw, digit, 56, ScVar, ClVar, heap);   // пїЅпїЅпїЅпїЅпїЅ
+  case hpterm: return prterm(sw, ScVar, ClVar, heap);                 // пїЅпїЅпїЅпїЅ
+  case hpdel: return prdel(sw, ScVar, ClVar, heap);                   // пїЅпїЅпїЅпїЅ
+  case hpskol: return prskol(sw, ScVar, ClVar, heap);                 // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprdsym: return prrdsym(sw, ScVar, ClVar, heap);               // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+  case hprdstr: return prrdstr(sw, ScVar, ClVar, heap);               // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprdint: return prrdint(sw, ScVar, ClVar, heap);               // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprdfloat: return prrdfloat(sw, ScVar, ClVar, heap);           // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   case hpabs: return prabs(sw, ScVar, ClVar, heap);                   // ABS
   case hpsqrt: return prsqrt(sw, ScVar, ClVar, heap);                 // SQRT
   case hpsin: return prsin(sw, ScVar, ClVar, heap);                   // SIN
@@ -1325,7 +1393,7 @@ PredicateState argtwo(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Error;  // 1;
 }
 
-// ТОЧКА
+// пїЅпїЅпїЅпїЅпїЅ
 PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType xy, x1, x2, y1, y2, color;
   switch (sw) {
@@ -1366,13 +1434,13 @@ PredicateState prset(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClearView(static_cast<unsigned>(color.toInt64()));
   } break;
   default: {
-    throw std::runtime_error("ТОЧКА: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Yes;  // 3;
 }
 
-// СЦЕП
+// пїЅпїЅпїЅпїЅ
 PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 444:
@@ -1382,7 +1450,7 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 944:
   case 949:
   case 994:
-  case 999:  // все str str str
+  case 999:  // пїЅпїЅпїЅ str str str
   case 445:
   case 495:
   case 945:
@@ -1390,7 +1458,7 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   {
     auto res = occ_line(0, ScVar, ClVar, heap) + occ_line(1, ScVar, ClVar, heap);
     if (sw == 445 || sw == 495 || sw == 945 || sw == 995) {
-      // если переменная
+      // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       return zap3(res, 3, ScVar, ClVar, heap);
     }
     return (res == occ_line(2, ScVar, ClVar, heap)) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;
@@ -1401,7 +1469,7 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 959: {
     auto str0 = occ_line(0, ScVar, ClVar, heap);
     auto str2 = occ_line(2, ScVar, ClVar, heap);
-    // если str0 входит в str2 и причем спереди
+    // пїЅпїЅпїЅпїЅ str0 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ str2 пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     if (str0.size() <= str2.size() && str0 == str2.substr(0, str0.size())) {
       return zap3(str2.substr(str0.size()), 2, ScVar, ClVar, heap);
     }
@@ -1413,31 +1481,31 @@ PredicateState prapp(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 599: {
     auto str1 = occ_line(1, ScVar, ClVar, heap);
     auto str2 = occ_line(2, ScVar, ClVar, heap);
-    // если str1 входит в str2 и причем сзади
+    // пїЅпїЅпїЅпїЅ str1 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ str2 пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     if (str2.size() > str1.size() && str2.substr(str2.size() - str1.size()) == str1) {
       return zap3(str2.substr(0, str2.size() - str1.size()), 1, ScVar, ClVar, heap);
     }
     break;
   }
   default: {
-    throw std::runtime_error("СЦЕП: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::No;  // 5;
 }
 
-// две функции работают в паре. они используют общую
-// глобальную переменную count_var и общий массив tvar
-// первой стартует VarOnList
+// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ. пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ count_var пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ tvar
+// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ VarOnList
 int count_var;
 
-// подсчет переменных в списке вернет 1 если ошибка
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap);
 
-// подсчет переменных в функции вернет 1 если ошибка
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (pb->ident != isfunction) {
-    return 1;  // ошибка
+    return 1;  // пїЅпїЅпїЅпїЅпїЅпїЅ
   }
   recordfunction *pf = (recordfunction *)pb;
   auto *ptrarg = heap->GetPunsigned(pf->ptrarg);
@@ -1446,12 +1514,12 @@ int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
     switch (tp->ident) {
     case isfunction:
       if (VarOnFunc((baserecord *)tp, ScVar, ClVar, heap)) {
-        return 1;  // ошибка
+        return 1;  // пїЅпїЅпїЅпїЅпїЅпїЅ
       }
       break;
     case islist:
       if (VarOnList((baserecord *)tp, ScVar, ClVar, heap)) {
-        return 1;  // ошибка
+        return 1;  // пїЅпїЅпїЅпїЅпїЅпїЅ
       }
       break;
     case isvar: count_var++; break;
@@ -1460,7 +1528,7 @@ int VarOnFunc(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 0;
 };
 
-// подсчет переменных в списке вернет 1 если ошибка
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (pb->ident != islist) {
     return 1;
@@ -1471,7 +1539,7 @@ int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
     switch (pv->ident) {
     case isfunction:
       if (VarOnFunc((baserecord *)pv, ScVar, ClVar, heap)) {
-        return 1;  // ошибка
+        return 1;  // пїЅпїЅпїЅпїЅпїЅпїЅ
       }
       break;
     case isvar: count_var++; break;
@@ -1481,8 +1549,8 @@ int VarOnList(baserecord *pb, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return 0;
 };
 
-// подготовка целей для предиката доб
-//  поместит цели в массив bpt
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+//  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ bpt
 
 size_t target_number;
 
@@ -1541,7 +1609,7 @@ size_t prepare_target_from_list(size_t term, TScVar *ScVar, TClVar *ClVar, array
     return 1;
   }
   while (pl->ident == islist) {
-    // выбирають цели из списка
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     baserecord *tp = heap->GetPbaserecord(pl->head);
     switch (tp->ident) {
     case islist: {
@@ -1714,9 +1782,9 @@ size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap) {
       }
     } break;
     case islist: {
-      // это не было написано Балдиным
-      // Если лист, то скопирую его
-      // Константантый наверно можно не копировать?
+      // пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+      // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ?
       auto indx = _Term;
       size_t lstPrev = 0, fstIdx = 0;
       while (heap->GetPbaserecord(indx)->ident == islist) {
@@ -1732,7 +1800,7 @@ size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap) {
         lstPrev = lstCopy;
         indx = lst->link;
         while (heap->GetPbaserecord(indx)->ident == isvar) {
-          // Это всегда работает?
+          // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ?
           size_t j;
           bound(&indx, &_Frame, &j, ClVar, heap);
         }
@@ -1752,7 +1820,7 @@ size_t GetConstTerm(size_t Term, size_t Frame, TClVar *ClVar, array *heap) {
 
 int GetVarsFromFunction(recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array *heap /*,std::vector<recordvar *> &Vars*/) {
   if (pf->ident != isfunction) {
-    return -1;  // ошибка
+    return -1;  // пїЅпїЅпїЅпїЅпїЅпїЅ
   }
   int Count = 0;
   auto *ptrarg = heap->GetPunsigned(pf->ptrarg);
@@ -1760,7 +1828,7 @@ int GetVarsFromFunction(recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array 
     baserecord *tp = heap->GetPbaserecord(ptrarg[i]);
     switch (tp->ident) {
     case isvar: 
-        // Vars.push_back((recordvar *)tp); Пока убрал, т.к. не используется
+        // Vars.push_back((recordvar *)tp); пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅ.пїЅ. пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         ++Count;
         //Vars[VarCount + Count++] = (recordvar *)tp; break;
         break;
@@ -1787,9 +1855,9 @@ int GetVarsFromFunction(recordfunction *pf, TScVar *ScVar, TClVar *ClVar, array 
       break;
     }
     default:
-      throw std::runtime_error(std::string("ДОБ: ЦЕЛЬ содержит недопустимый терм: ") + tp->name());
+      throw std::runtime_error(std::string("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ: ") + tp->name());
       // throw std::runtime_error("GetVarCountFromFunction: unknown term: " + std::to_string(tp->ident));
-      // раньше был pldout
+      // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ pldout
       // return -1;
     }
   }
@@ -1800,7 +1868,7 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
   int VarCount = 0;
   if (rc->ident != isclause) {
     throw std::runtime_error(std::runtime_error("No clause in func GetVarCountFromCluse"));
-    // раньше был pldout
+    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ pldout
     // return -1;
   }
 
@@ -1820,9 +1888,9 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
     } break;
     default:
       break;
-      // throw std::runtime_error(std::string("ДОБ: ЦЕЛЬ должна быть функцией, получено: ") + br->name());
+      // throw std::runtime_error(std::string("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: ") + br->name());
       // throw std::runtime_error("GetVarCountFromClause: unknown term: " + std::to_string(br->ident));
-      // раньше был pldout
+      // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ pldout
       // return -1;
     }
     i++;
@@ -1843,30 +1911,30 @@ int GetVarCountFromClause(recordclause *rc, TScVar *ScVar, TClVar *ClVar, array 
   return VarCount;
 }
 
-// ДОБ
+// пїЅпїЅпїЅ
 PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   auto old_index = heap->last;
   size_t error = 0;
   baserecord *tp;
   recordsconst *ps;
   recordfunction *pf;
-  recordclause *pfirstclause;  // первое предложение данного типа
-  recordclause *pclause;       // предложение на место которого вставиться требуемое
+  recordclause *pfirstclause;  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+  recordclause *pclause;       // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   size_t index;
-  size_t *ptarget;  // указатель на массив с целями
+  size_t *ptarget;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
-  size_t ntarget = 1;  // число целей в новом предложении
+  size_t ntarget = 1;  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   switch (sw) {
   case 427:
   case 927:
-  case 827:  // _,[],int  //рассматриваем предложение как факт
-             // в новом предолжении переменных не может быть
+  case 827:  // _,[],int  //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+             // пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
   {
     tp = heap->GetPbaserecord(ScVar->vgoal[maxarity]);
-    if (tp->ident != isfunction)  // может быть либо функцией или переменной,конкретизированной функцией возможно что
-                                  // нужно поискать функцию
+    if (tp->ident != isfunction)  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
+                                  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     {
-      throw std::runtime_error("ДОБ: АРГ1 не функция");
+      throw std::runtime_error("пїЅпїЅпїЅ: пїЅпїЅпїЅ1 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
       // return PredicateState::Error;  // 1;
     }
     recordfunction *prf = (recordfunction *)tp;
@@ -1876,7 +1944,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     auto *parg = heap->GetPunsigned(ArgIndex);
     auto *prf_arg = heap->GetPunsigned(prf->ptrarg);
     for (size_t i = 0; i < prf->narg; i++) {
-      // достать константы из агрументов функции.
+      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
       *(parg + i) = GetConstTerm(*(prf_arg + i), ClVar->frame2, ClVar, heap);
     }
     auto findex = heap->append(recordfunction(prf->narg, prf->func, ArgIndex));
@@ -1891,16 +1959,16 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   case 837:  //_,list,int
   {
     tp = heap->GetPbaserecord(ScVar->vgoal[maxarity + 1]);
-    // нужно подсчитать число переменных
+    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     count_var = 0;
-    if (VarOnList(tp, ScVar, ClVar, heap) != 0)  // подсчет числа переменных в новом предложении
+    if (VarOnList(tp, ScVar, ClVar, heap) != 0)  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     {
-      pldout(const_cast<char *>("Ошибка при подсчете числа переменных"));
+      pldout(const_cast<char *>("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
       return PredicateState::Error;  // 1;
     }
     error = prepare_target(ScVar->vgoal[maxarity + 1], ScVar, ClVar, heap);
     if (error) {
-      pldout(const_cast<char *>("Ошибка при поиске целей для ДОБ"));
+      pldout(const_cast<char *>("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ"));
       return PredicateState::Error;  // 1;
     }
 
@@ -1918,7 +1986,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     for (i = 0; ptarget[i]; ++i) {
       if (heap->GetPbaserecord(ptarget[i])->ident != isfunction) {
         continue;
-        // throw std::runtime_error("ДОБ: ЦЕЛЬ " + std::to_string(i) + " не является функцией, получаю: " + heap->GetPbaserecord(ptarget[i])->name());
+        // throw std::runtime_error("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅ " + std::to_string(i) + " пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: " + heap->GetPbaserecord(ptarget[i])->name());
       }
       recordfunction *prf = heap->GetPrecordfunction(ptarget[i]);
       auto ArgIndex = heap->append<size_t>(0, prf->narg);
@@ -1928,7 +1996,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
       for (size_t j = 0; j < prf->narg; ++j) {
         arg[j] = *(prf_arg + j);
 
-        // достать константы из агрументов функции.
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
         // auto Arg = GetConstTerm(*(prf_arg + j), ClVar->frame2, ClVar, heap);
         // // Arg = 0;
         // if (Arg) { /*
@@ -1958,7 +2026,7 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     recordclause rc(isclause, 0, 5, ScVar->vgoal[maxarity], index);
     int Count = GetVarCountFromClause(&rc, ScVar, ClVar, heap);
     if (Count < 0) {
-      throw std::runtime_error("ДОБ: Ошибка при подсчёте числа переменных в новом правиле");
+      throw std::runtime_error("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
       // throw std::runtime_error("Var count calculation in new clause failure");
       // return PredicateState::No;
     }
@@ -1967,12 +2035,12 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
   }
   default: {
-    throw std::runtime_error("ДОБ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
-  // включим в цепочку предложений
-  IntegerType number = occ(2, ScVar, ClVar, heap);  // куда следует воткнуть новое
-  // поищем первое предложение
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  IntegerType number = occ(2, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   tp = heap->GetPbaserecord(ScVar->vgoal[maxarity]);
   if (tp->ident == issymbol) {
     ps = (recordsconst *)tp;
@@ -1985,20 +2053,20 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     recordfunction *_pf = pf;
     ps = heap->GetPrecordsconst(pf->func);
     recordsconst *_ps = ps;
-    // теперь поискать сколько переменных в предложении
+    // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   }
   if (ps->begin != NULL && ps->begin != isnil) {
     pfirstclause = heap->GetPrecordclause(ps->begin);
   } else {
-    pfirstclause = NULL;  // нет таких предложения
+    pfirstclause = NULL;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   }
   recordclause *newcl = heap->GetPrecordclause(index);
   if (number < 2 || !pfirstclause) {
-    // поставим новое предложение первым в списке
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     newcl->next = ps->begin;
-    ps->begin = index;  // стало первым
+    ps->begin = index;  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
   } else {
-    // придется втыкать в средину или конец
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     int i = 1;
     pclause = pfirstclause;
     while (i < number - 1 && pclause->next && pclause->next != isnil)
@@ -2014,11 +2082,11 @@ PredicateState prassrt(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Yes;  // 3;
 }
 
-// СЛОЖЕНИЕ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState pradd(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
-  bool fl = false;  // если будет true то обработка вещ иначе целых
+  bool fl = false;  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ true пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   for (size_t i = 0; i < 3; ++i) {
     if (ScVar->vgoal[i] == 6) {
       fl = true;
@@ -2041,8 +2109,8 @@ PredicateState pradd(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  case 777: return (l[0] + l[1] == l[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все целые  ццц
-  case 666: return (f[0] + f[1] == f[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все веществ ffff
+  case 777: return (l[0] + l[1] == l[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅ
+  case 666: return (f[0] + f[1] == f[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
   case 775: return zap1(l[0] + l[1], 3, ScVar, ClVar, heap);
   case 665: return zap1f(f[0] + f[1], 3, ScVar, ClVar, heap);
   case 577: return zap1(l[2] - l[1], 1, ScVar, ClVar, heap);
@@ -2054,11 +2122,11 @@ PredicateState pradd(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Error;         // 1;
 }
 
-// УМНОЖЕНИЕ   в goal[0].. 1 .. идетифик параметр
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ   пїЅ goal[0].. 1 .. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[3];
   FloatType f[3];
-  bool fl = false;  // если будет true то обработка вещ иначе целых
+  bool fl = false;  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ true пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   for (size_t i = 0; i < 3; ++i) {
     if (ScVar->vgoal[i] == 6) {
       fl = true;
@@ -2081,8 +2149,8 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
   }
   switch (sw) {
-  case 777: return (l[0] * l[1] == l[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все целые  ццц
-  case 666: return (f[0] * f[1] == f[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все веществ ffff
+  case 777: return (l[0] * l[1] == l[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅ
+  case 666: return (f[0] * f[1] == f[2]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
   case 775: return zap1(l[0] * l[1], 3, ScVar, ClVar, heap);
   case 665: return zap1f(f[0] * f[1], 3, ScVar, ClVar, heap);
   case 577:
@@ -2115,30 +2183,30 @@ PredicateState prmul3(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return zap1f(f[2] / f[0], 2, ScVar, ClVar, heap);
   }
   outerror(ErrorCode::FailedMultiplicationInvalidArguments);  // 30
-  return PredicateState::Error;                               // 1; // r_t_e не вып пред умножение
+  return PredicateState::Error;                               // 1; // r_t_e пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
 PredicateState argthree(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(3, ClVar->head, ScVar, ClVar, heap);
   size_t sw = 100 * ScVar->vgoal[0] + 10 * ScVar->vgoal[1] + ScVar->vgoal[2];
   switch (name) {
-  case hpmul: return prmul3(sw, ScVar, ClVar, heap);     // УМНОЖЕНИЕ
-  case hpset: return prset(sw, ScVar, ClVar, heap);      // ТОЧКА
-  case hpapp: return prapp(sw, ScVar, ClVar, heap);      // СЦЕП
-  case hpassrt: return prassrt(sw, ScVar, ClVar, heap);  // ДОБ
-  case hpadd: return pradd(sw, ScVar, ClVar, heap);      // СЛОЖЕНИЕ
-  case hppaint: return prpaint(sw, ScVar, ClVar, heap);  // ЗАКРАСКА
-  case hpfndall: return prfindall(sw, ScVar, ClVar, heap);  // НАЙТИВСЕ
-  case hprand: return prrandom(sw, ScVar, ClVar, heap);  // СЛУЧ
+  case hpmul: return prmul3(sw, ScVar, ClVar, heap);     // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpset: return prset(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅ
+  case hpapp: return prapp(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅ
+  case hpassrt: return prassrt(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅ
+  case hpadd: return pradd(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hppaint: return prpaint(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpfndall: return prfindall(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hprand: return prrandom(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅ
   }
   return PredicateState::Error;
 }
 
-// УМНОЖЕНИЕ   в goal[0].. 1 .. идетифик параметр
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ   пїЅ goal[0].. 1 .. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType l[4];
   FloatType f[4];
-  bool fl = false;  // если будет true то обработка вещ иначе целых
+  bool fl = false;  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ true пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   for (size_t i = 0; i < 4; i++) {
     if (ScVar->vgoal[i] == 6) {
       fl = true;
@@ -2160,21 +2228,21 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         l[i] = occ(i, ScVar, ClVar, heap);
     }
   }
-  /* switch(sw)     //так было до введения float
-   {case 7777:return (occ(0)*occ(1)+occ(2)==occ(3))?3:5; //все целые  цццц
-    case 6666:return (occf(0)*occf(1)+occf(2)==occf(3))?3:5; //все веществ ffff
+  /* switch(sw)     //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ float
+   {case 7777:return (occ(0)*occ(1)+occ(2)==occ(3))?3:5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ
+    case 6666:return (occf(0)*occf(1)+occf(2)==occf(3))?3:5; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
     case 5777:if (occ(1))
                           {int work;
                            if ((work=occ(3)-occ(2))%occ(1)!=0) return 5;
                             return zap1(work/occ(1),1);
                           }break;
 
-    case 7577:if (occ(0))                     //цпцц
+    case 7577:if (occ(0))                     //пїЅпїЅпїЅпїЅ
                           {int work;
                           if ((work=occ(3)-occ(2)) % occ(0)!=0) return 5;
                           return zap1(work/occ(0),2);}break;
 
-    case 7757:return zap1(occ(3)-occ(0)*occ(1),3);    //цпцц
+    case 7757:return zap1(occ(3)-occ(0)*occ(1),3);    //пїЅпїЅпїЅпїЅ
     case 7775:return zap1(occ(0)*occ(1)+occ(2),4);
     case 7557:if (occ(0)) return zap2(occ(3)%occ(0),occ(3)/occ(0),3,2);break;
     case 5757:if (occ(1)) return zap2(occ(3)%occ(1),occ(3)/occ(1),3,1);break;
@@ -2182,8 +2250,8 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
    }*/
 
   switch (sw) {
-  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все целые  цццц
-  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // все веществ ffff
+  case 7777: return (l[0] * l[1] + l[2] == l[3]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ
+  case 6666: return (f[0] * f[1] + f[2] == f[3]) ? PredicateState::Yes : PredicateState::No;  // 3 : 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ ffff
   case 5777:
     if (l[1]) {
       IntegerType work;
@@ -2195,7 +2263,7 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     break;
 
   case 7577:
-    if (l[0])  // цпцц
+    if (l[0])  // пїЅпїЅпїЅпїЅ
     {
       IntegerType work;
       if ((work = l[3] - l[2]) % l[0] != 0) {
@@ -2205,8 +2273,8 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     }
     break;
 
-  case 7757: return zap1(l[3] - l[0] * l[1], 3, ScVar, ClVar, heap);   // цпцц
-  case 6656: return zap1f(f[3] - f[0] * f[1], 3, ScVar, ClVar, heap);  // цпцц
+  case 7757: return zap1(l[3] - l[0] * l[1], 3, ScVar, ClVar, heap);   // пїЅпїЅпїЅпїЅ
+  case 6656: return zap1f(f[3] - f[0] * f[1], 3, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅ
   case 7775: return zap1(l[0] * l[1] + l[2], 4, ScVar, ClVar, heap);
   case 6665: return zap1f(f[0] * f[1] + f[2], 4, ScVar, ClVar, heap);
   case 7557:
@@ -2226,7 +2294,7 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
                                                                                            if ((work=f[3]-f[2])%f[1]!=0) return 5;
                                                                                             return zap1f(work/f[1],1);
                                                                                           }break; */
-  case 6566:                                                                        /*if (f[0])                     //цпцц
+  case 6566:                                                                        /*if (f[0])                     //пїЅпїЅпїЅпїЅ
                                                                                           {float work;
                                                                                           if ((work=f[3]-f[2]) % f[0]!=0) return 5;
                                                                                           return zap1f(work/f[0],2);}break;*/
@@ -2234,10 +2302,10 @@ PredicateState prmul(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::Error;                                                   // 1;
   }
   outerror(ErrorCode::FailedMultiplicationInvalidArguments);  // 30
-  return PredicateState::Error;                               // 1; // r_t_e не вып пред умножение
+  return PredicateState::Error;                               // 1; // r_t_e пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
-// ОКРУЖНОСТЬ
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType x1, x2, y1, y2, r, color;
 
@@ -2281,13 +2349,13 @@ PredicateState prcircl(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     ClearView(static_cast<unsigned>(color.toInt64()));
   } break;
   default: {
-    throw std::runtime_error("ОКРУЖНОСТЬ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Yes;  // 3;
 }
 
-// ЗАКРАСКА
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 PredicateState prpaint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType x, y, color;
   if (sw != 777) {
@@ -2301,7 +2369,7 @@ PredicateState prpaint(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   return PredicateState::Yes;  // 3;
 }
 
-// КОПИЯ
+// пїЅпїЅпїЅпїЅпїЅ
 PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   switch (sw) {
   case 4775:
@@ -2392,24 +2460,24 @@ PredicateState prcopy(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::No;
   }
   default: {
-    throw std::runtime_error("КОПИЯ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::No;
 }
 
-// ПРЕДЛ
+// пїЅпїЅпїЅпїЅпїЅ
 PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   baserecord *tp;
   size_t err = 0;
   size_t index = 0;
-  // типы аргументов каждого по отдельности
-  size_t sw1;  // первый
-  size_t sw2;  // второй
-  size_t sw3;  // третий
+  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  size_t sw1;  // пїЅпїЅпїЅпїЅпїЅпїЅ
+  size_t sw2;  // пїЅпїЅпїЅпїЅпїЅпїЅ
+  size_t sw3;  // пїЅпїЅпїЅпїЅпїЅпїЅ
   size_t sw4 = sw;
 
-  // разбор типов аргументов
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
   sw1 = sw4 / 1000;
   sw4 = sw4 - sw1 * 1000;
@@ -2418,7 +2486,7 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   sw3 = sw4 / 10;
   sw4 = sw4 - sw3 * 10;
 
-  // проверка типов
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   if (sw1 != 4 && sw1 != 9)
     err = 1;  // symb/str
   if (sw2 != 7)
@@ -2428,15 +2496,15 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   if (sw4 != 5 && sw4 != 2 && sw4 != 3)
     err = 4;  // var/list/emptylist
   if (err != 0) {
-    pldout(const_cast<char *>("Неверный тип аргументов в 'ПРЕДЛ'."));  // как нибудь раскрою номер параметра
+    pldout(const_cast<char *>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 'пїЅпїЅпїЅпїЅпїЅ'."));  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     return PredicateState::No;                                         // 5;
   }
 
-  // поищем заданное предложение
-  IntegerType i = occ(1, ScVar, ClVar, heap);  // номер заданного предл
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  IntegerType i = occ(1, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   recordsconst *ps = heap->GetPrecordsconst(ScVar->vgoal[maxarity]);
   if (ps->begin == isnil || ps->begin == NULL) {
-    return PredicateState::No;  // 5;  // нет предложения
+    return PredicateState::No;  // 5;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   }
   recordclause *pc = heap->GetPrecordclause(ps->begin);
   IntegerType w;
@@ -2444,25 +2512,25 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     pc = heap->GetPrecordclause(pc->next);
   }
   if (w != i) {
-    return PredicateState::No;  // 5;  // предл с данным номером отсутствует
+    return PredicateState::No;  // 5;  // пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   }
 
-  // нашли нужное предложение
+  // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   recordfunction *pf = heap->GetPrecordfunction(ClVar->head);
-  // аргументы функции предл
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
   auto *ptr = heap->GetPunsigned(pf->ptrarg);
-  // цели найденного предложения
+  // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   auto *p = heap->GetPunsigned(pc->ptrtarget);
-  // запомним состояние
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   auto oldindex = heap->last;
   ClVar->oldtptr = ClVar->tptr;
   ClVar->frame1 = ClVar->oldsvptr = ClVar->svptr;
-  ClVar->svptr = ClVar->frame1 + pc->nvars;  // это число переменных в предл
+  ClVar->svptr = ClVar->frame1 + pc->nvars;  // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
   if (ClVar->svptr > ClVar->vmaxstack && expand_stack(ClVar) != 0) {
-    pldout(const_cast<char *>("Не достаточно памяти в стеке переменных"));
+    pldout(const_cast<char *>("пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"));
     return PredicateState::No;  // 5;
   }
-  // унификация головы предлож с переменной или ...
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ ...
   if (!unify(p[0], ptr[2], ClVar->frame1, ClVar->frame2, ClVar, heap)) {
     ClVar->svptr = ClVar->oldsvptr;
     // heap->last = oldindex;  //??????
@@ -2471,7 +2539,7 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
     return PredicateState::No;  // 5;
   }
 
-  // получим список из целей найденного предложения
+  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
   tp = heap->GetPbaserecord(pc->head);
   size_t tlist = 0;
   switch (tp->ident) {
@@ -2510,7 +2578,7 @@ PredicateState prclaus(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
         zero(ClVar);
       }
 
-      return PredicateState::Yes;  // 3;  // удачная унификация
+      return PredicateState::Yes;  // 3;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     }
     break;
   }
@@ -2522,15 +2590,15 @@ PredicateState argfour(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(4, ClVar->head, ScVar, ClVar, heap);
   size_t sw = ScVar->vgoal[0] * 1000 + ScVar->vgoal[1] * 100 + ScVar->vgoal[2] * 10 + ScVar->vgoal[3];
   switch (name) {
-  case hpmul: return prmul(sw, ScVar, ClVar, heap);      // УМНОЖЕНИЕ
-  case hpcircl: return prcircl(sw, ScVar, ClVar, heap);  // ОКРУЖНОСТЬ
-  case hpcopy: return prcopy(sw, ScVar, ClVar, heap);    // КОПИЯ
-  case hpclaus: return prclaus(sw, ScVar, ClVar, heap);  // ПРЕДЛ
+  case hpmul: return prmul(sw, ScVar, ClVar, heap);      // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpcircl: return prcircl(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpcopy: return prcopy(sw, ScVar, ClVar, heap);    // пїЅпїЅпїЅпїЅпїЅ
+  case hpclaus: return prclaus(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅ
   }
   return PredicateState::Error;  // 1;
 }
 
-// ЛИНИЯ
+// пїЅпїЅпїЅпїЅпїЅ
 PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
   IntegerType x1, x2, y1, y2, color;
   switch (sw) {
@@ -2624,7 +2692,7 @@ PredicateState prger(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap) {
              static_cast<long long>(occ(4, ScVar, ClVar, heap).toInt64()));
   } break;
   default: {
-    throw std::runtime_error("ЛИНИЯ: Недопустимый тип аргументов");
+    throw std::runtime_error("пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
   }
   }
   return PredicateState::Yes;  // 3;
@@ -2634,7 +2702,7 @@ PredicateState argfive(size_t name, TScVar *ScVar, TClVar *ClVar, array *heap) {
   conarg(5, ClVar->head, ScVar, ClVar, heap);
   size_t sw = 10000 * ScVar->vgoal[0] + 1000 * ScVar->vgoal[1] + 100 * ScVar->vgoal[2] + 10 * ScVar->vgoal[3] + ScVar->vgoal[4];
   switch (name) {
-  case hpline: return prger(sw, ScVar, ClVar, heap);  // ЛИНИЯ
+  case hpline: return prger(sw, ScVar, ClVar, heap);  // пїЅпїЅпїЅпїЅпїЅ
   }
   return PredicateState::Error;  // 1;
 }
@@ -2690,8 +2758,8 @@ bool bpred(size_t name, size_t narg) {
   case hpapp:
   case hppaint:
   case hpassrt: return (narg == 3) ? true : false;  // 3
-  case hpfndall: return (narg == 3) ? true : false;  // НАЙТИВСЕ
-  case hpforall: return (narg == 2) ? true : false;  // ДЛЯВСЕХ
+  case hpfndall: return (narg == 3) ? true : false;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  case hpforall: return (narg == 2) ? true : false;  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
   case hpmul: return (narg == 3 || narg == 4) ? true : false;
   case hpcircl:
@@ -2700,12 +2768,12 @@ bool bpred(size_t name, size_t narg) {
 
   case hpline: return (narg == 5) ? true : false;  // 5
   }
-  return false;  // нечего сюда лезть
+  return false;  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 }
 
-//=========== функции ввода ==============
+//=========== пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ==============
 std::string Inputstring(const char *caption) {
-  const char *pCaption = "Введите строку";
+  const char *pCaption = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
   if (caption) {
     pCaption = caption;
   }
@@ -2717,7 +2785,7 @@ std::string Inputstring(const char *caption) {
 }
 
 std::string Inputline(const char *caption) {
-  const char *pCaption = "Введите строку";
+  const char *pCaption = "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ";
   if (caption) {
     pCaption = caption;
   }
@@ -2729,7 +2797,7 @@ std::string Inputline(const char *caption) {
 }
 
 int InputSymbol(char *c) {
-  char *pCaption = const_cast<char *>("Введите символ");
+  char *pCaption = const_cast<char *>("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ");
   auto buf = InputStringFromDialog(pCaption, true);
   if (buf.size() != 1) {
     throw std::runtime_error("Can't read");
