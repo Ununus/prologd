@@ -1,4 +1,4 @@
-FROM gcc:10.3.0-buster
+FROM gcc:15.3-trixie
 
 # Install build system generator
 ARG CMAKE_VERSION=3.22.2
@@ -11,9 +11,8 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cm
 
 ENV PATH="/usr/bin/cmake/bin:${PATH}"
 
-# Build prologd from the root CMakeLists.txt.
-COPY ./CMakeLists.txt /project/
-COPY ./src /project/src
-WORKDIR /project
-RUN cmake -S . -B build && cmake --build build -j"$(nproc)" && mkdir -m 777 /compiled
-CMD mv ./build/src/prologd /compiled/ && chmod 777 /compiled/prologd
+# Build prologd
+COPY ./src /src
+WORKDIR /src
+RUN cmake . && make && mkdir -m 777 /compiled
+CMD mv ./prologd /compiled/

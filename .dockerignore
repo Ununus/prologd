@@ -1,0 +1,8 @@
+# Local CMake cache and build artifacts (they pin the old compiler)
+src/CMakeCache.txt
+src/**/CMakeFiles
+src/**/Makefile
+src/**/cmake_install.cmake
+src/**/prlib_config.h
+src/prologd
+src/**/*.a

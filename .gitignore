@@ -374,6 +374,7 @@ src/prlib/Makefile
 
 # Pycharm files
 .idea/
+compiled/
 
 # Third-party sources are fetched into the build tree by CMake (see CMakeLists).
 src/3rdparty/
