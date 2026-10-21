@@ -501,3 +501,6 @@ constexpr size_t hpexp = hptan + sizeof(recordsconst) + sizeof("EXP") - 1;
 constexpr size_t hpfndall = hpexp + sizeof(recordsconst) + sizeof("мюирхбяе") - 1;
 /* ЛЕЯРН дкъбяеу Б ЙСВЕ */
 constexpr size_t hpforall = hpfndall + sizeof(recordsconst) + sizeof("дкъбяеу") - 1;
+
+// ЛЕЯРН янпрхпнбйю
+constexpr size_t hpsort = hpforall + sizeof(recordsconst) + sizeof("янпрхпнбйю") - 1;

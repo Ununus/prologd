@@ -67,6 +67,8 @@ PredicateState prterm(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 PredicateState prfindall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 // ÄËßÂÑÅÕ
 PredicateState prforall(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
+// ÑÎĞÒÈĞÎÂÊÀ
+PredicateState prsort(size_t sw, TScVar *ScVar, TClVar *ClVar, array *heap);
 // ÁÎËÜØÅ
 PredicateState prgt(TScVar *ScVar, TClVar *ClVar, array *heap);
 // ÇÀÊĞÀÑÊÀ

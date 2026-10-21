@@ -10,6 +10,7 @@ add_library (prlib
 "extfunc.cpp" "extfunc.h"
 "findall.cpp"
 "forall.cpp"
+"sort.cpp"
 "functions.cpp" "functions.h"
 "keywords.h"
 "pstructs.cpp" "pstructs.h"

@@ -17,6 +17,7 @@ add_executable(prlib_tests
   "test_control.cpp"
   "test_findall.cpp"
   "test_forall.cpp"
+  "test_sort.cpp"
   "test_strings.cpp"
   "test_types.cpp"
   "test_input.cpp"
@@ -78,3 +79,16 @@ file(WRITE "${prologd_cyrillic_dir}/программа.pld" "?СЛОЖЕНИЕ(2
 add_test(NAME cli_cyrillic_path
   COMMAND prologd "--source=${prologd_cyrillic_dir}/программа.pld")
 set_tests_properties(cli_cyrillic_path PROPERTIES PASS_REGULAR_EXPRESSION "=5")
+
+# СОРТИРОВКА в настоящем интерпретаторе: список выстраивается, повтор остаётся
+# одним значением, а несравнимые элементы — ошибка с именем предиката.
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/sort.pld" "?СОРТИРОВКА([3,1,2,1], С).\n")
+add_test(NAME cli_sort
+  COMMAND prologd "--source=${CMAKE_CURRENT_BINARY_DIR}/sort.pld")
+set_tests_properties(cli_sort PROPERTIES PASS_REGULAR_EXPRESSION "1,2,3")
+
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/sort_error.pld" "?СОРТИРОВКА([1, аня], С).\n")
+add_test(NAME cli_sort_error
+  COMMAND prologd "--source=${CMAKE_CURRENT_BINARY_DIR}/sort_error.pld")
+set_tests_properties(cli_sort_error PROPERTIES
+  PASS_REGULAR_EXPRESSION "СОРТИРОВКА: Недопустимый тип аргументов")
