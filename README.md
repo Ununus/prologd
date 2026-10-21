@@ -30,6 +30,12 @@ cmake -S . -B build -DPROLOGD_BUILD_FOR_GUI=ON
 cmake -S . -B build -DPROLOGD_BUILD_TESTS=ON
 ```
 
+### Test
+
+```
+ctest --test-dir build --output-on-failure
+```
+
 ## Run
 ```
 prologd --source=FILE

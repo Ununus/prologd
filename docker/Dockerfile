@@ -11,8 +11,9 @@ RUN wget https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cm
 
 ENV PATH="/usr/bin/cmake/bin:${PATH}"
 
-# Build prologd
-COPY ./src /src
-WORKDIR /src
-RUN cmake . && make && mkdir -m 777 /compiled
-CMD mv ./prologd /compiled/ && chmod 777 /compiled/prologd
+# Build prologd from the root CMakeLists.txt.
+COPY ./CMakeLists.txt /project/
+COPY ./src /project/src
+WORKDIR /project
+RUN cmake -S . -B build && cmake --build build -j"$(nproc)" && mkdir -m 777 /compiled
+CMD mv ./build/src/prologd /compiled/ && chmod 777 /compiled/prologd
