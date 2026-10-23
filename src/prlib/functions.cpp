@@ -313,6 +313,24 @@ ErrorCode strings(char *&p, TScVar *ScVar, array *heap) {
   return err;
 }
 
+// `'атом'` — константа в кавычках: внутри допустимы пробелы и знаки, которые вне кавычек
+// были бы разделителями.  В базу знаний имя попадает без кавычек, поэтому `'атом'` и
+// `атом` — одна и та же константа.
+ErrorCode quotedconst(char *&p, TScVar *ScVar, array *heap) {
+  ErrorCode err = ErrorCode::NoErrors;
+  p++;
+  int i;
+  for (i = 0; *(p + i) && *(p + i) != '\''; i++)
+    ;
+  if (*(p + i) == '\'') {
+    err = wrsconst(p, i, ScVar, heap);
+  } else {
+    err = ErrorCode::InvalidAtomFormat;  // 45;
+  }
+  p += i;
+  return err;
+}
+
 ErrorCode num(char *&p, TScVar *ScVar, array *heap) {
   // должна прийти первая цифра или знак + -
   ErrorCode err = ErrorCode::NoErrors;
@@ -404,6 +422,9 @@ bool isalpharus(char symb) {
   return false;
 }
 
+// Имя — переменная, если оно однобуквенное (`х`), если за ним стоит `'` (`переменная'`)
+// или если оно начинается с `_` (`_пер`).  Одно `_` именем не считается: это безымянное
+// место (hpunkn), и разбирает его сам сканер.
 bool issvar(char *&p, size_t &len) {
   if (isdigitrus(*p)) {
     return false;  // first symbol must be no digit
@@ -413,20 +434,14 @@ bool issvar(char *&p, size_t &len) {
   if (!len) {
     return false;
   }
-  if (len == 1) {
-    if (*(p + len) == '\'') {
-      len++;
-    }
+  if (*(p + len) == '\'') {
+    len++;
     return true;
-  } else {
-    if (*(p + len) == '\'') {
-      len++;
-      return true;
-    }
   }
-  return false;
+  return len == 1 || *p == '_';
 }
 
+// Константа — имя без `'` в конце и не с `_` в начале: такие имена — переменные (см. issvar).
 bool issconst(char *&p, size_t &len) {
   len = 0;
   if ((*p >= '0' && *p <= '9') || *p == '-' || *p == '+') {
@@ -437,18 +452,11 @@ bool issconst(char *&p, size_t &len) {
   if (!len) {
     return false;
   }
-  if (len == 1) {
-    if (*(p + len) == '\'') {
-      len++;
-    }
-    return false;
-  } else {
-    if (*(p + len) == '\'') {
-      len++;
-      return false;
-    }
+  if (*(p + len) == '\'') {
+    len++;
+    return false;  // `переменная'` — переменная
   }
-  return true;
+  return len > 1 && *p != '_';
 }
 
 ErrorCode implic(char *&p, TScVar *ScVar, array *heap) {
@@ -664,6 +672,20 @@ ErrorCode arsgn(TScVar *ScVar, size_t i) {
   } else {
     ScVar->vbuf[ScVar->bptr++] = i;
   }
+  return err;
+}
+
+// `_имя` — переменная без кавычки: имя пишется в базу как есть, а `'` в конце
+// (`_имя'`) считается тем же самым знаком переменной и в имя не попадает.
+ErrorCode underscorename(char *&p, TScVar *ScVar, array *heap) {
+  size_t len = 0;
+  issvar(p, len);
+  size_t name = len;
+  if (name > 1 && *(p + name - 1) == '\'') {
+    name--;
+  }
+  ErrorCode err = variabletable(p, name, ScVar, heap);
+  p += len - 1;
   return err;
 }
 

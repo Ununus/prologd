@@ -34,6 +34,7 @@ ErrorCode FreeProlog();
 ErrorCode tokbb(TScVar *ScVar, array *heap);
 ErrorCode clause(TScVar *ScVar, array *heap);
 ErrorCode strings(char *&p, TScVar *ScVar, array *heap);
+ErrorCode quotedconst(char *&p, TScVar *ScVar, array *heap);
 ErrorCode num(char *&p, TScVar *ScVar, array *heap);
 ErrorCode implic(char *&p, TScVar *ScVar, array *heap);
 ErrorCode expbeg(TScVar *ScVar, array *heap);
@@ -47,6 +48,7 @@ bool isalphanumang(char symb);
 bool isdigitrus(char symb);
 bool issvar(char *&p, size_t &len);
 bool issconst(char *&p, size_t &len);
+ErrorCode underscorename(char *&p, TScVar *ScVar, array *heap);
 //=====функции для записи ========================================
 ErrorCode variabletable(char *&p, size_t len, TScVar *ScVar, array *heap);
 ErrorCode wrsconst(char *&p, size_t len, TScVar *ScVar, array *heap);

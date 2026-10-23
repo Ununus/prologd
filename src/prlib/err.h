@@ -47,7 +47,8 @@ enum class ErrorCode : size_t {
   DivisionByZeroWhileCalculatingArithmeticsExpressions = 41,
   CharacterConstantNameBufferOverflow = 42,
   AnExceptionOccurredDuringExecution = 43,
-  TooLongList = 44
+  TooLongList = 44,
+  InvalidAtomFormat = 45
 };
 
 std::string GetPrErrText(ErrorCode err);

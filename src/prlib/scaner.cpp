@@ -96,7 +96,10 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
     case ' ': break;  // ни каких действий - переход на следующий символ
     case '_': {
       // анонимка
-      if (gptr <= 0) {
+      size_t len = 0;
+      if (issvar(p, len) && len > 1) {
+        err = underscorename(p, ScVar, heap);
+      } else if (gptr <= 0) {
         err = ErrorCode::IncorrectUseUnderscore;  // 11;
       } else {
         if (bptr + 1 >= buf.size()) {
@@ -134,6 +137,9 @@ ErrorCode scaner(char *Str, TScVar *ScVar, array *heap) {
       err = arsgn(ScVar, isslash);
       break;
     }
+    case '\'': {
+      err = quotedconst(p, ScVar, heap);
+    } break;
       // символы арифметических функций должны обработатся в expresse
     default: {
       size_t len = 0;
