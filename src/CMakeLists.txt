@@ -1,5 +1,11 @@
 ﻿set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64")
 
+# The engine needs C++17 (std::string_view, std::optional, std::filesystem), and
+# this file is also the entry point of an in-source build.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_subdirectory("prlib")
 
 # The console interpreter.  The JSON session of a front-end is an option: it needs
@@ -33,4 +39,5 @@ endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   target_link_libraries(prologd -static-libgcc -static-libstdc++)
+  target_link_options(prologd PRIVATE -static)
 endif()
