@@ -1,7 +1,8 @@
-#define PRLIB_BUILD_DATE "${prlib_t}"
 #define PROLOGD_VERSION "${PROLOGD_VERSION}"
+#define PROLOGD_RELEASE_DATE "${PROLOGD_RELEASE_DATE}"
 
-//: The string the version predicate prints: the name of the interpreter, the
-//: version of the project's CMakeLists and the date this build was configured for,
-//: as in "PrologD 1.xx (dd.mm.yyyy)".
-#define PROLOGD_VERSION_STRING "PrologD " PROLOGD_VERSION " (" PRLIB_BUILD_DATE ")"
+//: What the version predicate prints (`?ВЕРСИЯ`, hpversion in extfunc.cpp): the
+//: release stamp of the dialect alone.  It is deliberately not the date of the
+//: build - a stamp that moved with every configure would make the answer depend
+//: on when the binary happened to be built.
+#define PROLOGD_VERSION_STRING PROLOGD_RELEASE_DATE

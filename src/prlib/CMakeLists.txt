@@ -18,7 +18,6 @@ add_library (prlib
 "pdefs.h"
 )
 
-string(TIMESTAMP prlib_t "%d.%m.%Y")
 configure_file(prlib_config.h.in prlib_config.h)
 
 set_property(TARGET prlib PROPERTY CXX_STANDARD 17)

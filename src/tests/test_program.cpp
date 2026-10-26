@@ -63,12 +63,11 @@ TEST_CASE("quiet suppresses the answer of its question", "[program]") {
   REQUIRE(run("?ТИХО,ВЫВОД(9).\n").output == "9");
 }
 
-TEST_CASE("version prints the version and the build date", "[program]") {
-  // One string: the name of the interpreter, the version the project was built
-  // with and the date of the build; the question it answers is a question, so the
-  // version line is followed by its `ДА`.
-  REQUIRE(question("ВЕРСИЯ") ==
-          std::string("PrologD ") + PROLOGD_VERSION + " (" + PRLIB_BUILD_DATE + ")\nДА\n");
+TEST_CASE("version prints the release stamp", "[program]") {
+  // One fixed string - the release stamp of the dialect, not the date of the
+  // build; the question it answers is a question, so the line is followed by `ДА`.
+  REQUIRE(question("ВЕРСИЯ") == std::string(PROLOGD_RELEASE_DATE) + "\nДА\n");
+  REQUIRE(std::string(PROLOGD_VERSION_STRING) == PROLOGD_RELEASE_DATE);
 }
 
 TEST_CASE("a syntax error names the line it was found on", "[program][errors]") {

@@ -3,6 +3,8 @@
 project("prologd" VERSION 1.27 LANGUAGES CXX)
 set(PROLOGD_VERSION "${PROJECT_VERSION}")
 
+set(PROLOGD_RELEASE_DATE "26.10")
+
 # The engine and the interpreter are C++17 (std::filesystem, [[fallthrough]]).
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
